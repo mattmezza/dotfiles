@@ -103,3 +103,7 @@ export PIP_REQUIRE_VIRTUALENV=true
 
 # gurobi
 export GUROBI_HOME=/opt/gurobi801/linux64
+
+# pbcopy (as in macOS)
+alias pbcopy='xclip -selection clipboard'
+alias pbpaste='xclip -selection clipboard -o'
