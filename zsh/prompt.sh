@@ -5,11 +5,10 @@ autoload -U colors && colors
 setopt PROMPT_SUBST
 
 set_prompt() {
-
 	PS1=""
 
 	if [[ $VIRTUAL_ENV != "" ]]; then
-		PS1+="%{$fg[green]%}($(basename $VIRTUAL_ENV))%{$reset_color%}"
+		PS1+="%{$fg[green]%}($(basename $VIRTUAL_ENV)) %{$reset_color%}"
 	fi
 
 	# [

@@ -97,3 +97,9 @@ if command -v pyenv 1>/dev/null 2>&1; then
  eval "$(pyenv init -)"
  eval "$(pyenv virtualenv-init -)"
 fi
+
+# pip
+export PIP_REQUIRE_VIRTUALENV=true
+
+# gurobi
+export GUROBI_HOME=/opt/gurobi801/linux64
