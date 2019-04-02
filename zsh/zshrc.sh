@@ -87,3 +87,12 @@ export PATH=$PATH:$HOME/dotfiles/utils
 alias g=git
 alias gti=git
 alias got=git
+
+# pyenv
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH=$PATH:$PYENV_ROOT/bin
+
+if command -v pyenv 1>/dev/null 2>&1; then
+ eval "$(pyenv init -)"
+ eval "$(pyenv virtualenv-init -)"
+fi
