@@ -52,6 +52,7 @@ autoload -U compinit
 
 plugins=(
 	docker
+	virtualenv
 )
 
 for plugin ($plugins); do
