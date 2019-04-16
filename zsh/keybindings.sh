@@ -38,7 +38,7 @@
 		zle accept-line
 	}
 	zle -N edit_and_run
-	bindkey "^v" edit_and_run
+	bindkey "^b" edit_and_run
 
 # LS
 	function ctrl_l() {

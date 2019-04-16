@@ -7,6 +7,15 @@
 	Plugin 'VundleVim/Vundle.vim'
 	Plugin 'tpope/vim-fugitive'
 	Plugin 'vim-syntastic/syntastic'
+	Plugin 'tpope/vim-surround'
+	Plugin 'tpope/vim-repeat'
+	Plugin 'yegappan/mru'
+	Plugin 'Valloric/YouCompleteMe'
+	Plugin 'scrooloose/nerdtree'
+	Plugin 'jistr/vim-nerdtree-tabs'
+
+	call vundle#end()
+	filetype plugin indent on
 " General Vim settings
 	syntax on
 	let mapleader=","
@@ -27,6 +36,7 @@
 	nnoremap <C-l> :nohl<CR><C-l>:echo "Search Cleared"<CR>
 	nnoremap <C-c> :set norelativenumber<CR>:set nonumber<CR>:echo "Line numbers turned off."<CR>
 	nnoremap <C-n> :set relativenumber<CR>:set number<CR>:echo "Line numbers turned on."<CR>
+	nnoremap <leader><Space> :MRU 
 
 	nnoremap n nzzzv
 	nnoremap N Nzzzv
@@ -126,3 +136,9 @@
 " Fix for: https://github.com/fatih/vim-go/issues/1509
 
 filetype plugin indent on
+
+
+" Some nice to have nerd tree config
+	let g:nerdtree_tabs_autofind=1
+	let g:nerdtree_tabs_open_on_console_startup=1
+

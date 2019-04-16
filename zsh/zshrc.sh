@@ -53,6 +53,7 @@ autoload -U compinit
 plugins=(
 	docker
 	virtualenv
+	safe-paste
 )
 
 for plugin ($plugins); do
@@ -103,6 +104,12 @@ export PIP_REQUIRE_VIRTUALENV=true
 
 # gurobi
 export GUROBI_HOME=/opt/gurobi801/linux64
+export PATH=$PATH:$GUROBI_HOME/bin
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GUROBI_HOME/lib
+
+# libhdfs3
+export LIBHDFS3_HOME=/home/matt/Development/libhdfs3-new/dist
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$LIBHDFS3_HOME/lib
 
 # pbcopy (as in macOS)
 alias pbcopy='xclip -selection clipboard'
