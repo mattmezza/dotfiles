@@ -13,6 +13,9 @@
 	Plugin 'Valloric/YouCompleteMe'
 	Plugin 'scrooloose/nerdtree'
 	Plugin 'jistr/vim-nerdtree-tabs'
+	Plugin 'mileszs/ack.vim'
+	Plugin 'vim-scripts/python.vim'
+	Plugin 'ekalinin/dockerfile.vim'
 
 	call vundle#end()
 	filetype plugin indent on
@@ -25,6 +28,7 @@
 	set dir=/tmp/
 	set relativenumber 
 	set number
+	colorscheme pablo
 
 	autocmd Filetype html setlocal sw=2 expandtab
 	autocmd Filetype javascript setlocal sw=4 expandtab
@@ -142,3 +146,12 @@ filetype plugin indent on
 	let g:nerdtree_tabs_autofind=1
 	let g:nerdtree_tabs_open_on_console_startup=1
 
+" Alert when line too long
+	augroup vimrc_autocmds
+		autocmd FileType python highlight OverLength ctermbg=red ctermfg=white
+		autocmd FileType python match OverLength /\%79v.\+/
+	augroup END
+
+" add yaml stuff
+	au! BufNewFile,BufReadPost *.{yaml,yml} set filetype=yaml
+	autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
