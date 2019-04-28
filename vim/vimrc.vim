@@ -16,6 +16,12 @@
 	Plugin 'mileszs/ack.vim'
 	Plugin 'vim-scripts/python.vim'
 	Plugin 'ekalinin/dockerfile.vim'
+	Plugin 'ambv/black'
+	Plugin 'kana/vim-textobj-user'
+	Plugin 'bps/vim-textobj-python'
+	Plugin 'craigemery/vim-autotag'
+	Plugin 'ctrlpvim/ctrlp.vim'
+	Plugin 'dhruvasagar/vim-zoom'
 
 	call vundle#end()
 	filetype plugin indent on
@@ -149,9 +155,14 @@ filetype plugin indent on
 " Alert when line too long
 	augroup vimrc_autocmds
 		autocmd FileType python highlight OverLength ctermbg=red ctermfg=white
-		autocmd FileType python match OverLength /\%79v.\+/
+		autocmd FileType python match OverLength /\%88v.\+/
 	augroup END
+	let g:syntastic_python_pylint_post_args="--max-line-length=88"
 
 " add yaml stuff
 	au! BufNewFile,BufReadPost *.{yaml,yml} set filetype=yaml
 	autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
+
+" ctags auto generation on file save for python venv
+	map <F11> :!ctags -R --exclude=.tox --exclude=.dockervenv --exclude=.mypy_cache --exclude=.pytest_cache --exclude=__pycache__ --exclude=.idea --exclude=.git -f tags `python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())"`<CR>
+	autocmd BufWritePost,FileWritePost *.py :silent! !ctags -R --exclude=.tox --exclude=.dockervenv -f tags .
