@@ -22,6 +22,7 @@
 	Plugin 'craigemery/vim-autotag'
 	Plugin 'ctrlpvim/ctrlp.vim'
 	Plugin 'dhruvasagar/vim-zoom'
+	Plugin 'fisadev/vim-isort'
 
 	call vundle#end()
 	filetype plugin indent on
@@ -39,7 +40,7 @@
 	autocmd Filetype html setlocal sw=2 expandtab
 	autocmd Filetype javascript setlocal sw=4 expandtab
 
-	set cursorline
+	set nocursorline
 	hi Cursor ctermfg=White ctermbg=Yellow cterm=bold guifg=white guibg=yellow gui=bold
 
 	set hlsearch
@@ -166,3 +167,6 @@ filetype plugin indent on
 " ctags auto generation on file save for python venv
 	map <F11> :!ctags -R --exclude=.tox --exclude=.dockervenv --exclude=.mypy_cache --exclude=.pytest_cache --exclude=__pycache__ --exclude=.idea --exclude=.git -f tags `python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())"`<CR>
 	autocmd BufWritePost,FileWritePost *.py :silent! !ctags -R --exclude=.tox --exclude=.dockervenv -f tags .
+
+" setting line length for black
+	let g:black_linelength = 79
