@@ -50,6 +50,11 @@ check_default_shell() {
 	fi
 }
 
+install_brew_deps() {
+	cat ~/dotfiles/brew.txt | while read in; do brew install "$in"; done
+	cat ~/dotfiles/cask.txt | while read in; do brew cask install "$in"; done
+}
+
 echo "We're going to do the following:"
 echo "1. Check to make sure you have zsh, vim, and tmux installed"
 echo "2. We'll help you install them if you don't"
@@ -95,6 +100,10 @@ fi
 printf "source '$HOME/dotfiles/zsh/zshrc_manager.sh'" > ~/.zshrc
 printf "so $HOME/dotfiles/vim/vimrc.vim" > ~/.vimrc
 printf "source-file $HOME/dotfiles/tmux/tmux.conf" > ~/.tmux.conf
+
+echo
+echo "Installing brew dependencies..."
+install_brew_deps
 
 echo
 echo "Please log out and log back in for default shell to be initialized."

@@ -1,0 +1,11 @@
+iterm2
+lastpass
+google-chrome
+visual-studio-code
+jetbrains-toolbox
+docker
+telegram
+vlc
+insomnia
+spotify
+tunnelblick

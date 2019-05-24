@@ -1,0 +1,9 @@
+zlib
+pyenv
+pyenv-virtualenv
+node
+composer
+php
+neovim
+jq
+git-extras

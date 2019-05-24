@@ -1,7 +1,7 @@
 " Install vundle
 	set nocompatible
 	filetype off
-	set rtp+=~/.vim/bundle/Vundle.vim
+	set rtp+=$HOME/dotfiles/vim/bundle/Vundle.vim
 	call vundle#begin()
 
 	Plugin 'VundleVim/Vundle.vim'
@@ -10,7 +10,7 @@
 	Plugin 'tpope/vim-surround'
 	Plugin 'tpope/vim-repeat'
 	Plugin 'yegappan/mru'
-	Plugin 'Valloric/YouCompleteMe'
+	Plugin 'w0rp/ale'
 	Plugin 'scrooloose/nerdtree'
 	Plugin 'jistr/vim-nerdtree-tabs'
 	Plugin 'mileszs/ack.vim'
@@ -22,7 +22,7 @@
 	Plugin 'craigemery/vim-autotag'
 	Plugin 'ctrlpvim/ctrlp.vim'
 	Plugin 'dhruvasagar/vim-zoom'
-	Plugin 'fisadev/vim-isort'
+	Plugin 'vim-airline/vim-airline'
 
 	call vundle#end()
 	filetype plugin indent on
@@ -128,6 +128,8 @@
 			\	execute 'normal! g`"zvzz' |
 			\ endif
 	augroup END
+
+let g:pymode_python = 'python3'
 
 " Auto load
 	" Triger `autoread` when files changes on disk

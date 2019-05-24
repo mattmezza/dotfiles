@@ -7,6 +7,7 @@
 	git config --global push.default current
 
 # Aliases
+	alias vim="nvim"
 	alias v="vim -p"
 	mkdir -p /tmp/log
 	
@@ -112,8 +113,8 @@ export LIBHDFS3_HOME=/home/matt/Development/libhdfs3-new/dist
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$LIBHDFS3_HOME/lib
 
 # pbcopy (as in macOS)
-alias pbcopy='xclip -selection clipboard'
-alias pbpaste='xclip -selection clipboard -o'
+# alias pbcopy='xclip -selection clipboard'
+# alias pbpaste='xclip -selection clipboard -o'
 
 # gitignore
 function gi() { curl -sLw "\n" https://www.gitignore.io/api/$@ ;}
