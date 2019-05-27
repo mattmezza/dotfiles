@@ -90,6 +90,8 @@ export PATH=$PATH:$HOME/dotfiles/utils
 alias g=git
 alias gti=git
 alias got=git
+alias dc=docker-compose
+git config --global include.path ~/dotfiles/gitalias.txt
 
 # pyenv
 export PYENV_ROOT="$HOME/.pyenv"
