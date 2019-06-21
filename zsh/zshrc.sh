@@ -8,6 +8,7 @@
 
 # Aliases
 	alias vim="nvim"
+	alias vi="nvim"
 	alias v="vim -p"
 	mkdir -p /tmp/log
 	
@@ -90,7 +91,10 @@ export PATH=$PATH:$HOME/dotfiles/utils
 alias g=git
 alias gti=git
 alias got=git
-alias dc=docker-compose
+alias compose=docker-compose
+function pull() { git pull ;}
+function push() { git push ;}
+function push1() { git push1 ;}
 git config --global include.path ~/dotfiles/gitalias.txt
 
 # pyenv
@@ -106,7 +110,8 @@ fi
 export PIP_REQUIRE_VIRTUALENV=true
 
 # gurobi
-export GUROBI_HOME=/opt/gurobi801/linux64
+export GUROBI_HOME=/Library/gurobi801/mac64
+export GRB_LICENSE_FILE=$HOME/gurobi.lic
 export PATH=$PATH:$GUROBI_HOME/bin
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GUROBI_HOME/lib
 
@@ -120,3 +125,13 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$LIBHDFS3_HOME/lib
 
 # gitignore
 function gi() { curl -sLw "\n" https://www.gitignore.io/api/$@ ;}
+export PATH="/usr/local/opt/krb5/bin:$PATH"
+export PATH="/usr/local/opt/krb5/sbin:$PATH"
+
+function kubelogin() {
+	if [ $1 = "nle" ]; then
+		curl -u klm86001 -o /tmp/odsklm-amsica1902 -s "https://squirrel.klm.nl/v1/auth/kubeconfig/odsklm/amsica1902" && export KUBECONFIG=/tmp/odsklm-amsica1902
+	else
+		echo "Not yet implemented for le..."
+	fi
+}

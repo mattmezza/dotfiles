@@ -9,3 +9,5 @@ vlc
 insomnia
 spotify
 tunnelblick
+slack
+sizeup

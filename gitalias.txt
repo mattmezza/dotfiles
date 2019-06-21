@@ -1278,3 +1278,5 @@
 
   ull = pull
   ush = push
+
+pod = git pull origin develop

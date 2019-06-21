@@ -16,7 +16,7 @@
 	Plugin 'mileszs/ack.vim'
 	Plugin 'vim-scripts/python.vim'
 	Plugin 'ekalinin/dockerfile.vim'
-	Plugin 'ambv/black'
+" Plugin 'ambv/black'
 	Plugin 'kana/vim-textobj-user'
 	Plugin 'bps/vim-textobj-python'
 	Plugin 'craigemery/vim-autotag'
@@ -153,7 +153,7 @@ filetype plugin indent on
 
 " Some nice to have nerd tree config
 	let g:nerdtree_tabs_autofind=1
-	let g:nerdtree_tabs_open_on_console_startup=1
+	" let g:nerdtree_tabs_open_on_console_startup=1
 
 " Alert when line too long
 	augroup vimrc_autocmds
