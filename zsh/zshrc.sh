@@ -115,23 +115,34 @@ export GRB_LICENSE_FILE=$HOME/gurobi.lic
 export PATH=$PATH:$GUROBI_HOME/bin
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GUROBI_HOME/lib
 
-# libhdfs3
-export LIBHDFS3_HOME=/home/matt/Development/libhdfs3-new/dist
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$LIBHDFS3_HOME/lib
-
 # pbcopy (as in macOS)
-# alias pbcopy='xclip -selection clipboard'
-# alias pbpaste='xclip -selection clipboard -o'
+if [[ "$OSTYPE" == "linux-gnu" ]]; then
+	alias pbcopy='xclip -selection clipboard'
+	alias pbpaste='xclip -selection clipboard -o'
+fi
 
 # gitignore
 function gi() { curl -sLw "\n" https://www.gitignore.io/api/$@ ;}
-export PATH="/usr/local/opt/krb5/bin:$PATH"
-export PATH="/usr/local/opt/krb5/sbin:$PATH"
 
-function kubelogin() {
-	if [ $1 = "nle" ]; then
-		curl -u klm86001 -o /tmp/odsklm-amsica1902 -s "https://squirrel.klm.nl/v1/auth/kubeconfig/odsklm/amsica1902" && export KUBECONFIG=/tmp/odsklm-amsica1902
+# install imessage cli if needed
+if [ -f '/usr/local/imessage' ]; then
+	;
+else
+	sudo curl -o /usr/local/imessage https://gist.githubusercontent.com/aktau/8958054/raw/95f62b2e04cf6e21a0724f1cae6bb508f71b46b3/imessage && sudo chmod a+x /usr/local/imessage;
+fi
+
+# alias msg for rapid messaging `msg buddy "msg"`
+function msg() {
+	RCPT=""
+	if [ -f '.contacts.txt' ]; then
+		RCPT=$(cat .contacts.txt | grep " ($1)" | cut -f 1 -d ' ' |  xargs -n1 -I{})
 	else
-		echo "Not yet implemented for le..."
+		RCPT=$1
 	fi
+	/usr/local/imessage $RCPT $2
 }
+
+# if there is an .extras.sh file then source it
+if [ -f '.extras.sh' ]; then
+	source .extras.sh
+fi
