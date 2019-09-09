@@ -23,6 +23,7 @@
 	Plugin 'ctrlpvim/ctrlp.vim'
 	Plugin 'dhruvasagar/vim-zoom'
 	Plugin 'vim-airline/vim-airline'
+	Plugin 'rust-lang/rust.vim'
 
 	call vundle#end()
 	filetype plugin indent on
