@@ -172,6 +172,7 @@ function note() {
 			echo "\nYour scratch notes dir is: $NOTE_DIR"
 			;;
 		*)
+			echo "Missing command.\n$ note help"
 			return 1
 			;;
 	esac
