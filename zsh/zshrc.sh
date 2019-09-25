@@ -151,7 +151,7 @@ function note() {
 
 	case "$1" in
 		list)
-			ls -1 $NOTE_DIR
+			ls -1 $NOTE_DIR/*.txt
 			;;
 		new)
 			FILE_NAME="$(date +%Y%m%d%H%M)-$(echo $2 | sed 's/ /_/g')"
@@ -183,6 +183,6 @@ function note() {
 }
 
 # if there is an .extras.sh file then source it
-if [ -f '.extras.sh' ]; then
+if [ -f $HOME/.extras.sh ]; then
 	source $HOME/.extras.sh
 fi
