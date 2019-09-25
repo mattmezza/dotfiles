@@ -151,7 +151,7 @@ function note() {
 
 	case "$1" in
 		list)
-			ls $NOTE_DIR
+			ls -1 $NOTE_DIR
 			;;
 		new)
 			FILE_NAME="$(date +%Y%m%d%H%M)-$(echo $2 | sed 's/ /_/g')"
