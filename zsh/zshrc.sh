@@ -180,5 +180,5 @@ function note() {
 
 # if there is an .extras.sh file then source it
 if [ -f '.extras.sh' ]; then
-	source .extras.sh
+	source $HOME/dotfiles/.extras.sh
 fi
