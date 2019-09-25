@@ -160,6 +160,9 @@ function note() {
 		open)
 			$VISUAL "$NOTE_DIR/$2"
 			;;
+		path)
+			echo "$NOTE_DIR/$2"
+			;;
 		rm)
 			rm -i "$NOTE_DIR/$2"
 			;;
@@ -168,6 +171,7 @@ function note() {
 			echo "$ note list"
 			echo "$ note new name"
 			echo "$ note open name"
+			echo "$ note path name"
 			echo "$ note rm name"
 			echo "\nYour scratch notes dir is: $NOTE_DIR"
 			;;
