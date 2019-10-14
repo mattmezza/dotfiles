@@ -39,16 +39,16 @@ function note() {
 			echo $(note list | tail -n 1)
 			;;
 		help)
-			echo "Here's what you can do with `note`:\n"
-			echo "$ note list"
-			echo "$ note new name"
-			echo "$ note open name"
-			echo "$ note path name"
-			echo "$ note rm name"
+			echo "Here's what you can do with `$0`:\n"
+			echo "$ $0 list"
+			echo "$ $0 new name"
+			echo "$ $0 open name"
+			echo "$ $0 path name"
+			echo "$ $0 rm name"
 			echo "\nYour scratch notes dir is: $NOTE_DIR"
 			;;
 		*)
-			echo "Missing command.\n$ note help"
+			echo "Missing command.\n$ $0 help"
 			return 1
 			;;
 	esac
