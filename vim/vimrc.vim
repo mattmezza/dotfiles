@@ -10,7 +10,6 @@
 	Plugin 'tpope/vim-surround'
 	Plugin 'tpope/vim-repeat'
 	Plugin 'yegappan/mru'
-	Plugin 'w0rp/ale'
 	Plugin 'scrooloose/nerdtree'
 	Plugin 'jistr/vim-nerdtree-tabs'
 	Plugin 'mileszs/ack.vim'
@@ -24,6 +23,9 @@
 	Plugin 'dhruvasagar/vim-zoom'
 	Plugin 'vim-airline/vim-airline'
 	Plugin 'rust-lang/rust.vim'
+	Plugin 'dense-analysis/ale'
+	Plugin 'ajh17/VimCompletesMe'
+	Plugin 'Raimondi/delimitMate'
 
 	call vundle#end()
 	filetype plugin indent on
