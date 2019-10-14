@@ -117,10 +117,21 @@ gpip2() {
 }
 
 # gurobi
-export GUROBI_HOME=/Library/gurobi801/mac64
-export GRB_LICENSE_FILE=$HOME/gurobi.lic
 export PATH=$PATH:$GUROBI_HOME/bin
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GUROBI_HOME/lib
+
+# source any password
+function my_passwd() {
+	if [ -f $HOME/.passwd ]; then
+		if [[ "$1" == "source" ]]; then
+			source $HOME/.passwd
+		elif [[ "$1" == "unset" ]]; then
+			eval $(cat $HOME/.passwd | sed -E "s/=.*/=''/")
+		else
+			echo "Usage:\n$ my_passwd source\n$ my_passwd unset"
+		fi
+	fi
+}
 
 # pbcopy (as in macOS)
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
