@@ -108,6 +108,13 @@ fi
 
 # pip
 export PIP_REQUIRE_VIRTUALENV=true
+# cause sometimes you need to do this...
+gpip() {
+    PIP_REQUIRE_VIRTUALENV="" pip "$@"
+}
+gpip2() {
+    PIP_REQUIRE_VIRTUALENV="" pip2 "$@"
+}
 
 # gurobi
 export GUROBI_HOME=/Library/gurobi801/mac64
