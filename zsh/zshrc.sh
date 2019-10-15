@@ -153,5 +153,5 @@ if [ -f $HOME/.extras.sh ]; then
 fi
 
 source $HOME/dotfiles/note.sh
-source $HOME/dotfiles/env_passwd.sh
+source $HOME/dotfiles/env_var.sh
 
