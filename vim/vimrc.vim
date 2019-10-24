@@ -26,6 +26,7 @@
 	Plugin 'dense-analysis/ale'
 	Plugin 'ajh17/VimCompletesMe'
 	Plugin 'Raimondi/delimitMate'
+	Plugin 'svermeulen/vim-easyclip'
 
 	call vundle#end()
 	filetype plugin indent on
