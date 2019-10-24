@@ -147,6 +147,10 @@ function msg() {
 	/usr/local/imessage $RCPT $2
 }
 
+function rand_hash() {
+	cat /dev/urandom | head | md5 | cut -c1-${1-8}
+}
+
 # if there is an .extras.sh file then source it
 if [ -f $HOME/.extras.sh ]; then
 	source $HOME/.extras.sh
