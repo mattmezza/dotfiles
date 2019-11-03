@@ -2,7 +2,7 @@ todo() {
 	TODAY=$(date "+%Y-%m-%d")
 	TODO_DIR=${TODO_DIR_DEFAULT:-"$HOME/todo"}
 	case "$1" in
-		add)
+		add|a)
 			case "$3" in
 				today|t)
 					WHEN=$TODAY
@@ -21,14 +21,14 @@ todo() {
 			WHEN=${WHEN:-$TODAY}
 			echo "- [ ] $2" >> "$TODO_DIR/$WHEN.md"
 			;;
-		help)
+		help|h)
 			echo "Usage:"
-			echo "$ $0 add 'Buy milk'"
-			echo "$ $0 view [today|tomorrow|yesterday|+2d|-2d]"
-			echo "$ $0 view [t|tm|y|+2d|-2d]"
+			echo "$ $0 add|a 'Buy milk'"
+			echo "$ $0 view|v [today|tomorrow|yesterday|+2d|-2d]"
+			echo "$ $0 view|v [t|tm|y|+2d|-2d]"
 			echo ""
 			;;
-		view)
+		view|v)
 			case "$2" in
 				today|t)
 					WHEN=$TODAY
