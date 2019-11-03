@@ -68,6 +68,7 @@ todo() {
 			echo "  'left|l' to print the items left to do for WHEN"
 			echo "  'did' to print the items already did for WHEN"
 			echo "  'done|d' or undone|u to mark or unmark the item as done"
+			echo "  'carry-on|co moves yesterday's undone items to today's list"
 			echo "  'help|h' prints this message"
 			echo "If no command is passed, 'view' is assumed."
 			echo ""
@@ -87,6 +88,7 @@ todo() {
 			echo "$ $0 did yesterday"
 			echo "$ $0 done 'Buy milk' yesterday"
 			echo "$ $0 undone|u 'Buy milk' yesterday"
+			echo "$ $0 carry-on"
 			echo ""
 			;;
 		view|v)
@@ -99,6 +101,10 @@ todo() {
 		did)
 			echo "$WHEN_VIEW"
 			$0 view "$WHEN_VIEW" | grep -e "^\- \[x\] .*$"
+			;;
+		carry-on|co)
+			$0 left yesterday | tail -n 1 >> "$TODO_DIR/$TODAY.md"
+			$0 view today
 			;;
 		*)
 			$0 view today
