@@ -29,12 +29,12 @@ todo() {
 			;;
 		done|d)
 			WHEN=${WHEN:-$TODAY}
-			sed -i "" "s/\- \[ \] $2$/- [x] $2/g" "$TODO_DIR/$WHEN.md"
+			sed -i "" "s/^\- \[ \] $2$/- [x] $2/g" "$TODO_DIR/$WHEN.md"
 			$0 view "$WHEN"
 			;;
 		undone|u)
 			WHEN=${WHEN:-$TODAY}
-			sed -i "" "s/\- \[x\] $2$/- [ ] $2/g" "$TODO_DIR/$WHEN.md"
+			sed -i "" "s/^\- \[x\] $2$/- [ ] $2/g" "$TODO_DIR/$WHEN.md"
 			$0 view "$WHEN"
 			;;
 		help|h)
