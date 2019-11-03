@@ -16,6 +16,26 @@ todo() {
 			fi
 			;;
 	esac
+	case "$2" in
+		today|t)
+			WHEN_VIEW=$TODAY
+			;;
+		yesterday|y)
+			WHEN_VIEW=$(date -v-1d "+%Y-%m-%d")
+			;;
+		tomorrow|tm|tomo)
+			WHEN_VIEW=$(date -v+1d "+%Y-%m-%d")
+			;;
+		*)
+			if [[ $2 =~ ^[+-][0-9]+d$ ]]; then
+				WHEN_VIEW=$(date -v$2 "+%Y-%m-%d")
+			elif [ -z "$2" ]; then
+				WHEN_VIEW=$TODAY
+			else
+				WHEN_VIEW=$2
+			fi
+			;;
+	esac
 	case "$1" in
 		add|a)
 			WHEN=${WHEN:-$TODAY}
@@ -42,16 +62,18 @@ todo() {
 			echo "  $0 [CMD] [WHAT] [WHEN]"
 			echo ""
 			echo "CMD can be:"
-			echo "  add|a to add element to list"
-			echo "  remove|rm to remove an element from a list"
-			echo "  view|v to print the list on stdout"
-			echo "  done|d or undone|u to mark or unmark the item as done"
-			echo "  help|h prints this message"
+			echo "  'add|a' to add element to list"
+			echo "  'remove|rm' to remove an element from a list"
+			echo "  'view|v' to print the list on stdout"
+			echo "  'left|l' to print the items left to do for WHEN"
+			echo "  'did' to print the items already did for WHEN"
+			echo "  'done|d' or undone|u to mark or unmark the item as done"
+			echo "  'help|h' prints this message"
 			echo "If no command is passed, 'view' is assumed."
 			echo ""
 			echo "WHEN can be:"
 			echo "  today|t"
-			echo "  tomorrow|tomo|to"
+			echo "  tomorrow|tomo|tm"
 			echo "  yesterday|y"
 			echo "  a temporal interaval referred to today's date (e.g. +2d, -2d etc...)."
 			echo "When CMD is 'view', it can also be a string matching the format '%Y-%m-%d' to list all the items in different days. If no WHEN is passed, 'today' is assumed."
@@ -61,32 +83,22 @@ todo() {
 			echo "$ $0 rm 'Buy milk'"
 			echo "$ $0 view tomorrow"
 			echo "$ $0 view 2019-11"
+			echo "$ $0 left today"
+			echo "$ $0 did yesterday"
 			echo "$ $0 done 'Buy milk' yesterday"
 			echo "$ $0 undone|u 'Buy milk' yesterday"
 			echo ""
 			;;
 		view|v)
-			case "$2" in
-				today|t)
-					WHEN=$TODAY
-					;;
-				yesterday|y)
-					WHEN=$(date -v-1d "+%Y-%m-%d")
-					;;
-				tomorrow|tm|tomo)
-					WHEN=$(date -v+1d "+%Y-%m-%d")
-					;;
-				*)
-					if [[ $2 =~ ^[+-][0-9]+d$ ]]; then
-						WHEN=$(date -v$2 "+%Y-%m-%d")
-					elif [ -z "$2" ]; then
-						WHEN=$TODAY
-					else
-						WHEN=$2
-					fi
-					;;
-			esac
-			find "$TODO_DIR" -name "$WHEN*.md" -type f -exec basename {} .md \; -exec cat {} \; -exec echo "" \; 2> /dev/null || echo "No todos for $WHEN."
+			find "$TODO_DIR" -name "$WHEN_VIEW*.md" -type f -exec basename {} .md \; -exec cat {} \; -exec echo "" \; 2> /dev/null || echo "No todos for $WHEN_VIEW."
+			;;
+		left|l)
+			echo "$WHEN_VIEW"
+			$0 view "$WHEN_VIEW" | grep -e "^\- \[ \] .*$"
+			;;
+		did)
+			echo "$WHEN_VIEW"
+			$0 view "$WHEN_VIEW" | grep -e "^\- \[x\] .*$"
 			;;
 		*)
 			$0 view today
