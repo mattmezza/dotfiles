@@ -129,23 +129,6 @@ fi
 # gitignore
 function gi() { curl -sLw "\n" https://www.gitignore.io/api/$@ ;}
 
-# install imessage cli if needed
-if [ -f '/usr/local/imessage' ]; then
-	;
-else
-	sudo curl -o /usr/local/imessage https://gist.githubusercontent.com/aktau/8958054/raw/95f62b2e04cf6e21a0724f1cae6bb508f71b46b3/imessage && sudo chmod a+x /usr/local/imessage;
-fi
-
-# alias msg for rapid messaging `msg buddy "msg"`
-function msg() {
-	RCPT=""
-	if [ -f '.contacts.txt' ]; then
-		RCPT=$(cat .contacts.txt | grep " ($1)" | cut -f 1 -d ' ' |  xargs -n1 -I{})
-	else
-		RCPT=$1
-	fi
-	/usr/local/imessage $RCPT $2
-}
 
 function rand_hash() {
 	cat /dev/urandom | head | md5 | cut -c1-${1-8}
@@ -158,5 +141,6 @@ fi
 
 source $HOME/dotfiles/note.sh
 source $HOME/dotfiles/todo.sh
+source $HOME/dotfiles/msg.sh
 source $HOME/dotfiles/env_var.sh
 
