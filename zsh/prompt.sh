@@ -4,6 +4,15 @@ autoload -U colors && colors
 
 setopt PROMPT_SUBST
 
+excerpt() {
+        MAX_LENGTH=$(($2 + $3))
+        if [ ${#1} -ge $MAX_LENGTH ]; then
+                echo $1 | sed -E 's/(.{0,15}).*(.{15})/\1...\2/'
+        else
+                echo $1
+        fi
+}
+
 set_prompt() {
 	PS1=$''
 
@@ -23,7 +32,8 @@ set_prompt() {
 	# Git
 	if git rev-parse --is-inside-work-tree 2> /dev/null | grep -q 'true' ; then
 		PS1+=' '
-		PS1+="%{$fg[blue]%}$(git rev-parse --abbrev-ref HEAD 2> /dev/null)%{$reset_color%}"
+		BRANCH=$(git rev-parse --abbrev-ref HEAD 2> /dev/null)
+		PS1+="%{$fg[blue]%}$(excerpt $BRANCH 15 15)%{$reset_color%}"
 		if [ $(git status --short | wc -l) -gt 0 ]; then 
 			PS1+="%{$fg[red]%}+$(git status --short | wc -l | awk '{$1=$1};1')%{$reset_color%}"
 		fi
