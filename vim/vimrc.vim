@@ -15,7 +15,7 @@
 	Plugin 'mileszs/ack.vim'
 	Plugin 'vim-scripts/python.vim'
 	Plugin 'ekalinin/dockerfile.vim'
-" Plugin 'ambv/black'
+	Plugin 'ambv/black'
 	Plugin 'kana/vim-textobj-user'
 	Plugin 'bps/vim-textobj-python'
 	Plugin 'craigemery/vim-autotag'
