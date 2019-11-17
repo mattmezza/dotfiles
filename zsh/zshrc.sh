@@ -139,8 +139,9 @@ if [ -f $HOME/.extras.sh ]; then
 	source $HOME/.extras.sh
 fi
 
-source $HOME/dotfiles/note.sh
-source $HOME/dotfiles/todo.sh
+source $HOME/dotfiles/plugins.sh
+source $HOME/dotfiles/plugins/note/note.sh
+source $HOME/dotfiles/plugins/todo/todo.sh
 source $HOME/dotfiles/msg.sh
 source $HOME/dotfiles/env_var.sh
 
