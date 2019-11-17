@@ -140,6 +140,8 @@ if [ -f $HOME/.extras.sh ]; then
 fi
 
 source $HOME/dotfiles/plugins.sh
+# after this point you can use `source <(plugin_install)` to install the plugins.
+
 source $HOME/dotfiles/plugins/note/note.sh
 source $HOME/dotfiles/plugins/todo/todo.sh
 source $HOME/dotfiles/msg.sh
