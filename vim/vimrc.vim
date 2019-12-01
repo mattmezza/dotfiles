@@ -5,28 +5,43 @@
 	call vundle#begin()
 
 	Plugin 'VundleVim/Vundle.vim'
+	Plugin 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+	" deoplete for python, go, docker, clang, tag, zsh, make
+	Plugin 'deoplete-plugins/deoplete-jedi'
+	Plugin 'deoplete-plugins/deoplete-go'
+	Plugin 'deoplete-plugins/deoplete-docker'
+	Plugin 'deoplete-plugins/deoplete-clang'
+	Plugin 'deoplete-plugins/deoplete-tag'
+	Plugin 'deoplete-plugins/deoplete-zsh'
+	Plugin 'deoplete-plugins/deoplete-make'
 	Plugin 'tpope/vim-fugitive'
-	Plugin 'vim-syntastic/syntastic'
 	Plugin 'tpope/vim-surround'
 	Plugin 'tpope/vim-repeat'
-	Plugin 'yegappan/mru'
 	Plugin 'scrooloose/nerdtree'
+	Plugin 'scrooloose/syntastic'
 	Plugin 'jistr/vim-nerdtree-tabs'
+	" To use ack within vim
 	Plugin 'mileszs/ack.vim'
-	Plugin 'vim-scripts/python.vim'
-	Plugin 'ekalinin/dockerfile.vim'
-	Plugin 'ambv/black'
-	Plugin 'kana/vim-textobj-user'
-	Plugin 'bps/vim-textobj-python'
-	Plugin 'craigemery/vim-autotag'
+	" Plugin 'ambv/black'
 	Plugin 'ctrlpvim/ctrlp.vim'
-	Plugin 'dhruvasagar/vim-zoom'
+	" To create tables with plain text
+	Plugin 'dhruvasagar/vim-table-mode'
+	" To create marp presentations
+	Plugin 'dhruvasagar/vim-marp'
+	" For an awesome status bar
 	Plugin 'vim-airline/vim-airline'
+	" Fancy bindings for rust
 	Plugin 'rust-lang/rust.vim'
-	Plugin 'dense-analysis/ale'
-	Plugin 'ajh17/VimCompletesMe'
-	Plugin 'Raimondi/delimitMate'
+	" Syntax highlighting for major languages
+	Plugin 'sheerun/vim-polyglot'
+	" For auto insertion of pairs of ({["'
+	Plugin 'jiangmiao/auto-pairs'
+	" To use vim in tmux easily
+	Plugin 'christoomey/vim-tmux-navigator'
+	" Clipboard enhanced
 	Plugin 'svermeulen/vim-easyclip'
+	" The following shows vertical line for indentation
+	Plugin 'Yggdroot/indentLine'
 
 	call vundle#end()
 	filetype plugin indent on
@@ -39,7 +54,8 @@
 	set dir=/tmp/
 	set relativenumber 
 	set number
-	colorscheme pablo
+	set background=dark
+	colorscheme slate
 
 	autocmd Filetype html setlocal sw=2 expandtab
 	autocmd Filetype javascript setlocal sw=4 expandtab
@@ -169,10 +185,3 @@ filetype plugin indent on
 " add yaml stuff
 	au! BufNewFile,BufReadPost *.{yaml,yml} set filetype=yaml
 	autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
-
-" ctags auto generation on file save for python venv
-	map <F11> :!ctags -R --exclude=.tox --exclude=.dockervenv --exclude=.mypy_cache --exclude=.pytest_cache --exclude=__pycache__ --exclude=.idea --exclude=.git -f tags `python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())"`<CR>
-	autocmd BufWritePost,FileWritePost *.py :silent! !ctags -R --exclude=.tox --exclude=.dockervenv -f tags .
-
-" setting line length for black
-	let g:black_linelength = 79

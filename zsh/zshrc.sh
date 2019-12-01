@@ -9,7 +9,6 @@
 # Aliases
 	alias vim="nvim"
 	alias vi="nvim"
-	alias v="vim -p"
 	mkdir -p /tmp/log
 	
 	# This is currently causing problems (fails when you run it anywhere that isn't a git project's root directory)
@@ -53,6 +52,39 @@ source ~/dotfiles/zsh/plugins/fixls.zsh
 autoload -U compinit
 
 plugins=(
+	brew
+	cask
+	cargo
+	celery
+	composer
+	cp
+	docker-compose
+	git
+	git-extras
+	github
+	golang
+	gradle
+	history
+	kubectl
+	man
+	osx
+	node
+	npm
+	pep8
+	pip
+	postgres
+	pyenv
+	pylint
+	python
+	redis-cli
+	ruby
+	sbt
+	scala
+	screen
+	sudo
+	tmux
+	wp-cli
+	yarn
 	docker
 	virtualenv
 	safe-paste
