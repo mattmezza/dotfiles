@@ -38,8 +38,6 @@
 	Plugin 'jiangmiao/auto-pairs'
 	" To use vim in tmux easily
 	Plugin 'christoomey/vim-tmux-navigator'
-	" Clipboard enhanced
-	Plugin 'svermeulen/vim-easyclip'
 	" The following shows vertical line for indentation
 	Plugin 'Yggdroot/indentLine'
 
