@@ -1,2 +1,2 @@
-1.0.0 git@github.com:mattmezza/todo.git plugins/todo
+1.1.0 git@github.com:mattmezza/todo.git plugins/todo
 1.0.0 git@github.com:mattmezza/note.git plugins/note
