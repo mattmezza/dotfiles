@@ -28,6 +28,7 @@
 
 # Settings
 	export VISUAL=vim
+	export VIMCONFIG="$HOME/dotfiles/vim/vimrc.vim"
 
 source ~/dotfiles/zsh/plugins/fixls.zsh
 
