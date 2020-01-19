@@ -99,6 +99,7 @@ plugins=(
 	docker
 	virtualenv
 	safe-paste
+	autojump
 )
 
 for plugin ($plugins); do
