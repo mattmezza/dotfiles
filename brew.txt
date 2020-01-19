@@ -8,3 +8,4 @@ neovim
 jq
 git-extras
 exa
+autojump

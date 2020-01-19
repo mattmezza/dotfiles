@@ -24,6 +24,7 @@
 	alias ....="cd ../../.."
 	alias .....="cd ../../../.."
 	alias -- -="cd -"
+	alias j="autojump"
 
 # Settings
 	export VISUAL=vim
