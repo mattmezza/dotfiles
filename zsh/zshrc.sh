@@ -25,10 +25,14 @@
 	alias .....="cd ../../../.."
 	alias -- -="cd -"
 	alias j="autojump"
+	# Tmux stuff
+	alias tx="tmuxinator"
 
 # Settings
 	export VISUAL=vim
 	export VIMCONFIG="$HOME/dotfiles/vim/vimrc.vim"
+	export TMUXINATOR_CONFIG="$HOME/tmux/.tmuxinator"
+	export EDITOR="vim"
 
 source ~/dotfiles/zsh/plugins/fixls.zsh
 

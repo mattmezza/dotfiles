@@ -9,3 +9,4 @@ jq
 git-extras
 exa
 autojump
+tmuxinator
