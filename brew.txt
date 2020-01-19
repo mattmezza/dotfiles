@@ -7,3 +7,4 @@ php
 neovim
 jq
 git-extras
+exa
