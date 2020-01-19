@@ -173,8 +173,14 @@ alias cd="c"
 
 loop() {
 	echo "Executing '${@:1}'..."
+	clear
 	"${@:1}"
-	while true; do echo -n "Press any key to loop again..."; read; "${@:1}"; done
+	while true; do
+		echo -n "At $(date)"
+		read
+		clear
+		"${@:1}"
+	done
 }
 
 
