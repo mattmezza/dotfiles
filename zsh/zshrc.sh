@@ -36,27 +36,7 @@
 
 source ~/dotfiles/zsh/plugins/fixls.zsh
 
-#Functions
-	# Loop a command and show the output in vim
-	loop() {
-		echo ":cq to quit\n" > /tmp/log/output 
-		fc -ln -1 > /tmp/log/program
-		while true; do
-			cat /tmp/log/program >> /tmp/log/output ;
-			$(cat /tmp/log/program) |& tee -a /tmp/log/output ;
-			echo '\n' >> /tmp/log/output
-			vim + /tmp/log/output || break;
-			rm -rf /tmp/log/output
-		done;
-	}
-
- 	# Custom cd
- 	c() {
- 		cd $1;
- 		ls;
- 	}
- 	alias cd="c"
-
+ 	
 # For vim mappings: 
 	stty -ixon
 
@@ -179,13 +159,24 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
 	alias pbpaste='xclip -selection clipboard -o'
 fi
 
-# gitignore
 function gi() { curl -sLw "\n" https://www.gitignore.io/api/$@ ;}
 
-
-function rand_hash() {
+rand_hash() {
 	cat /dev/urandom | head | md5 | cut -c1-${1-8}
 }
+
+c() {
+	cd $1;
+	ls;
+}
+alias cd="c"
+
+loop() {
+	echo "Executing '${@:1}'..."
+	"${@:1}"
+	while true; do echo -n "Press any key to loop again..."; read; "${@:1}"; done
+}
+
 
 # if there is an .extras.sh file then source it
 if [ -f $HOME/.extras.sh ]; then
