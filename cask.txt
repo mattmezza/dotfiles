@@ -11,3 +11,4 @@ spotify
 tunnelblick
 slack
 sizeup
+hammerspoon
