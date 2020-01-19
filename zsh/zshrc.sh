@@ -13,8 +13,17 @@
 	
 	# This is currently causing problems (fails when you run it anywhere that isn't a git project's root directory)
 	# alias vs="v `git status --porcelain | sed -ne 's/^ M //p'`"
+
+	# a better version of ls
 	alias ls="exa"
 	alias l="exa"
+	# some aliases for easier navigation
+	# Easier navigation: .., ..., ...., ..... and -
+	alias ..="cd .."
+	alias ...="cd ../.."
+	alias ....="cd ../../.."
+	alias .....="cd ../../../.."
+	alias -- -="cd -"
 
 # Settings
 	export VISUAL=vim
