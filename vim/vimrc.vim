@@ -178,11 +178,9 @@ filetype plugin indent on
 	" let g:nerdtree_tabs_open_on_console_startup=1
 
 " Alert when line too long
-	augroup vimrc_autocmds
-		autocmd FileType python highlight OverLength ctermbg=red ctermfg=white
-		autocmd FileType python match OverLength /\%88v.\+/
-	augroup END
-	let g:syntastic_python_pylint_post_args="--max-line-length=88"
+	highlight ColorColumn ctermbg=magenta
+	call matchadd('ColorColumn', '\%80v', 100)
+	let g:syntastic_python_pylint_post_args="--max-line-length=79"
 
 " add yaml stuff
 	au! BufNewFile,BufReadPost *.{yaml,yml} set filetype=yaml
