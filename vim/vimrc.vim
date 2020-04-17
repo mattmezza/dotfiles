@@ -103,6 +103,13 @@ highlight Comment term=bold cterm=italic ctermfg=white gui=italic guifg=white
 
 imap jj <ESC>
 
+"====[ Mapping that bloody :W to :w ]=================
+
+cmap Wq wq
+cmap WQ wq
+cmap W w
+cmap Q q
+
 "====[ Edit and auto-update this config file and plugins ]==========
 
 augroup VimReload
