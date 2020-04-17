@@ -187,6 +187,8 @@ loop() {
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 
+export MYVIMRC="$HOME/dotfiles/vim/vimrc.vim"
+
 
 # if there is an .extras.sh file then source it
 if [ -f $HOME/.extras.sh ]; then
