@@ -547,7 +547,18 @@ augroup END
 
 command! -complete=filetype -nargs=+ Autosyntax call AS_set_active(<q-args>)
 
-let g:AS_active_in = {}
+let g:AS_active_in = {
+\   '.py'   : 1,
+\   '.ts'   : 1,
+\   '.js'   : 1,
+\   '.rs'   : 1,
+\   '.vim'  : 1,
+\   '.md'   : 1,
+\   '.json' : 1,
+\   '.yaml' : 1,
+\   '.yml'  : 1,
+\   '.java' : 1,
+\}
 
 function! AS_set_active(list)
     for ft in split(a:list, '\s\+')
