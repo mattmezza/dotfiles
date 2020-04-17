@@ -9,9 +9,9 @@ Plugin 'neoclide/coc.nvim', {'branch': 'release'}
 Plugin 'tpope/vim-fugitive'
 Plugin 'tpope/vim-surround'
 Plugin 'tpope/vim-repeat'
-Plugin 'scrooloose/nerdtree'
+"Plugin 'tpope/vim-vinegar'
+"Plugin 'scrooloose/nerdtree'
 Plugin 'scrooloose/syntastic'
-Plugin 'jistr/vim-nerdtree-tabs'
 Plugin 'ctrlpvim/ctrlp.vim'
 Plugin 'dhruvasagar/vim-table-mode' " tables with plain text
 Plugin 'dhruvasagar/vim-marp' " marp presentations
