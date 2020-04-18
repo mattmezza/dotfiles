@@ -91,6 +91,14 @@ autocmd BufNewFile,BufRead  *   try
 autocmd BufNewFile,BufRead  *		 set encoding=utf-8
 autocmd BufNewFile,BufRead  *   endtry
 
+"=====[ A bit of netrw config ]=======================
+
+let g:netrw_banner=0
+let g:netrw_list_hide = '\(^\|\s\s\)\zs\.\S\+,\(^\|\s\s\)ntuser\.\S\+'
+autocmd FileType netrw set nolist
+" - to open up an explorer in current buffer
+nnoremap - :e.<CR>
+
 "=====[ Enable Nmap command for documented mappings ]================
 
 runtime documap.vim
