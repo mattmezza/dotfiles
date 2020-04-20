@@ -68,7 +68,7 @@ let g:EQAS_default_match = {
 \    'json'  : EQAS_Match_On( '\(::\@!\)' )
 \}
 
-function EQAS_Align (mode, ...) range
+function EqAS_Align (mode, ...) range
     let option = a:0 ? a:1 : {}
 
     "What symbol to align by default (determined by filetype and g:EQAS_default_match)
@@ -161,12 +161,12 @@ function EQAS_Align (mode, ...) range
 endfunction
 
 
-nmap <silent> =     :call EQAS_Align('nmap')<CR>
-nmap <silent> ==    :call EQAS_Align('nmap', {'paragraph':1} )<CR>
-nmap <silent> +     :call EQAS_Align('nmap', {'cursor':1} )<CR>:%s/\s\+$//e<CR>``
-nmap <silent> ++    :call EQAS_Align('nmap', {'cursor':1, 'paragraph':1} )<CR>:%s/\s\+$//e<CR>``
-xmap <silent> =     :call EQAS_Align('xmap')<CR>
-xmap <silent> +     :call EQAS_Align('xmap', {'cursor':1} )<CR>
+nmap <silent> =     :call EqAS_Align('nmap')<CR>
+nmap <silent> ==    :call EqAS_Align('nmap', {'paragraph':1} )<CR>
+nmap <silent> +     :call EqAS_Align('nmap', {'cursor':1} )<CR>:%s/\s\+$//e<CR>``
+nmap <silent> ++    :call EqAS_Align('nmap', {'cursor':1, 'paragraph':1} )<CR>:%s/\s\+$//e<CR>``
+xmap <silent> =     :call EqAS_Align('xmap')<CR>
+xmap <silent> +     :call EqAS_Align('xmap', {'cursor':1} )<CR>
 
 " Restore previous external compatibility options
 let &cpo = s:save_cpo
