@@ -202,4 +202,4 @@ source $HOME/dotfiles/plugins/note/note.sh
 source $HOME/dotfiles/plugins/todo/todo.sh
 source $HOME/dotfiles/msg.sh
 source $HOME/dotfiles/env_var.sh
-
+source $HOME/dotfiles/tmux/sp.sh
