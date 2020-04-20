@@ -97,7 +97,12 @@ let g:netrw_banner=0
 let g:netrw_list_hide = '\(^\|\s\s\)\zs\.\S\+,\(^\|\s\s\)ntuser\.\S\+'
 autocmd FileType netrw set nolist
 " - to open up an explorer in current buffer
-nnoremap - :e.<CR>
+nnoremap - :Exp<CR>
+
+
+"=====[ Skip stuff in ctrlp ]==========================
+
+let g:ctrlp_custom_ignore = 'node_modules\|DS_Store\|git|__pycache'
 
 "=====[ Enable Nmap command for documented mappings ]================
 
