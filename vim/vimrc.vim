@@ -571,6 +571,9 @@ let g:AS_active_in = {
 \   '.yaml' : 1,
 \   '.yml'  : 1,
 \   '.java' : 1,
+\   '.css' : 1,
+\   '.scss' : 1,
+\   '.html' : 1,
 \}
 
 function! AS_set_active(list)
