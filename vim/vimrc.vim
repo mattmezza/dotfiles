@@ -99,7 +99,6 @@ autocmd FileType netrw set nolist
 " - to open up an explorer in current buffer
 nnoremap - :Exp<CR>
 
-
 "=====[ Skip stuff in ctrlp ]==========================
 
 let g:ctrlp_custom_ignore = 'node_modules\|DS_Store\|git|__pycache'
@@ -752,14 +751,9 @@ nnoremap <leader>w :w<CR>
 inoremap <leader>q <ESC>:q<CR>
 nnoremap <leader>q :q<CR>
 
-inoremap <leader>x <ESC>:x<CR>
-nnoremap <leader>x :x<CR>
-
-nnoremap <leader>e :Ex<CR>
-nnoremap <leader>t :tabnew<CR>:Ex<CR>
-nnoremap <leader>v :vsplit<CR>:w<CR>:Ex<CR>
-nnoremap <leader>s :split<CR>:w<CR>:Ex<CR>
-nnoremap <leader>a :NERDTreeToggle<CR>
+nnoremap <leader>t :Tex<CR>
+nnoremap <leader>v :Vex<CR>
+nnoremap <leader>s :Sex<CR>
 
 " Return to the same line you left off at
 augroup line_return
