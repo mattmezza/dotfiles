@@ -24,7 +24,6 @@
 	alias ....="cd ../../.."
 	alias .....="cd ../../../.."
 	alias -- -="cd -"
-	alias j="autojump"
 	# Tmux stuff
 	alias tx="tmuxinator"
 
@@ -85,7 +84,6 @@ plugins=(
 	docker
 	virtualenv
 	safe-paste
-	autojump
 )
 
 for plugin ($plugins); do
@@ -101,6 +99,7 @@ source ~/dotfiles/zsh/plugins/vi-mode.plugin.zsh
 source ~/dotfiles/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 source ~/dotfiles/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source ~/dotfiles/zsh/keybindings.sh
+source ~/dotfiles/jj.sh
 
 # Fix for arrow-key searching
 # start typing + [Up-Arrow] - fuzzy find history forward
