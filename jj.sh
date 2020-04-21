@@ -8,7 +8,14 @@ jj() {
     then
         if [[ $1 == -* ]]
         then
-            # skip and goto help
+            case "$1" in
+                "-l")
+                    cat $DB | sed -E 's/^(.+)\:(.+)$/\1 -> \2/'
+                    return
+                    ;;
+                *)
+                    # goto help
+            esac
         else
             cd $(cat $DB | grep -Em1 "^$1" | sed -E 's/^.*\:(.*)$/\1/')
             return
@@ -47,6 +54,7 @@ Usage:
     $ $0 -r name      # to resolve 'name'
     $ $0 -a name path # to add 'name' as 'path'
     $ $0 -d name      # to delete 'name'
+    $ $0 -l           # to list all entries
 
 DB is at '$DB'.
 EOF
