@@ -12,3 +12,5 @@ tunnelblick
 slack
 sizeup
 hammerspoon
+font-hack-nerd-font
+font-jetbrainsmono-nerd-font
