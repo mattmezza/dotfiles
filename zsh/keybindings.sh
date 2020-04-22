@@ -1,7 +1,3 @@
-up_widget() { BUFFER="cd .."; zle accept-line; }
-zle -N up_widget
-bindkey "^k" up_widget
-
 git_prepare() {
     if [ -n "$BUFFER" ];
         then
