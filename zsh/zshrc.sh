@@ -115,6 +115,9 @@ if [[ "${terminfo[kcud1]}" != "" ]]; then
 	bindkey "${terminfo[kcud1]}" down-line-or-beginning-search
 fi
 
+# binding Ctrl+k to a screen clear
+bindkey "^k" clear-screen
+
 source ~/dotfiles/zsh/prompt.sh
 export PATH=$PATH:$HOME/dotfiles/utils
 alias g=git
