@@ -76,7 +76,7 @@ fi
 
 
 check_for_software zsh
-echo 
+echo
 check_for_software vim
 echo
 check_for_software tmux
@@ -98,8 +98,8 @@ else
     echo -e "\nNot backing up old dotfiles."
 fi
 
-printf "source '$HOME/dotfiles/zsh/zshrc_manager.sh'" > ~/.zshrc
-printf "so $HOME/dotfiles/vim/vimrc.vim" > ~/.vimrc
+printf "source '$HOME/dotfiles/zsh/.zshrc'" > ~/.zshrc
+printf "so $HOME/dotfiles/vim/.vimrc" > ~/.vimrc
 printf "source-file $HOME/dotfiles/tmux/tmux.conf" > ~/.tmux.conf
 
 echo

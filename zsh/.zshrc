@@ -70,7 +70,7 @@ export VIMCONFIG="$HOME/dotfiles/vim/vimrc.vim"
 export TMUXINATOR_CONFIG="$HOME/tmux/.tmuxinator"
 export EDITOR="vim"
 export PATH=$PATH:$HOME/dotfiles/utils
-export MYVIMRC="$HOME/dotfiles/vim/vimrc.vim"
+export MYVIMRC="$HOME/dotfiles/vim/.vimrc"
 export PATH=$PATH:$GUROBI_HOME/bin
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GUROBI_HOME/lib
 export PIP_REQUIRE_VIRTUALENV=true
@@ -165,3 +165,6 @@ source $HOME/dotfiles/env_var.sh
 source $HOME/dotfiles/j.sh
 
 source $HOME/dotfiles/tmux/sp.sh
+
+# start tmux
+[ -z $TMUX ] && exec tmux new-session -A -s main
