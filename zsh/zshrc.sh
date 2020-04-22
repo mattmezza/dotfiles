@@ -1,12 +1,8 @@
-# For vim mappings
 stty -ixon
-
-# Completions
-# These are all the plugin options available: https://github.com/robbyrussell/oh-my-zsh/tree/291e96dcd034750fbe7473482508c08833b168e3/plugins
-#
-# Edit the array below, or relocate it to ~/.zshrc before anything is sourced
-# For help create an issue at github.com/parth/dotfiles
 autoload -U compinit
+compinit
+HISTFILE=~/.zsh_history
+SAVEHIST=10000
 
 plugins=(
     brew
@@ -51,39 +47,8 @@ for plugin ($plugins); do
     fpath=(~/dotfiles/zsh/plugins/oh-my-zsh/plugins/$plugin $fpath)
 done
 
-compinit
-
-# Vars
-HISTFILE=~/.zsh_history
-SAVEHIST=10000
 setopt inc_append_history # To save every command before it is executed 
 setopt share_history # setopt inc_append_history
-
-git config --global push.default current
-
-# Aliases
-alias vim="nvim"
-alias vi="nvim"
-mkdir -p /tmp/log
-
-# This is currently causing problems (fails when you run it anywhere that isn't a git project's root directory)
-# alias vs="v `git status --porcelain | sed -ne 's/^ M //p'`"
-
-# some aliases for easier navigation
-# Easier navigation: .., ..., ...., ..... and -
-alias ..="cd .."
-alias ...="cd ../.."
-alias ....="cd ../../.."
-alias .....="cd ../../../.."
-alias -- -="cd -"
-# Tmux stuff
-alias tx="tmuxinator"
-
-# Settings
-export VISUAL=vim
-export VIMCONFIG="$HOME/dotfiles/vim/vimrc.vim"
-export TMUXINATOR_CONFIG="$HOME/tmux/.tmuxinator"
-export EDITOR="vim"
 
 # Fix for arrow-key searching
 # start typing + [Up-Arrow] - fuzzy find history forward
@@ -99,63 +64,30 @@ if [[ "${terminfo[kcud1]}" != "" ]]; then
     bindkey "${terminfo[kcud1]}" down-line-or-beginning-search
 fi
 
-# binding Ctrl+k to a screen clear
-bindkey "^k" clear-screen
-
+#=========[ Exports ]===============
+export VISUAL=vim
+export VIMCONFIG="$HOME/dotfiles/vim/vimrc.vim"
+export TMUXINATOR_CONFIG="$HOME/tmux/.tmuxinator"
+export EDITOR="vim"
 export PATH=$PATH:$HOME/dotfiles/utils
-alias g=git
-alias gti=git
-alias got=git
-alias compose=docker-compose
-function pull() { git pull ;}
-function push() { git push ;}
-function push1() { git push1 ;}
-git config --global include.path ~/dotfiles/gitalias.txt
-
-# pyenv
-export PYENV_ROOT="$HOME/.pyenv"
-export PATH=$PATH:$PYENV_ROOT/bin
-
-if command -v pyenv 1>/dev/null 2>&1; then
- eval "$(pyenv init -)"
- eval "$(pyenv virtualenv-init -)"
-fi
-
-# poetry
-export PATH=$PATH:$HOME/.poetry/bin
-
-# pip
-export PIP_REQUIRE_VIRTUALENV=true
-# cause sometimes you need to do this...
-gpip() {
-    PIP_REQUIRE_VIRTUALENV="" pip "$@"
-}
-gpip2() {
-    PIP_REQUIRE_VIRTUALENV="" pip2 "$@"
-}
-
-# gurobi
+export MYVIMRC="$HOME/dotfiles/vim/vimrc.vim"
 export PATH=$PATH:$GUROBI_HOME/bin
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GUROBI_HOME/lib
+export PIP_REQUIRE_VIRTUALENV=true
+export PATH=$PATH:$HOME/.poetry/bin
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH=$PATH:$PYENV_ROOT/bin
+export NVM_DIR="$HOME/.nvm"
+export DOT="$HOME/dotfiles"
 
-# pbcopy (as in macOS)
-if [[ "$OSTYPE" == "linux-gnu" ]]; then
-    alias pbcopy='xclip -selection clipboard'
-    alias pbpaste='xclip -selection clipboard -o'
-fi
-
+#=========[ Functions ]===============
+gpip() { PIP_REQUIRE_VIRTUALENV="" pip "$@" }
 function gi() { curl -sLw "\n" https://www.gitignore.io/api/$@ ;}
-
-rand_hash() {
-    cat /dev/urandom | head | md5 | cut -c1-${1-8}
-}
-
-c() {
-    cd $1;
-    ls;
-}
-alias cd="c"
-
+rand_hash() { cat /dev/urandom | head | md5 | cut -c1-${1-8} }
+c() { cd $1; ls; }
+pull() { git pull ;}
+push() { git push ;}
+push1() { git push1 ;}
 loop() {
     echo "Executing '${@:1}'..."
     clear
@@ -168,33 +100,63 @@ loop() {
     done
 }
 
-# NVM - node version manager
-export NVM_DIR="$HOME/.nvm"
+#=========[ Aliases ]===============
+alias vim="nvim"
+alias vi="nvim"
+mkdir -p /tmp/log  # TODO find out why we need it
+alias ..="cd .."
+alias ...="cd ../.."
+alias ....="cd ../../.."
+alias .....="cd ../../../.."
+alias -- -="cd -"
+alias tx="tmuxinator"
+alias cd="c"
+alias g=git
+alias gti=git
+alias got=git
+# This is currently causing problems
+# (fails when you run it anywhere that isn't a git project's root directory)
+# alias vs="v `git status --porcelain | sed -ne 's/^ M //p'`"
+alias compose=docker-compose
+alias ls="exa"
+alias l="exa"
+
+if [[ "$OSTYPE" == "linux-gnu" ]]; then
+    alias pbcopy='xclip -selection clipboard'
+    alias pbpaste='xclip -selection clipboard -o'
+    # pbcopy now works on linux as in macos
+fi
+
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 
-export MYVIMRC="$HOME/dotfiles/vim/vimrc.vim"
+# autoactivate virtualenv via pyenv
+if command -v pyenv 1>/dev/null 2>&1; then
+ eval "$(pyenv init -)"
+ eval "$(pyenv virtualenv-init -)"
+fi
 
+eval "$(direnv hook zsh)"  # source .envrc if present
+
+#==========[ Defaults ]=============
+git config --global include.path ~/dotfiles/gitalias.txt
+git config --global push.default current
 
 if [ -f $HOME/.extras.sh ]; then
     source $HOME/.extras.sh
 fi
 
-source ~/dotfiles/zsh/plugins/fixls.zsh
-source ~/dotfiles/zsh/plugins/oh-my-zsh/lib/history.zsh
-source ~/dotfiles/zsh/plugins/oh-my-zsh/lib/key-bindings.zsh
-source ~/dotfiles/zsh/plugins/oh-my-zsh/lib/completion.zsh
-source ~/dotfiles/zsh/plugins/vi-mode.plugin.zsh
-source ~/dotfiles/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
-source ~/dotfiles/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-source ~/dotfiles/zsh/keybindings.sh
-source ~/dotfiles/zsh/prompt.sh
-
-# a better version of ls
-alias ls="exa"
-alias l="exa"
+source $DOT/zsh/plugins/fixls.zsh
+source $DOT/zsh/plugins/oh-my-zsh/lib/history.zsh
+source $DOT/zsh/plugins/oh-my-zsh/lib/key-bindings.zsh
+source $DOT/zsh/plugins/oh-my-zsh/lib/completion.zsh
+source $DOT/zsh/plugins/vi-mode.plugin.zsh
+source $DOT/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+source $DOT/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source $DOT/zsh/keybindings.sh
+source $DOT/zsh/prompt.sh
 
 source $HOME/dotfiles/plugins.sh
-# after this point you can use `source <(plugin_install)` to install the plugins.
+# you can now use `source <(plugin_install)` to install the plugins.
 
 source $HOME/dotfiles/plugins/note/note.sh
 source $HOME/dotfiles/plugins/todo/todo.sh
