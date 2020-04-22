@@ -10,3 +10,4 @@ git-extras
 exa
 autojump
 tmuxinator
+direnv
