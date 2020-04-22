@@ -28,6 +28,10 @@ bindkey '^?' backward-delete-char
 bindkey '^h' backward-delete-char
 bindkey '^w' backward-kill-word
 
+# allow jj to switch to normal mode
+bindkey -M viins 'jj' vi-cmd-mode
+bindkey -r '['
+
 # allow ctrl-r to perform backward search in history
 bindkey '^r' history-incremental-search-backward
 

@@ -1,4 +1,4 @@
-jj() {
+j() {
     DB=${JJDB:-"$HOME/.jj"}
     if [ $# -eq 0 ]
     then

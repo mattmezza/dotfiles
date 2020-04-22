@@ -314,7 +314,8 @@ set updatecount=10				 "Save buffer every 10 chars typed
 
 
 " Keycodes and maps timeout in 3/10 sec...
-set timeout timeoutlen=300 ttimeoutlen=300
+set timeout timeoutlen=300  " for fast leader response
+set ttimeoutlen=10          " for fast escape key
 
 " "idleness" is 2 sec
 set updatetime=2000
