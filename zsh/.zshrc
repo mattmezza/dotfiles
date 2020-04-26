@@ -165,7 +165,5 @@ source $DOT/plugins/sp/sp.sh
 source $DOT/msg.sh
 source $DOT/env_var.sh
 
-source $DOT/tmux/sp.sh
-
 # start tmux
 [ -z $TMUX ] && exec tmux new-session -A -s main
