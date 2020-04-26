@@ -1,2 +1,3 @@
 try installation from scratch
 extract copy.sh to a plugin for cross-platform copy pipe
+extract plugins.sh out from dotfiles
