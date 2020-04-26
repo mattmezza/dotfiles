@@ -11,6 +11,7 @@ It contains configuration for mainly:
 - vim
 - alacritty
 - bookmarker
+- git
 - OSX (macOS)
 
 ## brew and cask
@@ -71,6 +72,10 @@ This is a special html page with a bit of javascript in it. It serves me to spee
 - Visit the page with the particular anchor
 - `bookmarker.html` will prompt the variable part in a dialog
 - the variable part will be subsituted in the destination URL and you'll be redirected to it
+
+## git
+
+I have defined some alias for recurring git commands, some of which are peculiar for me. I bet that some of them are also good for you though.
 
 ## OSX (macOS)
 
