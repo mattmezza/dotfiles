@@ -100,7 +100,7 @@ loop() {
 }
 
 #=========[ Aliases ]===============
-alias copy=$DOT/utils/copy
+alias copy=$DOT/copy.sh
 alias vim="nvim"
 alias vi="nvim"
 mkdir -p /tmp/log  # TODO find out why we need it
