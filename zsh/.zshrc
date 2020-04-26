@@ -156,13 +156,13 @@ source $DOT/zsh/keybindings.sh
 source $DOT/zsh/prompt.sh
 
 source $HOME/dotfiles/plugins.sh
-# you can now use `source <(plugin_install)` to install the plugins.
-
+# add plugin in plugins.txt and run `source <(plugin_install)` to install them.
 source $HOME/dotfiles/plugins/note/note.sh
 source $HOME/dotfiles/plugins/todo/todo.sh
+source $HOME/dotfiles/plugins/jump/j.sh
+
 source $HOME/dotfiles/msg.sh
 source $HOME/dotfiles/env_var.sh
-source $HOME/dotfiles/j.sh
 
 source $HOME/dotfiles/tmux/sp.sh
 
