@@ -10,6 +10,7 @@ It contains configuration for mainly:
 - tmux
 - vim
 - alacritty
+- bookmarker
 - OSX (macOS)
 
 ## brew and cask
@@ -56,6 +57,20 @@ I configured it quite a bit, you can read the `.vimrc` to read the customization
 ## alacritty
 
 I only saved a slight customization in terms of font size and chosen font. Unfortunately, alacritty does not support ligatures yet, so sometimes I use iTerm 2. When the ligature support will be added I plan to fully switch to it.
+
+## bookmarker
+
+This is a special html page with a bit of javascript in it. It serves me to speed up the process of opening web pages I access frequently for which only one part of the URL is dynamic (think about JIRA issues for instance "https://jira.company.tld/browse/1002").
+
+#### How does it work?
+
+- Add a bookmark on your browser pointing to: `file:///Users/matt/dotfiles/bookmarker.html#https://jira.company.tld/browse/PROJECT-$`
+  1. link to `bookmarker.html` via `file://` protocol
+  2. add destination URL as an anchor
+  3. in the destination URL, you can use `$` as a placeholder for the substitution
+- Visit the page with the particular anchor
+- `bookmarker.html` will prompt the variable part in a dialog
+- the variable part will be subsituted in the destination URL and you'll be redirected to it
 
 ## OSX (macOS)
 
