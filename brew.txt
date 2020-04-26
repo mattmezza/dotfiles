@@ -11,3 +11,4 @@ exa
 autojump
 tmuxinator
 direnv
+zsh-syntax-highlighting

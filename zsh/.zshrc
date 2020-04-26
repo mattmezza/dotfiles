@@ -189,7 +189,7 @@ source $DOT/zsh/plugins/oh-my-zsh/lib/key-bindings.zsh
 source $DOT/zsh/plugins/oh-my-zsh/lib/completion.zsh
 source $DOT/zsh/plugins/vi-mode.plugin.zsh
 source $DOT/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
-source $DOT/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source $DOT/zsh/prompt.sh
 
 source $DOT/plugins.sh
