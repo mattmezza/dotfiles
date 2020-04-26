@@ -1,3 +1,5 @@
+export DOT="$HOME/dotfiles"
+
 stty -ixon
 autoload -U compinit
 compinit
@@ -44,7 +46,7 @@ plugins=(
 )
 
 for plugin ($plugins); do
-    fpath=(~/dotfiles/zsh/plugins/oh-my-zsh/plugins/$plugin $fpath)
+    fpath=($DOT/zsh/plugins/oh-my-zsh/plugins/$plugin $fpath)
 done
 
 #==============[ keybindings ]================
@@ -104,10 +106,10 @@ fi
 
 #=========[ Exports ]===============
 export VISUAL=vim
-export VIMCONFIG="$HOME/dotfiles/vim/vimrc.vim"
+export VIMCONFIG="$DOT/vim/vimrc.vim"
 export TMUXINATOR_CONFIG="$HOME/tmux/.tmuxinator"
 export EDITOR="vim"
-export MYVIMRC="$HOME/dotfiles/vim/.vimrc"
+export MYVIMRC="$DOT/vim/.vimrc"
 export PATH=$PATH:$GUROBI_HOME/bin
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GUROBI_HOME/lib
 export PIP_REQUIRE_VIRTUALENV=true
@@ -115,7 +117,6 @@ export PATH=$PATH:$HOME/.poetry/bin
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH=$PATH:$PYENV_ROOT/bin
 export NVM_DIR="$HOME/.nvm"
-export DOT="$HOME/dotfiles"
 
 #=========[ Functions ]===============
 gpip() { PIP_REQUIRE_VIRTUALENV="" pip "$@" }
@@ -176,7 +177,7 @@ fi
 eval "$(direnv hook zsh)"  # source .envrc if present
 
 #==========[ Defaults ]=============
-git config --global include.path ~/dotfiles/gitalias.txt
+git config --global include.path $DOT/gitalias.txt
 git config --global push.default current
 
 if [ -f $HOME/.extras.sh ]; then
