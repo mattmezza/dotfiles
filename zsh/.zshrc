@@ -69,7 +69,6 @@ export VISUAL=vim
 export VIMCONFIG="$HOME/dotfiles/vim/vimrc.vim"
 export TMUXINATOR_CONFIG="$HOME/tmux/.tmuxinator"
 export EDITOR="vim"
-export PATH=$PATH:$HOME/dotfiles/utils
 export MYVIMRC="$HOME/dotfiles/vim/.vimrc"
 export PATH=$PATH:$GUROBI_HOME/bin
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GUROBI_HOME/lib
@@ -101,6 +100,7 @@ loop() {
 }
 
 #=========[ Aliases ]===============
+alias copy=$DOT/utils/copy
 alias vim="nvim"
 alias vi="nvim"
 mkdir -p /tmp/log  # TODO find out why we need it
@@ -161,6 +161,7 @@ source $DOT/plugins/note/note.sh
 source $DOT/plugins/todo/todo.sh
 source $DOT/plugins/jump/j.sh
 source $DOT/plugins/sp/sp.sh
+alias spot=$DOT/plugins/spot/spot.sh
 
 source $DOT/msg.sh
 source $DOT/env_var.sh
