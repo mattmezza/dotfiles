@@ -100,7 +100,7 @@ fi
 
 printf "source '$HOME/dotfiles/zsh/.zshrc'" > ~/.zshrc
 printf "so $HOME/dotfiles/vim/.vimrc" > ~/.vimrc
-printf "source-file $HOME/dotfiles/tmux/tmux.conf" > ~/.tmux.conf
+printf "source-file $HOME/dotfiles/.tmux.conf" > ~/.tmux.conf
 
 echo
 echo "Installing brew dependencies..."
