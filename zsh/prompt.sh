@@ -70,5 +70,5 @@ preexec() {
 
 precmd() {
    (( _start >= 0 )) && _elapsed+=($(( SECONDS-_start )))
-   _start=-1 
+   _start=-1
 }

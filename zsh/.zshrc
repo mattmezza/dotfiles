@@ -47,7 +47,45 @@ for plugin ($plugins); do
     fpath=(~/dotfiles/zsh/plugins/oh-my-zsh/plugins/$plugin $fpath)
 done
 
-setopt inc_append_history # To save every command before it is executed 
+#==============[ keybindings ]================
+gg() {
+    if [ -n "$BUFFER" ];
+        then
+            BUFFER="git add -A && git commit -m \"$BUFFER\""
+    fi
+
+    if [ -z "$BUFFER" ];
+        then
+            BUFFER="git add -A && git commit -v"
+    fi
+    zle accept-line
+}
+zle -N gg
+bindkey "^g" gg
+
+goto_home() { BUFFER="cd ~/"$BUFFER; zle end-of-line; zle accept-line; }
+zle -N goto_home
+bindkey "^h" goto_home
+
+edit_and_run() { BUFFER="fc"; zle accept-line; }
+zle -N edit_and_run
+bindkey "^b" edit_and_run
+
+ctrl_l() { BUFFER="ls"; zle accept-line; }
+zle -N ctrl_l
+bindkey "^l" ctrl_l
+
+enter_line() { zle accept-line }
+zle -N enter_line
+bindkey "^o" enter_line
+
+add_sudo() { BUFFER="sudo "$BUFFER; zle end-of-line; }
+zle -N add_sudo
+bindkey "^s" add_sudo
+bindkey "^k" clear-screen
+
+
+setopt inc_append_history # To save every command before it is executed
 setopt share_history # setopt inc_append_history
 
 # Fix for arrow-key searching
@@ -145,14 +183,12 @@ if [ -f $HOME/.extras.sh ]; then
     source $HOME/.extras.sh
 fi
 
-source $DOT/zsh/plugins/fixls.zsh
 source $DOT/zsh/plugins/oh-my-zsh/lib/history.zsh
 source $DOT/zsh/plugins/oh-my-zsh/lib/key-bindings.zsh
 source $DOT/zsh/plugins/oh-my-zsh/lib/completion.zsh
 source $DOT/zsh/plugins/vi-mode.plugin.zsh
 source $DOT/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 source $DOT/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-source $DOT/zsh/keybindings.sh
 source $DOT/zsh/prompt.sh
 
 source $DOT/plugins.sh
