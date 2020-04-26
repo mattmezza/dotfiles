@@ -155,16 +155,17 @@ source $DOT/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source $DOT/zsh/keybindings.sh
 source $DOT/zsh/prompt.sh
 
-source $HOME/dotfiles/plugins.sh
-# add plugin in plugins.txt and run `source <(plugin_install)` to install them.
-source $HOME/dotfiles/plugins/note/note.sh
-source $HOME/dotfiles/plugins/todo/todo.sh
-source $HOME/dotfiles/plugins/jump/j.sh
+source $DOT/plugins.sh
+# add plugin in plugins.txt and run `plugin_install` to install them.
+source $DOT/plugins/note/note.sh
+source $DOT/plugins/todo/todo.sh
+source $DOT/plugins/jump/j.sh
+source $DOT/plugins/sp/sp.sh
 
-source $HOME/dotfiles/msg.sh
-source $HOME/dotfiles/env_var.sh
+source $DOT/msg.sh
+source $DOT/env_var.sh
 
-source $HOME/dotfiles/tmux/sp.sh
+source $DOT/tmux/sp.sh
 
 # start tmux
 [ -z $TMUX ] && exec tmux new-session -A -s main

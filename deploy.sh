@@ -108,4 +108,4 @@ install_brew_deps
 
 echo
 echo "Please log out and log back in for default shell to be initialized."
-echo "Afterwards, run 'plugins_install' to install the custom plugins."
+echo "Afterwards, run 'plugin_install' to install the custom plugins."
