@@ -1,0 +1,5 @@
+todo  git@github.com:mattmezza/todo.git   1.1.1
+note  git@github.com:mattmezza/note.git   1.0.1
+jump  git@github.com:mattmezza/jump.git   1.1.0
+sp    git@github.com:mattmezza/sp.git     0.1.1
+spot  https://github.com/rauchg/spot.git  0.2.0

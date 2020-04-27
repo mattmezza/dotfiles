@@ -56,6 +56,12 @@ install_brew_deps() {
     cat ~/dotfiles/cask.txt | while read in; do brew cask install "$in"; done
 }
 
+install_pacco() {
+    source <(curl -s https://raw.githubusercontent.com/mattmezza/pacco/master/pacco.sh) &&\
+        pacco i pacco https://github.com/mattmezza/pacco.git 1.0.0 &&\
+        echo "Installed pacco v$(pacco -v) in $(pacco -d)."
+}
+
 echo "We're going to do the following:"
 echo "1. Check to make sure you have zsh, vim, and tmux installed"
 echo "2. We'll help you install them if you don't"
@@ -80,6 +86,8 @@ echo
 check_for_software vim
 echo
 check_for_software tmux
+echo
+installl_pacco
 echo
 
 check_default_shell

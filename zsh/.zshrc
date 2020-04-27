@@ -117,6 +117,7 @@ export PATH=$PATH:$HOME/.poetry/bin
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH=$PATH:$PYENV_ROOT/bin
 export NVM_DIR="$HOME/.nvm"
+export PACCO_DIR="$DOT/pacchi"
 
 #=========[ Functions ]===============
 gpip() { PIP_REQUIRE_VIRTUALENV="" pip "$@" }
@@ -192,13 +193,9 @@ source $DOT/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source $DOT/zsh/prompt.sh
 
-source $DOT/plugins.sh
-# add plugin in plugins.txt and run `plugin_install` to install them.
-source $DOT/plugins/note/note.sh
-source $DOT/plugins/todo/todo.sh
-source $DOT/plugins/jump/j.sh
-source $DOT/plugins/sp/sp.sh
-alias spot=$DOT/plugins/spot/spot.sh
+source $PACCO_DIR/pacco/pacco.sh
+pacco source-all  # this sources all the pacco pkgs
+alias spot=$PACCO_DIR/spot/spot.sh  # this pkg needs custom sourcing
 
 source $DOT/msg.sh
 source $DOT/env_var.sh
