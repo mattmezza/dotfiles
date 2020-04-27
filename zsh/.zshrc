@@ -118,6 +118,7 @@ export PYENV_ROOT="$HOME/.pyenv"
 export PATH=$PATH:$PYENV_ROOT/bin
 export NVM_DIR="$HOME/.nvm"
 export PACCO_DIR="$DOT/pacchi"
+export PACCO_FILE="$DOT/pacco.txt"
 
 #=========[ Functions ]===============
 gpip() { PIP_REQUIRE_VIRTUALENV="" pip "$@" }
