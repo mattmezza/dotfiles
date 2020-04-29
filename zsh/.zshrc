@@ -1,4 +1,5 @@
 export DOT="$HOME/dotfiles"
+export COMPLETIONS="$DOT/zsh/completions"
 export BREW_PREFIX=$(brew --prefix)
 
 stty -ixon
@@ -48,6 +49,9 @@ for plugin ($plugins); do
     fpath=($DOT/zsh/plugins/oh-my-zsh/plugins/$plugin $fpath)
 done
 
+completions_regen() {
+    if which gh > /dev/null; then gh completion --shell zsh > $COMPLETIONS/gh; fi
+}
 fpath=($DOT/zsh/completions $fpath)
 autoload -U compinit && compinit
 
