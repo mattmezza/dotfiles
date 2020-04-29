@@ -1,5 +1,0 @@
-1.1.0 git@github.com:mattmezza/todo.git plugins/todo
-1.0.0 git@github.com:mattmezza/note.git plugins/note
-1.0.0 git@github.com:mattmezza/jump.git plugins/jump
-0.1.0 git@github.com:mattmezza/sp.git plugins/sp
-0.2.0 https://github.com/rauchg/spot.git plugins/spot
