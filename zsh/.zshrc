@@ -2,8 +2,6 @@ export DOT="$HOME/dotfiles"
 export BREW_PREFIX=$(brew --prefix)
 
 stty -ixon
-autoload -U compinit
-compinit
 HISTFILE=~/.zsh_history
 SAVEHIST=10000
 
@@ -49,6 +47,9 @@ plugins=(
 for plugin ($plugins); do
     fpath=($DOT/zsh/plugins/oh-my-zsh/plugins/$plugin $fpath)
 done
+
+fpath=($DOT/zsh/completions $fpath)
+autoload -U compinit && compinit
 
 #==============[ keybindings ]================
 gg() {
