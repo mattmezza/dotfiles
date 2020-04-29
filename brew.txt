@@ -12,3 +12,4 @@ autojump
 tmuxinator
 direnv
 zsh-syntax-highlighting
+github/gh/gh
