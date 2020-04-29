@@ -1,3 +1,7 @@
 try installation from scratch
+extract env_var.sh into a plugin
+extract msg.sh into a plugin
 extract copy.sh to a plugin for cross-platform copy pipe
-extract plugins.sh out from dotfiles
+extract bookmarker.html to a plugin
+    support generation of html (with 1 par, 2 pars, n pars)
+    something like `bookmarker create -t "Jira Issues" --param project --param id` would create a two fields prompt with title
