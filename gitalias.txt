@@ -1,70 +1,4 @@
-##
-# GitAlias.com file of many git alias items, including shortcuts, helpers, workflows, etc.
-#
-#
-# ## Usage
-#
-# Typical usage for a typical user:
-#
-#   * Save this file as a dot file in your home directory: `~/.gitalias.txt`
-#
-#   * Edit your git config dot file in your home directory such as  `~/.gitconfig`
-#
-#   * Include the path to this file.
-#
-# Example file `~/.gitconfig` with an entry to include the file `~/.gitalias.txt`:
-#
-#     [include]
-#       path = gitalias.txt
-#
-#
-# ## Usage for older git versions
-#
-# If you use an older version of git that does not have git config "include" capability,
-# or if you prefer more control, then you can simply copy/paste anything you like from
-# this file to your own git config file.
-#
-#
-# ## Customization
-#
-# If you want to use this file, and also want to change some of the items,
-# then one way is to use your git config file to include this gitalias file,
-# and also define your own alias items; a later alias takes precedence.
-#
-# Example file `~/.gitconfig` item to include the file `~/.gitalias.txt`:
-#
-#     [include]
-#       path = ~/.gitconfig.d/gitalias.txt
-#     [alias]
-#       l = log --graph --oneline
-#
-#
-# ## Links
-#
-#   * [GitAlias.com website](http://gitlias.com)
-#   * [GitAlias GitHub](https://github.com/gitalias)
-#   * [Git Basics - Git Aliases](https://git-scm.com/book/en/v2/Git-Basics-Git-Aliases)
-#   * [Git Basics - Tips and Tricks](https://git-scm.com/book/en/v1/Git-Basics-Tips-and-Tricks)
-#
-# ## Tracking
-#
-#   * Package: gitalias
-#   * Version: 20.4.0
-#   * Created: 2016-06-17
-#   * Updated: 2019-01-16
-#   * License: GPL
-#   * Contact: Joel Parker Henderson (joel@joelparkerhenderson.com)
-##
-
 [alias]
-
-  ##
-  # One letter alias for our most frequent commands.
-  #
-  # Guidelines: these aliases do not use options, because we want
-  # these aliases to be easy to compose and use in many ways.
-  ##
-
   a = add
   b = branch
   c = commit
@@ -79,145 +13,65 @@
   s = status
   w = whatchanged
 
-  ##
-  # Short aliases for our frequent commands.
-  #
-  # Guidelines:
-  #
-  #  * Generally speaking, the alias should be in the same
-  #    order as the command name followed by its options.
-  #
-  #    * Right: fb = foo --bar
-  #    * Wrong: bf = foo --bar
-  ##
-
-  ### add ###
-
-  # add all
   aa = add --all
-
   # add by patch - looks at each change, and asks if we want to put it in the repo.
   ap = add --patch
-
   # add just the files that are updated.
   au = add --update
 
-  ### branch ###
-
   # branch - edit the description
   be = branch --edit-description
-
   # branch and only list branches whose tips are reachable from the specified commit (HEAD if not specified).
   bm = branch --merged
-
   # branch and only list branches whose tips are not reachable from the specified commit (HEAD if not specified).
   bnm = branch --no-merged
 
-  ### commit ###
-
-  # commit - amend the tip of the current branch rather than creating a new commit.
   ca = commit --amend
-
-  # commit - amend the tip of the current branch, and edit the message.
   cam = commit --amend --message
-
-  # commit - amend the tip of the current branch, and do not edit the message.
   cane = commit --amend --no-edit
-
-  # commit interactive
   ci = commit --interactive
-
-  # commit with a message
   cm = commit --message
 
-  ### checkout ###
-
-  # checkout - update the working tree to match a branch or paths. [same as "o" for "out"]
   co = checkout
 
-  ### cherry-pick ###
-
-  # cherry-pick - apply the changes introduced by some existing commits; useful for moving small chunks of code between branches.
   cp = cherry-pick
-
-  # cherry-pick - abort the picking process
   cpa = cherry-pick --abort
-
-  # cherry-pick - continue the picking process
   cpc = cherry-pick --continue
-
   # cherry-pick without making a commit, and when when recording the commit, append a line that says "(cherry picked from commit ...)"
   cp-nx = cherry-pick --no-commit -x
 
-  ### diff ###
-
   # diff - show changes not yet staged
   dc = diff --cached
-
   # diff - show changes about to be commited
   ds = diff --staged
-
   # diff - show changes but by word, not line
   dw = diff --word-diff
-
   # diff deep - show changes with our preferred options. Also aliased as `diff-deep`.
   dd = diff --check --dirstat --find-copies --find-renames --histogram --color
-
-  ### clean ###
 
   # clean everything to be pristine
   cleanest = clean -ffdx
 
-  ### grep ###
-
-  # grep i.e. search for text
   g = grep
-
-  # grep - show line number
   gl = grep --line-number
-
   # grep group - search with our preferred options. Also aliased as `grep-group`.
   gg = grep --break --heading --line-number --color
 
-  ### log ###
-
-  # log with a text-based graphical representation of the commit history.
   lg = log --graph
-
-  # log with one line per item.
   lo = log --oneline
-
-  # log with patch generation.
   lp = log --patch
-
   # log with first parent, useful for team branch that only accepts pull requests
   lfp = log --first-parent
-
   # log with items appearing in topological order, i.e. descendant commits are shown before their parents.
   lt = log --topo-order
-
-  # log like - we like this summarization our key performance indicators. Also aliased as `log-like`.
   ll = log --graph --topo-order --date=short --abbrev-commit --decorate --all --boundary --pretty=format:'%Cgreen%ad %Cred%h%Creset -%C(yellow)%d%Creset %s %Cblue[%cn]%Creset %Cblue%G?%Creset'
-
-  # log like long  - we like this summarization our key performance indicators. Also aliased as `log-like-long`.
   lll = log --graph --topo-order --date=iso8601-strict --no-abbrev-commit --abbrev=40 --decorate --all --boundary --pretty=format:'%Cgreen%ad %Cred%h%Creset -%C(yellow)%d%Creset %s %Cblue[%cn <%ce>]%Creset %Cblue%G?%Creset'
 
-  ## ls-files ##
-
-  # ls-files - show information about files in the index and the working tree; like Unix "ls" command.
   ls = ls-files
-
-  # ls-ignored -  list files that git has ignored.
   ls-ignored = ls-files --others --i --exclude-standard
 
-  ### merge ###
-
-  # merge but without autocommit, and with a commit even if the merge resolved as a fast-forward.
   me = merge --no-commit --no-ff
 
-  ### pull ###
-
-  # pull if a merge can be resolved as a fast-forward, otherwise fail.
   pf = pull --ff-only
 
   # pull with rebase - to provide a cleaner, linear, bisectable history.
@@ -265,18 +119,10 @@
   # preserve-vs-flatten question is moot anyway.
   pp = pull --rebase=preserve
 
-  ### rebase ###
-
   # rebase - forward-port local commits to the updated upstream head.
   rb = rebase
-
-  # rebase abort - cancel the rebasing process
   rba = rebase --abort
-
-  # rebase - continue the rebasing process after resolving a conflict manually and updating the index with the resolution.
   rbc = rebase --continue
-
-  # rebase - restart the rebasing process by skipping the current patch.
   rbs = rebase --skip
 
   # rbi - rebase interactive on our unpushed commits.
@@ -313,72 +159,34 @@
   # This is a slightly modified version
   fixup = "!f() { TARGET=$(git rev-parse \"$1\"); git commit --fixup=$TARGET && GIT_EDITOR=true git rebase --interactive --autosquash $TARGET~; }; f"
 
-  ### reflog ###
-
   # reflog - reference log that manages when tips of branches are updated.
   rl = reflog
 
-  ### remote ###
-
-  # remote - manage set of tracked repositories [same as "r"].
   rr = remote
-
-  # remote show - gives some information about the remote <name>.
   rrs = remote show
-
-  # remote update - fetch updates for a named set of remotes in the repository as defined by remotes.
   rru = remote update
-
-  # remote prune - deletes all stale remote-tracking branches under <name>.
   rrp = remote prune
-
   incoming = !git remote update --prune; git log ..@{upstream}
   outgoing = log @{upstream}..
-
-  # Push to all remotes
   push-to-all-remotes = !git remote | xargs -I% -n1 git push %
 
-  ### revert ###
-
-  # revert - undo the changes from some existing commits
   rv = revert
-
   # revert without autocommit; useful when you're reverting more than one commits' effect to your index in a row.
   rvnc = revert --no-commit
-
-  ### show-branch ###
 
   # show-branch - print a list of branches and their commits.
   sb = show-branch
 
-  ### submodule ###
-
-  # submodule - enables foreign repositories to be embedded within a dedicated subdirectory of the source tree.
   sm = submodule
-
-  # submodule init
   smi = submodule init
-
-  # submodule add
   sma = submodule add
-
-  # submodule sync
   sms = submodule sync
-
-  # submodule update
   smu = submodule update
-
-  # submodule update with initialize
   smui = submodule update --init
-
-  # submodule update with initialize and recursive; this is useful to bring a submodule fully up to date.
   smuir = submodule update --init --recursive
-
-  ### status ###
 
   # status with short format instead of full details
   ss = status --short
-
   # status with short format and showing branch and tracking info.
   ssb = status --short --branch
 
@@ -417,14 +225,10 @@
   # Diff using our preferred options. A.k.a. `dd`.
   diff-deep = diff --check --dirstat --find-copies --find-renames --histogram --color
 
-  ### grep-* ###
-
   # Find text in any commit ever.
   grep-all = !"f() { git rev-list --all | xargs git grep \"$@\"; }; f"
-
   # Find text and group the output lines. A.k.a. `gg`.
   grep-group = grep --break --heading --line-number --color
-
   # grep with ack-like formatting
   grep-ack = \
     -c color.grep.linenumber=\"bold yellow\" \
@@ -432,28 +236,20 @@
     -c color.grep.match=\"reverse yellow\" \
     grep --break --heading --line-number
 
-  ### merge-* ###
-
   # Given a merge commit, find the span of commits that exist(ed).
   # Not so useful in itself, but used by other aliases.
   # Thanks to Rob Miller for the merge-span-* aliaes.
   merge-span = !"f() { echo $(git log -1 $2 --merges --pretty=format:%P | cut -d' ' -f1)$1$(git log -1 $2 --merges --pretty=format:%P | cut -d' ' -f2); }; f"
-
   # Find the commits that were introduced by a merge
   merge-span-log = "!git log `git merge-span .. $1`"
-
   # Show the changes that were introduced by a merge
   merge-span-diff = !"git diff `git merge-span ... $1`"
-
   # Show the changes that were introduced by a merge, in your difftool
   merge-span-difftool = !"git difftool `git merge-span ... $1`"
-
   # Interactively rebase all the commits on the current branch
   rebase-branch = !"git rebase --interactive `git merge-base master HEAD`"
-
   # Sort by date for branches; can be useful for spring cleaning
   refs-by-date = for-each-ref --sort=-committerdate --format='%(committerdate:short) %(refname:short)'
-
   # Find all objects that aren't referenced by any other object (orphans).
   # To help an orphan, we create a new branch with the orphan's commit hash,
   # then merge it into our current branch:
@@ -467,53 +263,38 @@
   # By [CodeGnome](http://www.codegnome.com/)
   rev-list-all-objects-sort-by-size = !"git rev-list --all --objects  | awk '{print $1}'| git cat-file --batch-check | fgrep blob | sort -k3nr"
 
-
-  ### LOG ALIASES ###
-
   # Show log of changes, most recent first
   log-changes = log --oneline --reverse
-
   # Show log of new commits after you fetched, with stats, excluding merges
   log-fresh = log ORIG_HEAD.. --stat --no-merges
-
   # Show log in our preferred format for our key performance indicators. A.k.a. `ll`.
   log-like = log --graph --topo-order --date=short --abbrev-commit --decorate --all --boundary --pretty=format:'%Cgreen%ad %Cred%h%Creset -%C(yellow)%d%Creset %s %Cblue[%cn]%Creset %Cblue%G?%Creset'
-
   # Show log in our preferred format for our key performance indicators, with long items. A.k.a. `lll`.
   log-like-long = log --graph --topo-order --date=iso8601-strict --no-abbrev-commit --decorate --all --boundary --pretty=format:'%Cgreen%ad %Cred%h%Creset -%C(yellow)%d%Creset %s %Cblue[%cn <%ce>]%Creset %Cblue%G?%Creset'
-
   # Show log with dates in our local timezone
   log-local = log --date=local
-
   # Show the log for my own commits by my own user email
   log-my = !git log --author $(git config user.email)
-
   # Show log as a graph
   log-graph = log --graph --all --oneline --decorate
-
   # Show the date of the earliest commit, in strict ISO 8601 format
   log-first-date = !"git log --date-order --format=%cI | tail -1"
-
   # Show the date of the latest commit, in strict ISO 8601 format
   log-latest-date = log -1 --date-order --format=%cI
-
   # Show the number of log entries by a specific date format
   log-count-per-date-format = "!f() { d=\"$1\"; shift; git log $@ --format=oneline --format="%ad" --date=format:\"$d\" | awk '{a[$0]++}END{for(i in a){print i, a[i]}}' | sort; }; f"
-
   # Show the log of the recent hour, day, week, month, year
   log-hour  = log --since "1 hour ago"
   log-day   = log --since "1 day ago"
   log-week  = log --since "1 week ago"
   log-month = log --since "1 month ago"
   log-year  = log --since "1 year ago"
-
   # Show the log of my own recent hour, day, week, month, year
   log-my-hour  = log --author $(git config user.email) --since "1 hour ago"
   log-my-day   = log --author $(git config user.email) --since "1 day ago"
   log-my-week  = log --author $(git config user.email) --since "1 week ago"
   log-my-month = log --author $(git config user.email) --since "1 month ago"
   log-my-year  = log --author $(git config user.email) --since "1 year ago"
-
   # Show the number of log items by year, or month, or day, etc.
   log-count-per-hour          = "!f() { git log-count-per-date-format \"%Y-%m-%dT%H\" $@ ; }; f"
   log-count-per-day           = "!f() { git log-count-per-date-format \"%Y-%m-%d\" $@ ; }; f"
@@ -579,18 +360,12 @@
   #
   churn = !git log --all --find-copies --find-renames --name-only --format='format:' "$@" | sort | grep -v '^$' | uniq -c | sort | awk 'BEGIN {print "count\tfile"} {print $1 "\t" $2}' | sort -g
 
-
-  ### LOOKUP ALIASES ###
-
   # whois: given a string for an author, try to figure out full name and email:
   whois = "!sh -c 'git log --regexp-ignore-case -1 --pretty=\"format:%an <%ae>\n\" --author=\"$1\"' -"
-
   # Given any git object, try to show it briefly
   whatis = show --no-patch --pretty='tformat:%h (%s, %ad)' --date=short
-
   # Show who contributed with summarized changes
   who = shortlog --summary --
-
   # Show who contributed, in descending order by number of commits
   whorank = shortlog --summary --numbered --no-merges
 
@@ -604,12 +379,10 @@
   #
   # But will work with any valid commit range:
   #  $ git issues master..HEAD
-
   issues = !sh -c \"git log $1 --oneline | grep -o \\\"ISSUE-[0-9]\\+\\\" | sort -u\"
 
   # Show the commit's parents
   commit-parents = !git cat-file -p "$1" | sed -n '/0/,/^ *$/p' | grep "^parent "
-
   # Is the commit a merge commit? If yes exit 0, else exit 1
   commit-is-merge = ![ "$(git cat-file -p "42e810fddc4688b28ef1cf438998579344cc33f5" | sed -n '/0/,/^ *$/p' | grep -c "^parent ")" -ge "2" ]
 
@@ -644,7 +417,6 @@
 
   # When you're a little worried that the world is coming to an end
   panic = !tar cvf ../panic.tar *
-
   # Create an archive file of everything in the repo
   archive = !"f() { top=$(rev-parse --show-toplevel); cd $top; tar cvf $top.tar $top ; }; f"
 
@@ -679,10 +451,6 @@
   # this is a bit hacky because of the parsing, and we welcome
   # better code that works using more-specific git commands.
   track-all-remote-branches = !"f() { git branch -r | grep -v ' -> ' | sed 's/^ \\+origin\\///' ; }; f"
-
-  ##
-  # Reset & Undo
-  ##
 
   # Reset and undo aliases are ways to move backwards on the commit chain.
   # We find that novices prefer the wording "undo"; experts prefer "reset".
@@ -1278,5 +1046,4 @@
 
   ull = pull
   ush = push
-
-pod = git pull origin develop
+  pod = git pull origin develop
