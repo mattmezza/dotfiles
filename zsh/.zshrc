@@ -160,8 +160,9 @@ alias got=git
 # (fails when you run it anywhere that isn't a git project's root directory)
 # alias vs="v `git status --porcelain | sed -ne 's/^ M //p'`"
 alias compose=docker-compose
-alias ls="exa"
-alias l="exa"
+if which exa > /dev/null; then alias ls="exa"; alias l="exa"; fi
+if which bat > /dev/null; then alias cat=bat; fi
+alias k=kubectl
 
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
     alias pbcopy='xclip -selection clipboard'
