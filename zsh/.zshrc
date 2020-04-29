@@ -160,7 +160,13 @@ alias got=git
 # (fails when you run it anywhere that isn't a git project's root directory)
 # alias vs="v `git status --porcelain | sed -ne 's/^ M //p'`"
 alias compose=docker-compose
-if which exa > /dev/null; then alias ls="exa"; alias l="exa"; fi
+if which exa > /dev/null; then
+    alias ls="exa";
+    alias l="exa";
+    alias ll="exa --long --header --group --inode --blocks --links --modified --accessed --created --git"
+    alias la="ll -a"
+    alias tree="exa -T"
+fi
 if which bat > /dev/null; then alias cat=bat; fi
 alias k=kubectl
 
