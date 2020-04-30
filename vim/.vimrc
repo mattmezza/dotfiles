@@ -5,21 +5,22 @@ set rtp+=$DOT/vim/bundle/Vundle.vim
 call vundle#begin()
 
 Plugin 'VundleVim/Vundle.vim'
-Plugin 'neoclide/coc.nvim', {'branch': 'release'}
-Plugin 'tpope/vim-fugitive'
-Plugin 'tpope/vim-surround'
-Plugin 'tpope/vim-repeat'
-Plugin 'scrooloose/syntastic'
-Plugin 'ctrlpvim/ctrlp.vim'
-Plugin 'dhruvasagar/vim-table-mode' " tables with plain text
-Plugin 'dhruvasagar/vim-marp' " marp presentations
-Plugin 'vim-airline/vim-airline'
-Plugin 'rust-lang/rust.vim'
-Plugin 'sheerun/vim-polyglot'
+Plugin 'bogado/file-line'
 Plugin 'christoomey/vim-tmux-navigator'
-Plugin 'Yggdroot/indentLine' " vertical line for indentation
+Plugin 'ctrlpvim/ctrlp.vim'
+Plugin 'dhruvasagar/vim-marp' " marp presentations
+Plugin 'dhruvasagar/vim-table-mode' " tables with plain text
 Plugin 'leafgarland/typescript-vim'
-Bundle 'zirrostig/vim-schlepp'
+Plugin 'neoclide/coc.nvim', {'branch': 'release'}
+Plugin 'rust-lang/rust.vim'
+Plugin 'scrooloose/syntastic'
+Plugin 'sheerun/vim-polyglot'
+Plugin 'tpope/vim-fugitive'
+Plugin 'tpope/vim-repeat'
+Plugin 'tpope/vim-surround'
+Plugin 'vim-airline/vim-airline'
+Plugin 'yggdroot/indentLine' " vertical line for indentation
+Plugin 'zirrostig/vim-schlepp'
 
 call vundle#end()
 filetype plugin indent on
