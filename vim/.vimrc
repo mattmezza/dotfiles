@@ -11,9 +11,12 @@ Plugin 'ctrlpvim/ctrlp.vim'
 Plugin 'dhruvasagar/vim-marp' " marp presentations
 Plugin 'dhruvasagar/vim-table-mode' " tables with plain text
 Plugin 'leafgarland/typescript-vim'
+Plugin 'pangloss/vim-javascript'
+Plugin 'Quramy/vim-js-pretty-template'
+Plugin 'othree/javascript-libraries-syntax.vim'
+Plugin 'othree/yajs.vim'
 Plugin 'neoclide/coc.nvim', {'branch': 'release'}
 Plugin 'rust-lang/rust.vim'
-Plugin 'scrooloose/syntastic'
 Plugin 'sheerun/vim-polyglot'
 Plugin 'tpope/vim-fugitive'
 Plugin 'tpope/vim-repeat'
@@ -21,6 +24,7 @@ Plugin 'tpope/vim-surround'
 Plugin 'vim-airline/vim-airline'
 Plugin 'yggdroot/indentLine' " vertical line for indentation
 Plugin 'zirrostig/vim-schlepp'
+Plugin 'editorconfig/editorconfig-vim'
 
 call vundle#end()
 filetype plugin indent on
@@ -719,6 +723,9 @@ autocmd FileChangedShellPost *
 " Fix for: https://github.com/fatih/vim-go/issues/1509
 filetype plugin indent on
 
+" Fix for editorconfig-vim & fugitive
+let g:EditorConfig_exclude_patterns = ['fugitive://.*']
+
 
 " Some nice to have nerd tree config
 let g:nerdtree_tabs_autofind=1
@@ -727,7 +734,17 @@ let g:nerdtree_tabs_autofind=1
 " Alert when line too long
 highlight ColorColumn ctermbg=magenta
 call matchadd('ColorColumn', '\%80v', 100)
+
+"=====[ Toggle between angular ts and html]============
+nnoremap nh :e %<.html<CR>
+nnoremap nt :e %<.ts<CR>
+nnoremap nc :e %<.css<CR>
+nnoremap ns :e %<.spec.ts<CR>
+
+" Custom syntastic settings
 let g:syntastic_python_pylint_post_args="--max-line-length=79"
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
 
 " add yaml stuff
 au! BufNewFile,BufReadPost *.{yaml,yml} set filetype=yaml
@@ -737,9 +754,11 @@ autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
 " CoC
 " if hidden is not set, TextEdit might fail.
 set hidden
+hi CocWarningSign ctermfg=Gray guifg=#555555
 
 let g:coc_config_home="$HOME/dotfiles/vim"
 let g:airline#extensions#coc#enabled=1
+let b:coc_root_patterns = ['.git']
 
 " Some servers have issues with backup files, see #649
 set nobackup
@@ -829,9 +848,13 @@ nmap <leader>qf  <Plug>(coc-fix-current)
 
 " Create mappings for function text object, requires document symbols feature of languageserver.
 xmap if <Plug>(coc-funcobj-i)
-xmap af <Plug>(coc-funcobj-a)
 omap if <Plug>(coc-funcobj-i)
+xmap af <Plug>(coc-funcobj-a)
 omap af <Plug>(coc-funcobj-a)
+xmap ic <Plug>(coc-classobj-i)
+omap ic <Plug>(coc-classobj-i)
+xmap ac <Plug>(coc-classobj-a)
+omap ac <Plug>(coc-classobj-a)
 
 " Use <TAB> for select selections ranges, needs server support, like: coc-tsserver, coc-python
 nmap <silent> <TAB> <Plug>(coc-range-select)
@@ -847,7 +870,7 @@ command! -nargs=? Fold :call	   CocAction('fold', <f-args>)
 command! -nargs=0 OR   :call	   CocAction('runCommand', 'editor.action.organizeImport')
 
 " Add status line support, for integration with other plugin, checkout `:h coc-status`
-set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
+" set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
 
 " Using CocList
 " Show all diagnostics
