@@ -740,6 +740,7 @@ nnoremap nh :e %<.html<CR>
 nnoremap nt :e %<.ts<CR>
 nnoremap nc :e %<.css<CR>
 nnoremap ns :e %<.spec.ts<CR>
+nnoremap nl :e %<.less<CR>
 
 " Custom syntastic settings
 let g:syntastic_python_pylint_post_args="--max-line-length=79"
