@@ -28,6 +28,7 @@ Plugin 'editorconfig/editorconfig-vim'
 Plugin 'alvan/vim-closetag'
 Plugin 'morhetz/gruvbox'
 Plugin 'chriskempson/base16-vim'
+Plugin 'dawikur/base16-vim-airline-themes'
 
 call vundle#end()
 filetype plugin indent on
