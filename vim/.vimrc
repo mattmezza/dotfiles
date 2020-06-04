@@ -25,19 +25,24 @@ Plugin 'vim-airline/vim-airline'
 Plugin 'yggdroot/indentLine' " vertical line for indentation
 Plugin 'zirrostig/vim-schlepp'
 Plugin 'editorconfig/editorconfig-vim'
+Plugin 'alvan/vim-closetag'
+Plugin 'morhetz/gruvbox'
+Plugin 'chriskempson/base16-vim'
 
 call vundle#end()
 filetype plugin indent on
 
 " General Vim settings
+let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 set nomodeline
 syntax on
 let mapleader=","
 set dir=/tmp/
 set relativenumber
 set number
+set termguicolors
 set background=dark
-colorscheme slate
+colorscheme base16-tomorrow-night
 
 hi Cursor ctermfg=White ctermbg=Yellow cterm=bold guifg=white guibg=yellow gui=bold
 
@@ -52,8 +57,6 @@ nnoremap L $
 nnoremap J G
 nnoremap K gg
 nnoremap ; :
-
-map <tab> %
 
 set backspace=indent,eol,start
 
@@ -125,8 +128,7 @@ imap jj <ESC>
 
 cmap Wq wq
 cmap WQ wq
-cmap W w
-cmap Q q
+cmap wQ wq
 
 "====[ Edit and auto-update this config file and plugins ]==========
 
@@ -640,7 +642,7 @@ let g:table_mode_cell_text_object_i_map = 'ic'
 let g:table_mode_syntax                 = 1
 let g:table_mode_delimiter              = ' \{2,}'
 
-nmap <TAB> :TableModeToggle<CR>
+" nmap <TAB> :TableModeToggle<CR>
 xmap <TAB> <ESC><TAB>gv
 xmap <silent> T :<C-U>call ToggleTabularization()<CR>
 
@@ -806,8 +808,9 @@ nmap <silent> ]g <Plug>(coc-diagnostic-next)
 " Remap keys for gotos
 nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gi <Plug>(coc-jmplementation)
 nmap <silent> gr <Plug>(coc-references)
+nmap <silent> gh <Plug>(coc-float-hide)
 
 " Use K to show documentation in preview window
 nnoremap <silent> K :call <SID>show_documentation()<CR>
@@ -858,8 +861,8 @@ xmap ac <Plug>(coc-classobj-a)
 omap ac <Plug>(coc-classobj-a)
 
 " Use <TAB> for select selections ranges, needs server support, like: coc-tsserver, coc-python
-nmap <silent> <TAB> <Plug>(coc-range-select)
-xmap <silent> <TAB> <Plug>(coc-range-select)
+" nmap <silent> <TAB> <Plug>(coc-range-select)
+" xmap <silent> <TAB> <Plug>(coc-range-select)
 
 " Use `:Format` to format current buffer
 command! -nargs=0 Format :call CocAction('format')
