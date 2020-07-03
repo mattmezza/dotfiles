@@ -111,7 +111,7 @@ if [[ "${terminfo[kcud1]}" != "" ]]; then
 fi
 
 #=========[ Exports ]===============
-export VISUAL=vim
+export VISUAL=/usr/local/bin/nvim
 export VIMCONFIG="$DOT/vim/vimrc.vim"
 export TMUXINATOR_CONFIG="$HOME/tmux/.tmuxinator"
 export EDITOR="vim"
