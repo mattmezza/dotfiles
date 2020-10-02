@@ -46,6 +46,7 @@ set background=dark
 colorscheme base16-tomorrow-night
 
 hi Cursor ctermfg=White ctermbg=Yellow cterm=bold guifg=white guibg=yellow gui=bold
+set guicursor= " cursor stays a block even in insert mode
 
 nnoremap <C-_> :nohl<CR>:echo "Search Cleared"<CR>
 nnoremap <leader><Space> :MRU
@@ -271,7 +272,7 @@ xmap <left>  <Plug>SchleppLeft
 xmap <right> <Plug>SchleppRight
 
 xmap D	   <Plug>SchleppDupLeft
-xmap <C-D>   <Plug>SchleppDupLeft
+xmap <C-D>   <Plug>SchleppDupLeft    
 
 "=====[ Configure % key (via matchit plugin) ]==============================
 
@@ -527,14 +528,14 @@ function! Under_dollar_visual ()
     return maxcol . '|'
 endfunction
 
-"=====[ ,, as => without delays ]===================
+"=====[ ,, as -> without delays ]===================
 
 inoremap <expr><silent>  ,  Smartcomma()
 
 function! Smartcomma ()
     let [bufnum, lnum, col, off, curswant] = getcurpos()
     if getline('.') =~ (',\%' . (col+off) . 'c')
-        return "\<C-H>=>"
+        return "\<C-H>->"
     else
         return ','
     endif
@@ -590,12 +591,6 @@ if &term =~ "xterm.*"
     cmap        <Esc>[200~ <nop>
     cmap        <Esc>[201~ <nop>
 endif
-
-"=====[ Change cursor during insertion ]======================
-
-let &t_SI="\033[5 q" " start insert mode, switch to blinking cursor
-let &t_EI="\033[1 q" " end insert mode, back to square cursor
-
 
 "=====[ Completion during search (via Command window) ]======================
 
@@ -730,11 +725,6 @@ filetype plugin indent on
 " Fix for editorconfig-vim & fugitive
 let g:EditorConfig_exclude_patterns = ['fugitive://.*']
 
-
-" Some nice to have nerd tree config
-let g:nerdtree_tabs_autofind=1
-" let g:nerdtree_tabs_open_on_console_startup=1
-
 " Alert when line too long
 highlight ColorColumn ctermbg=magenta
 call matchadd('ColorColumn', '\%80v', 100)
@@ -754,7 +744,6 @@ let g:syntastic_check_on_wq = 0
 " add yaml stuff
 au! BufNewFile,BufReadPost *.{yaml,yml} set filetype=yaml
 autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
-
 
 " CoC
 " if hidden is not set, TextEdit might fail.
