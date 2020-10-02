@@ -92,7 +92,6 @@ zle -N add_sudo
 bindkey "^s" add_sudo
 bindkey "^k" clear-screen
 
-
 setopt inc_append_history # To save every command before it is executed
 setopt share_history # setopt inc_append_history
 
@@ -112,10 +111,9 @@ fi
 
 #=========[ Exports ]===============
 export VISUAL=/usr/local/bin/nvim
-export VIMCONFIG="$DOT/vim/vimrc.vim"
-export TMUXINATOR_CONFIG="$HOME/tmux/.tmuxinator"
+export VIMCONFIG="$DOT/vim/init.vim"
+export MYVIMRC=$VIMCONFIG
 export EDITOR="vim"
-export MYVIMRC="$DOT/vim/.vimrc"
 export PATH=$PATH:$GUROBI_HOME/bin
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GUROBI_HOME/lib
 export PIP_REQUIRE_VIRTUALENV=true

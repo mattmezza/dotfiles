@@ -34,7 +34,6 @@ call vundle#end()
 filetype plugin indent on
 
 " General Vim settings
-let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 set nomodeline
 syntax on
 let mapleader=","
@@ -42,8 +41,7 @@ set dir=/tmp/
 set relativenumber
 set number
 set termguicolors
-set background=dark
-colorscheme base16-tomorrow-night
+colorscheme base16-3024
 
 hi Cursor ctermfg=White ctermbg=Yellow cterm=bold guifg=white guibg=yellow gui=bold
 set guicursor= " cursor stays a block even in insert mode
