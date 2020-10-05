@@ -125,6 +125,10 @@ highlight Comment term=bold cterm=italic ctermfg=white gui=italic guifg=white
 
 imap jj <ESC>
 
+"====[ Change line number bg ]=======================
+highlight clear LineNr
+highlight clear SignColumn
+
 "====[ Mapping that bloody :W to :w ]=================
 
 cmap Wq wq
@@ -882,3 +886,8 @@ nnoremap <silent> <space>j  :<C-u>CocNext<CR>
 nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
 " Resume latest coc list
 nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
+
+" ====[ vim-airline customization ] ===========
+let g:airline_symbols_ascii = 1
+let g:airline#parts#ffenc#skip_expected_string='utf-8[unix]'
+let g:airline#extensions#whitespace#enabled = 0
