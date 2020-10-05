@@ -29,6 +29,11 @@ Plugin 'alvan/vim-closetag'
 Plugin 'morhetz/gruvbox'
 Plugin 'chriskempson/base16-vim'
 Plugin 'dawikur/base16-vim-airline-themes'
+if has('nvim') || has('patch-8.0.902')
+  Plugin 'mhinz/vim-signify'
+else
+  Plugin 'mhinz/vim-signify', { 'branch': 'legacy' }
+endif
 
 call vundle#end()
 filetype plugin indent on
@@ -891,3 +896,7 @@ nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
 let g:airline_symbols_ascii = 1
 let g:airline#parts#ffenc#skip_expected_string='utf-8[unix]'
 let g:airline#extensions#whitespace#enabled = 0
+let g:airline#extensions#branch#enabled = 0
+
+" ====[ signify customization ] ===============
+set updatetime=100
