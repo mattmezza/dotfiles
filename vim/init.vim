@@ -67,7 +67,7 @@ nnoremap vv 0v$
 set listchars=tab:\|\ 
 nnoremap <leader><tab> :set list!<cr>
 set pastetoggle=<F2>
-set mouse=a
+set mouse-=a
 
 "=====[ Load some useful plugins ] =================================
 
