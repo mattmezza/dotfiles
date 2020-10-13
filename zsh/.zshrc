@@ -163,6 +163,15 @@ alias cd="c"
 alias g=git
 alias gti=git
 alias got=git
+alias c="git rev-parse HEAD"
+alias cs="git rev-parse HEAD | cut -c-7"
+alias bc="git branch --show-current"
+alias b="git branch"
+alias br="git branch -d"
+alias cb="git checkout -b"
+co() {
+    git checkout $(git branch --list | grep $1 | sed 's/\*//' | xargs -n1)
+}
 # This is currently causing problems
 # (fails when you run it anywhere that isn't a git project's root directory)
 # alias vs="v `git status --porcelain | sed -ne 's/^ M //p'`"
