@@ -159,7 +159,6 @@ alias ....="cd ../../.."
 alias .....="cd ../../../.."
 alias -- -="cd -"
 alias tx="tmuxinator"
-alias cd="c"
 alias g=git
 alias gti=git
 alias got=git
