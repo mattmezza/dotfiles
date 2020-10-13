@@ -172,6 +172,9 @@ alias cb="git checkout -b"
 co() {
     git checkout $(git branch --list | grep $1 | sed 's/\*//' | xargs -n1)
 }
+bj() {
+    git branch --list | grep ${1-" "} | grep ${2-${1-" "}} | sed 's/\*//' | xargs -n1
+}
 # This is currently causing problems
 # (fails when you run it anywhere that isn't a git project's root directory)
 # alias vs="v `git status --porcelain | sed -ne 's/^ M //p'`"
