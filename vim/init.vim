@@ -34,6 +34,7 @@ if has('nvim') || has('patch-8.0.902')
 else
   Plugin 'mhinz/vim-signify', { 'branch': 'legacy' }
 endif
+Plugin 'mhinz/vim-grepper', { 'on': ['Grepper', '<plug>(GrepperOperator)'] }
 
 call vundle#end()
 filetype plugin indent on
@@ -197,9 +198,9 @@ set ignorecase		"Ignore case in all searches...
 set smartcase		"...unless uppercase letters used
 
 set hlsearch		"Highlight all matches
-highlight clear Search
-highlight		 Search	 ctermfg=White  ctermbg=Black  cterm=bold
-highlight    IncSearch	 ctermfg=White  ctermbg=Red	 cterm=bold
+"highlight clear Search
+highlight Search ctermfg=White  ctermbg=Red  cterm=bold
+highlight IncSearch ctermfg=White  ctermbg=Red cterm=bold
 
 " Absolute direction for n and N...
 runtime hlnext.vim
