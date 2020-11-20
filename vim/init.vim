@@ -247,9 +247,6 @@ xmap <BS> x
 " Make vaa select the entire file...
 xmap aa VGo1G
 
-" Make q extend to the surrounding string...
-xmap  q	"_y:call ExtendVisualString()<CR>
-
 let s:closematch = [ '', '', '}', ']', ')', '>', '/', "'", '"', '`' ]
 let s:ldelim = '\< \%(q [qwrx]\= \| [smy] \| tr \) \s*
 \			 \%(
@@ -477,12 +474,6 @@ xnoremap <silent><expr> c  VTC_select()
 "=====[ Make * respect smartcase and also set @/ (to enable 'n' and 'N') ]======
 
 nmap *  :let @/ = '\<'.expand('<cword>').'\>' ==? @/ ? @/ : '\<'.expand('<cword>').'\>'<CR>n
-
-"=====[ Much smarter "edit next file" command ]=======================
-
-runtime goto_file.vim
-nmap <silent><expr>  e  g:GTF_goto_file()
-nmap <silent><expr>  q  g:GTF_goto_file('`')
 
 "======[ Fix colourscheme for 256 colours ]============================
 
