@@ -1,6 +1,6 @@
 jump  git@github.com:mattmezza/jump.git   1.1.0
 note  git@github.com:mattmezza/note.git   1.0.1
-sp    git@github.com:mattmezza/sp.git     0.1.1
+sp    git@github.com:mattmezza/sp.git     1.0.0
 spot  https://github.com/rauchg/spot.git  0.2.0
 timer git@github.com:mattmezza/timer.git  1.0.0
 todo  git@github.com:mattmezza/todo.git   1.1.1
