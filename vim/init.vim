@@ -21,6 +21,7 @@ Plugin 'sheerun/vim-polyglot'
 Plugin 'tpope/vim-fugitive'
 Plugin 'tpope/vim-repeat'
 Plugin 'tpope/vim-surround'
+Plugin 'kburdett/vim-nuuid'
 Plugin 'vim-airline/vim-airline'
 Plugin 'yggdroot/indentLine' " vertical line for indentation
 Plugin 'zirrostig/vim-schlepp'
@@ -694,7 +695,6 @@ nnoremap <leader>q :q<CR>
 
 nnoremap <leader>t :Tex<CR>
 nnoremap <leader>v :Vex<CR>
-nnoremap <leader>s :Sex<CR>
 
 " Return to the same line you left off at
 augroup line_return
@@ -883,6 +883,8 @@ nnoremap <silent> <space>j  :<C-u>CocNext<CR>
 nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
 " Resume latest coc list
 nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
+" Search
+nnoremap <leader>s :CocSearch 
 
 " ====[ vim-airline customization ] ===========
 let g:airline_symbols_ascii = 1

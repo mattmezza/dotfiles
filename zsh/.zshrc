@@ -194,6 +194,12 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
     # pbcopy now works on linux as in macos
 fi
 
+pid () {
+    ps -A | grep "$1"  | grep -v "grep" | awk '{print $1}'
+}
+alias nproc="sysctl -n hw.ncpu"
+alias nproc-1="expr $(nproc) - 1"
+
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 
 # autoactivate virtualenv via pyenv
@@ -226,6 +232,10 @@ alias spot=$PACCO_DIR/spot/spot.sh  # this pkg needs custom sourcing
 
 source $DOT/msg.sh
 source $DOT/env_var.sh
+
+export PATH="/usr/local/opt/krb5/bin:$PATH"
+export PATH="/usr/local/opt/krb5/sbin:$PATH"
+export PATH="/usr/local/opt/openssl@1.1/bin:$PATH"
 
 # start tmux
 [ -z $TMUX ] && exec tmux new-session -A -s main
