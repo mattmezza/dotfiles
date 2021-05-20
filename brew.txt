@@ -240,7 +240,7 @@ zstd
 adoptopenjdk
 alacritty
 balenaetcher
-docker
+--cask docker
 drawio
 fliqlo
 font-hack-nerd-font

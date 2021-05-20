@@ -114,6 +114,7 @@ Upon launching a new shell, `zsh` first launches tmux. The session is retained e
   - `~/.config/nvim/init.vim` -> `~/dotfiles/vim/init.vim`
   - `~/.tmux.conf` -> `~/dotfiles/.tmux.conf`
   - `~/.alacritty.yml` -> `~/dotfiles/.alacritty.yml`
+  - `~/.gitconfig` -> `~/dotfiles/.gitconfig`
 - `touch ~/.jump`
 - `mkdir ~/notes`
 - `source <(curl -s https://raw.githubusercontent.com/mattmezza/pacco/master/pacco.sh)`

@@ -1,3 +1,17 @@
+[push]
+	default = current
+
+[user]
+    name = Matteo Merola
+    email = mattmezza@gmail.com
+    signingkey = D9DB2DCADC36E2F6
+
+[commit]
+    gpgsign = true
+
+[tag]
+    gpgsign = true
+
 [alias]
   a = add
   b = branch
@@ -1047,3 +1061,5 @@
   ull = pull
   ush = push
   pod = git pull origin develop
+[include]
+	path = /Users/matteo.merola/dotfiles/gitalias.txt
