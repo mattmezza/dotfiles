@@ -99,6 +99,23 @@ This script guides you through the following:
 
 Pretty convenient for configuring new servers.
 
-## Basic runtime opperations
+## Basic runtime operations
 
 Upon launching a new shell, `zsh` first launches tmux. The session is retained even if the terminal crashes or if you force-quit it.
+
+
+# Manual install
+
+- please clone the repo and all its submodules
+- `cat ~/dotfiles/brew.txt | xargs -n1 brew install`
+- `./dotfiles/.osx`
+- symlink the following
+  - `~/.zshrc` -> `~/dotfiles/zsh/.zshrc`
+  - `~/.config/nvim/init.vim` -> `~/dotfiles/vim/init.vim`
+  - `~/.tmux.conf` -> `~/dotfiles/.tmux.conf`
+  - `~/.alacritty.yml` -> `~/dotfiles/.alacritty.yml`
+- `touch ~/.jump`
+- `mkdir ~/notes`
+- `source <(curl -s https://raw.githubusercontent.com/mattmezza/pacco/master/pacco.sh)`
+- `pacco i pacco https://github.com/mattmezza/pacco.git 1.0.0`
+- `pacco I`

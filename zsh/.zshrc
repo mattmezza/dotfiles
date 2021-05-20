@@ -222,12 +222,13 @@ source $DOT/zsh/plugins/oh-my-zsh/lib/history.zsh
 source $DOT/zsh/plugins/oh-my-zsh/lib/key-bindings.zsh
 source $DOT/zsh/plugins/oh-my-zsh/lib/completion.zsh
 source $DOT/zsh/plugins/vi-mode.plugin.zsh
-source $DOT/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+# source $DOT/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 source $BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source $DOT/zsh/prompt.sh
 
 source $PACCO_DIR/pacco/pacco.sh
 pacco source-all  # this sources all the pacco pkgs
+export NOTE_SCRATCH_DIR="$HOME/notes"
 alias spot=$PACCO_DIR/spot/spot.sh  # this pkg needs custom sourcing
 
 source $DOT/msg.sh

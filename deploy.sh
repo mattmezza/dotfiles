@@ -100,3 +100,10 @@ printf "source-file $HOME/dotfiles/.tmux.conf" > ~/.tmux.conf
 echo
 echo "Please log out and log back in for default shell to be initialized."
 echo "Afterwards, run 'pacco I' to install all the custom plugins."
+
+# to supercharge the caps key
+mkdir -p ~/.hammerspoon/Spoons
+git clone https://github.com/jasonrudolph/ControlEscape.spoon.git ~/.hammerspoon/Spoons/ControlEscape.spoon
+
+# install oh-my-zsh
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"

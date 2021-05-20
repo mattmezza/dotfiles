@@ -120,10 +120,6 @@ nnoremap - :Exp<CR>
 
 let g:ctrlp_custom_ignore = 'node_modules\|DS_Store\|git|__pycache'
 
-"=====[ Enable Nmap command for documented mappings ]================
-
-runtime documap.vim
-
 "=====[ Comments are important ]==================
 
 highlight Comment term=bold cterm=italic ctermfg=white gui=italic guifg=white
@@ -149,8 +145,6 @@ autocmd!
     autocmd BufWritePost $MYVIMRC source $MYVIMRC
 augroup END
 
-Nmap <silent>  ;v   [Edit .vimrc]          :next $MYVIMRC<CR>
-Nmap           ;vv  [Edit .vim/plugin/...] :next $HOME/dotfiles/vim/plugin/
 
 "=====[ Some of Vim's defaults are just annoying ]============
 
@@ -162,15 +156,6 @@ set cpo-=aA
 
 " Prefer vertical orientation when using :diffsplit
 set diffopt+=vertical
-
-"====[ I'm sick of typing :%s/.../.../g ]=======
-
-Nmap S  [Shortcut for :s///g]  :%s//g<LEFT><LEFT>
-xmap S                         :s//g<LEFT><LEFT>
-
-Nmap <expr> M  [Shortcut for :s/<last match>//g]  ':%s/' . @/ . '//g<LEFT><LEFT>'
-xmap <expr> M                                     ':s/' . @/ . '//g<LEFT><LEFT>'
-
 
 "====[ Toggle visibility of naughty characters ]============
 
@@ -461,12 +446,6 @@ endfunction
 
 nnoremap //   /<C-R>/
 nnoremap ///  /<C-R>/\<BAR>
-
-"====[ Toggle between lists and bulleted lists ]======================
-
-runtime listtrans.vim
-Nmap     <silent> ;l [Toggle list format (bullets <-> commas)]  :call ListTrans_toggle_format()<CR>f
-xnoremap <silent> ;l                                            :call ListTrans_toggle_format('visual')<CR>f
 
 "=====[ Select a table column in visual mode ]========================
 runtime tablecellselect.vim
