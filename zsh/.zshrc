@@ -121,9 +121,6 @@ export PATH=$PATH:$HOME/.poetry/bin
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH=$PATH:$PYENV_ROOT/bin
 export PATH="$(brew --prefix)/opt/openjdk/bin:$PATH"
-export JAVA_14_HOME=$(/usr/libexec/java_home -v14)
-export JAVA_11_HOME=$(/usr/libexec/java_home -v11)
-export JAVA_HOME="$JAVA_14_HOME"
 export NVM_DIR="$HOME/.nvm"
 export PACCO_DIR="$DOT/pacchi"
 export PACCO_FILE="$DOT/pacco.txt"
@@ -237,6 +234,7 @@ source $DOT/env_var.sh
 export PATH="/usr/local/opt/krb5/bin:$PATH"
 export PATH="/usr/local/opt/krb5/sbin:$PATH"
 export PATH="/usr/local/opt/openssl@1.1/bin:$PATH"
+export GPG_TTY=$(tty)
 
 # start tmux
 [ -z $TMUX ] && exec tmux new-session -A -s main

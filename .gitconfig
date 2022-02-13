@@ -4,10 +4,10 @@
 [user]
     name = Matteo Merola
     email = mattmezza@gmail.com
-    signingkey = D9DB2DCADC36E2F6
+	signingkey = 0A70DC96F408F986
 
 [commit]
-    gpgsign = true
+	gpgsign = true
 
 [tag]
     gpgsign = true
@@ -1062,4 +1062,6 @@
   ush = push
   pod = git pull origin develop
 [include]
-	path = /Users/matteo.merola/dotfiles/gitalias.txt
+	path = /Users/mattmezza/dotfiles/gitalias.txt
+[core]
+	editor = vim
