@@ -95,7 +95,6 @@ fi
 cat brew.txt | xargs -n1 brew install
 
 printf "source '$HOME/dotfiles/zsh/.zshrc'" > ~/.zshrc
-printf "so $HOME/dotfiles/vim/.vimrc" > ~/.vimrc
 printf "source-file $HOME/dotfiles/.tmux.conf" > ~/.tmux.conf
 
 echo

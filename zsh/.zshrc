@@ -147,7 +147,7 @@ loop() {
 
 #=========[ Aliases ]===============
 alias copy=$DOT/copy.sh
-alias vim="nvim"
+alias vim="nvim -u $DOT/vim/init.vim"
 alias vi="nvim"
 mkdir -p /tmp/log  # TODO find out why we need it
 alias ..="cd .."
@@ -198,6 +198,7 @@ alias nproc="sysctl -n hw.ncpu"
 alias nproc-1="expr $(nproc) - 1"
 
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 # autoactivate virtualenv via pyenv
 if command -v pyenv 1>/dev/null 2>&1; then
