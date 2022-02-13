@@ -74,7 +74,7 @@ check_for_software vim
 echo
 check_for_software tmux
 echo
-installl_pacco
+install_pacco
 echo
 
 check_default_shell
