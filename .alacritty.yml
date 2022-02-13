@@ -11,6 +11,7 @@ window:
   padding:
     x: 0
     y: 0
+  opacity: 1
   dynamic_padding: false
   decorations: full
   startup_mode: Windowed
@@ -66,7 +67,6 @@ bell:
   animation: EaseOutExpo
   duration: 100
   color: '#ffffff'
-background_opacity: 1.0
 selection:
   save_to_clipboard: true
 cursor:
