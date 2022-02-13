@@ -44,7 +44,8 @@ check_default_shell() {
 }
 
 install_pacco() {
-    source <(curl -s https://raw.githubusercontent.com/mattmezza/pacco/master/pacco.sh) &&\
+	curl -s https://raw.githubusercontent.com/mattmezza/pacco/master/pacco.sh > /tmp/pacco &&\
+        source /tmp/pacco &&\
         pacco i pacco https://github.com/mattmezza/pacco.git 1.0.0 &&\
         echo "Installed pacco v$(pacco -v) in $(pacco -d)."
 }
@@ -91,7 +92,7 @@ if echo "$answer" | grep -iq "^y" ;then
     mv ~/.vimrc ~/.vimrc.old
 fi
 
-brew bundle && echo "Brew dependencies installed."
+cat brew.txt | xargs -n1 brew install
 
 printf "source '$HOME/dotfiles/zsh/.zshrc'" > ~/.zshrc
 printf "so $HOME/dotfiles/vim/.vimrc" > ~/.vimrc
