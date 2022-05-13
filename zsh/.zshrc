@@ -110,10 +110,10 @@ if [[ "${terminfo[kcud1]}" != "" ]]; then
 fi
 
 #=========[ Exports ]===============
-export VISUAL=/usr/local/bin/nvim
+export VISUAL=nvim
 export VIMCONFIG="$DOT/vim/init.vim"
 export MYVIMRC=$VIMCONFIG
-export EDITOR="vim"
+export EDITOR=nvim
 export PATH=$PATH:$GUROBI_HOME/bin
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GUROBI_HOME/lib
 export PIP_REQUIRE_VIRTUALENV=true
@@ -202,7 +202,7 @@ alias nproc-1="expr $(nproc) - 1"
 
 # autoactivate virtualenv via pyenv
 if command -v pyenv 1>/dev/null 2>&1; then
- eval "$(pyenv init -)"
+ eval "$(pyenv init --path)"
  eval "$(pyenv virtualenv-init -)"
 fi
 

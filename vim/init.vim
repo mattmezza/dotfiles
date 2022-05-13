@@ -11,6 +11,7 @@ Plugin 'ctrlpvim/ctrlp.vim'
 Plugin 'dhruvasagar/vim-marp' " marp presentations
 Plugin 'dhruvasagar/vim-table-mode' " tables with plain text
 Plugin 'leafgarland/typescript-vim'
+Plugin 'peitalin/vim-jsx-typescript'
 Plugin 'pangloss/vim-javascript'
 Plugin 'Quramy/vim-js-pretty-template'
 Plugin 'othree/javascript-libraries-syntax.vim'
@@ -30,6 +31,7 @@ Plugin 'alvan/vim-closetag'
 Plugin 'morhetz/gruvbox'
 Plugin 'chriskempson/base16-vim'
 Plugin 'dawikur/base16-vim-airline-themes'
+Plugin 'styled-components/vim-styled-components'
 if has('nvim') || has('patch-8.0.902')
   Plugin 'mhinz/vim-signify'
 else
@@ -662,8 +664,8 @@ cnoremap <C-M> <C-\>e('/?' =~ getcmdtype() ? substitute(getcmdline(), '\\\@<! ',
 so ~/dotfiles/vim/tabs.vim
 
 " Typescript
-autocmd BufNewFile,BufRead *.ts set syntax=javascript
-autocmd BufNewFile,BufRead *.tsx set syntax=javascript
+autocmd BufNewFile,BufRead *.ts set syntax=typescript
+autocmd BufNewFile,BufRead *.tsx,*.jsx set filetype=typescriptreact
 
 " File and Window Management
 inoremap <leader>w <Esc>:w<CR>

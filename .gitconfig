@@ -1064,4 +1064,6 @@
 [include]
 	path = /Users/mattmezza/dotfiles/gitalias.txt
 [core]
-	editor = vim
+	editor = nvim
+[init]
+	defaultBranch = main
