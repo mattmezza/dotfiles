@@ -17,6 +17,9 @@ Plugin 'Quramy/vim-js-pretty-template'
 Plugin 'othree/javascript-libraries-syntax.vim'
 Plugin 'othree/yajs.vim'
 Plugin 'neoclide/coc.nvim', {'branch': 'release'}
+Plugin 'neoclide/coc-rls'
+Plugin 'fannheyward/coc-pyright'
+Plugin 'fatih/vim-go'
 Plugin 'rust-lang/rust.vim'
 Plugin 'sheerun/vim-polyglot'
 Plugin 'tpope/vim-fugitive'
@@ -31,7 +34,6 @@ Plugin 'alvan/vim-closetag'
 Plugin 'morhetz/gruvbox'
 Plugin 'chriskempson/base16-vim'
 Plugin 'dawikur/base16-vim-airline-themes'
-Plugin 'styled-components/vim-styled-components'
 if has('nvim') || has('patch-8.0.902')
   Plugin 'mhinz/vim-signify'
 else

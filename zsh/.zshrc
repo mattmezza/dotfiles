@@ -121,6 +121,7 @@ export PATH=$PATH:$HOME/.poetry/bin
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH=$PATH:$PYENV_ROOT/bin
 export PATH="$(brew --prefix)/opt/openjdk/bin:$PATH"
+export JDK_HOME="$(brew --prefix)/opt/openjdk"
 export NVM_DIR="$HOME/.nvm"
 export PACCO_DIR="$DOT/pacchi"
 export PACCO_FILE="$DOT/pacco.txt"
@@ -197,8 +198,8 @@ pid () {
 alias nproc="sysctl -n hw.ncpu"
 alias nproc-1="expr $(nproc) - 1"
 
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
+[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
 
 # autoactivate virtualenv via pyenv
 if command -v pyenv 1>/dev/null 2>&1; then
@@ -235,6 +236,8 @@ source $DOT/env_var.sh
 export PATH="/usr/local/opt/krb5/bin:$PATH"
 export PATH="/usr/local/opt/krb5/sbin:$PATH"
 export PATH="/usr/local/opt/openssl@1.1/bin:$PATH"
+export PATH="$BREW_PREFIX/Cellar/libpq/15.1/bin:$PATH"  # exported to use psql (not from postgresql) https://stackoverflow.com/questions/44654216/correct-way-to-install-psql-without-full-postgres-on-macos
+export PATH="$HOME/google-cloud-sdk/bin:$PATH"  # gcloud
 export GPG_TTY=$(tty)
 
 # start tmux

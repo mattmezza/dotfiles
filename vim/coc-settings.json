@@ -1,3 +1,5 @@
 {
-    "python.jediEnabled": false
+    "python.jediEnabled": false,
+    "pyright.inlayHints.functionReturnTypes": false,
+    "pyright.inlayHints.variableTypes": false,
 }
