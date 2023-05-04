@@ -4,3 +4,4 @@
 .contacts.txt
 pacchi
 zsh/completions
+nvim/plugin/packer_compiled.lua
