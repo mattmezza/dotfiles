@@ -148,8 +148,9 @@ loop() {
 
 #=========[ Aliases ]===============
 alias copy=$DOT/copy.sh
-alias vim="nvim -u $DOT/vim/init.vim"
-alias vi="nvim"
+# alias vim="nvim -u $DOT/vim/init.vim"
+alias vim="nvim"
+alias vi="vim"
 mkdir -p /tmp/log  # TODO find out why we need it
 alias ..="cd .."
 alias ...="cd ../.."
@@ -240,7 +241,7 @@ export PATH="$BREW_PREFIX/Cellar/libpq/15.1/bin:$PATH"  # exported to use psql (
 export PATH="$HOME/google-cloud-sdk/bin:$PATH"  # gcloud
 export GPG_TTY=$(tty)
 
-# start tmux
-[ -z $TMUX ] && exec tmux new-session -A -s main
+# start tmux automatically
+# [ -z $TMUX ] && exec tmux new-session -A -s main
 
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
