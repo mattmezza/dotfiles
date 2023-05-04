@@ -1062,6 +1062,12 @@
   ush = push
   pod = git pull origin develop
 
+[filter "lfs"]
+	process = git-lfs filter-process
+	required = true
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+
 [core]
 	editor = nvim
 [init]

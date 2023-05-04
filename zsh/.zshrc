@@ -242,3 +242,5 @@ export GPG_TTY=$(tty)
 
 # start tmux
 [ -z $TMUX ] && exec tmux new-session -A -s main
+
+export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"

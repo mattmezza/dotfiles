@@ -1,3 +1,4 @@
+bloc  git@github.com:mattmezza/bloc.git   1.0.1
 jump  git@github.com:mattmezza/jump.git   1.1.0
 note  git@github.com:mattmezza/note.git   1.0.1
 sp    git@github.com:mattmezza/sp.git     1.0.0
