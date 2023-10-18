@@ -1,6 +1,9 @@
 export DOT="$HOME/dotfiles"
 export COMPLETIONS="$DOT/zsh/completions"
-export BREW_PREFIX=$(brew --prefix)
+if command -v brew &> /dev/null
+then
+    export BREW_PREFIX=$(brew --prefix)
+fi
 
 stty -ixon
 HISTFILE=~/.zsh_history
@@ -120,8 +123,8 @@ export PIP_REQUIRE_VIRTUALENV=true
 export PATH=$PATH:$HOME/.poetry/bin
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH=$PATH:$PYENV_ROOT/bin
-export PATH="$(brew --prefix)/opt/openjdk/bin:$PATH"
-export JDK_HOME="$(brew --prefix)/opt/openjdk"
+#export PATH="$(brew --prefix)/opt/openjdk/bin:$PATH"
+#export JDK_HOME="$(brew --prefix)/opt/openjdk"
 export NVM_DIR="$HOME/.nvm"
 export PACCO_DIR="$DOT/pacchi"
 export PACCO_FILE="$DOT/pacco.txt"
@@ -196,11 +199,15 @@ fi
 pid () {
     ps -A | grep "$1"  | grep -v "grep" | awk '{print $1}'
 }
-alias nproc="sysctl -n hw.ncpu"
-alias nproc-1="expr $(nproc) - 1"
+if ! command -v nproc &> /dev/null
+then
+    alias nproc="sysctl -n hw.ncpu"
+    alias nproc-1="expr $(nproc) - 1"
+fi
 
 [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
 [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+[ -s "/usr/share/nvm/init-nvm.sh" ] && source "/usr/share/nvm/init-nvm.sh"  # This loads nvm on Linux
 
 # autoactivate virtualenv via pyenv
 if command -v pyenv 1>/dev/null 2>&1; then
@@ -223,7 +230,7 @@ source $DOT/zsh/plugins/oh-my-zsh/lib/key-bindings.zsh
 source $DOT/zsh/plugins/oh-my-zsh/lib/completion.zsh
 source $DOT/zsh/plugins/vi-mode.plugin.zsh
 # source $DOT/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
-source $BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+# source $BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source $DOT/zsh/prompt.sh
 
 source $PACCO_DIR/pacco/pacco.sh
