@@ -21,7 +21,7 @@ scrolling:
   multiplier: 1
 font:
   normal:
-    family: Menlo
+    family: Noto Sans Mono
     style: Regular
   bold:
     style: Bold
@@ -29,7 +29,7 @@ font:
     style: Italic
   bold_italic:
     style: Bold Italic
-  size: 14.0
+  size: 10.0
 colors:
   primary:
     background: '0x090300'
