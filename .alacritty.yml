@@ -29,7 +29,7 @@ font:
     style: Italic
   bold_italic:
     style: Bold Italic
-  size: 10.0
+  size: 8.0
 colors:
   primary:
     background: '0x090300'
