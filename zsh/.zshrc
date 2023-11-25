@@ -117,8 +117,7 @@ export VISUAL=nvim
 export VIMCONFIG="$DOT/vim/init.vim"
 export MYVIMRC=$VIMCONFIG
 export EDITOR=nvim
-export PATH=$PATH:$GUROBI_HOME/bin
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$GUROBI_HOME/lib
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/jvm/java-21-openjdk/lib
 export PIP_REQUIRE_VIRTUALENV=true
 export PATH=$PATH:$HOME/.poetry/bin
 export PYENV_ROOT="$HOME/.pyenv"
@@ -251,4 +250,5 @@ export GPG_TTY=$(tty)
 # start tmux automatically
 # [ -z $TMUX ] && exec tmux new-session -A -s main
 
-export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
+export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$DOT/bin:$PATH"
+export TERMINAL=alacritty
