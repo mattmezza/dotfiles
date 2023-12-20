@@ -85,6 +85,14 @@ bindsym $mod+a focus parent
 # focus the child container
 #bindsym $mod+d focus child
 
+# screenshots
+bindsym $mod+Control+2 exec --no-startup-id maim "/home/$USER/Pictures/$(date +%s)"
+bindsym $mod+Control+3 exec --no-startup-id maim --window $(xdotool getactivewindow) "/home/$USER/Pictures/$(date +%s)"
+bindsym $mod+Control+4 exec --no-startup-id maim -s "/home/$USER/Pictures/$(date +%s)"
+bindsym $mod+Shift+Control+2 exec --no-startup-id maim | xclip -selection clipboard -t image/png
+bindsym $mod+Shift+Control+3 exec --no-startup-id maim --window $(xdotool getactivewindow) | xclip -selection clipboard -t image/png
+bindsym $mod+Shift+Control+4 exec --no-startup-id maim -s | xclip -selection clipboard -t image/png
+
 # Define names for default workspaces for which we configure key bindings later on.
 # We use variables to avoid repeating the names in multiple places.
 set $ws1 "1"
