@@ -240,7 +240,7 @@ exec --no-startup-id nm-applet
 exec xcape -e 'Caps_Lock=Escape'
 exec setxkbmap -layout us -option "caps:ctrl_modifier"
 
-exec_always --no-startup-id feh --bg-scale ~/.config/i3/wallpaper.jpg
+exec_always --no-startup-id ~/.config/i3/scripts/wallpaper-set "#222222" black ~/.config/i3/wallpaper.txt ~/.config/i3/wallpaper.png
 exec_always --no-startup-id picom --config ~/.config/i3/picom.conf
 # exec firefox-work
 # exec firefox-personal
