@@ -165,7 +165,6 @@ alias gti=git
 alias got=git
 alias c="git rev-parse HEAD"
 alias cs="git rev-parse HEAD | cut -c-7"
-alias bc="git branch --show-current"
 alias b="git branch"
 alias br="git branch -d"
 alias cb="git checkout -b"
