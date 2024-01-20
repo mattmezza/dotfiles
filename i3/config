@@ -208,6 +208,9 @@ for_window [class="Skype"] floating enable
 assign [class="Spotify"] $ws9
 assign [class="firefox-work"] $ws2
 assign [class="firefox-personal"] $ws9
+assign [class="chromium-IKEA"] $ws2
+assign [class="chromium-personal"] $ws9
+
 
 # workspace default monitors
 # workspace $workspace1 output DVI-I-2
@@ -218,6 +221,8 @@ bindsym $mod+m move workspace to output left
 #bindsym $mod+d exec --no-startup-id i3-dmenu-desktop
 bindsym $mod+d exec rofi -show combi
 bindsym $mod+i exec rofi -modi "emoji:rofimoji" -show emoji
+bindsym $mod+b exec rofi -modi "chromium:rofi-chromium-profiles" -show 'chromium'
+bindsym $mod+c exec rofi -show calc -modi calc -no-show-match -no-sort
 
 # Suspend
 bindsym $mod+Shift+period exec systemctl suspend

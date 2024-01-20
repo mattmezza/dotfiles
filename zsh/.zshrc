@@ -250,4 +250,5 @@ export GPG_TTY=$(tty)
 # [ -z $TMUX ] && exec tmux new-session -A -s main
 
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$DOT/bin:$PATH"
+export PATH="$DOT/bin:$PATH"
 export TERMINAL=alacritty
