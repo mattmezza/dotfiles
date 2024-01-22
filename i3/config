@@ -215,7 +215,10 @@ assign [class="chromium-personal"] $ws9
 # workspace default monitors
 # workspace $workspace1 output DVI-I-2
 
-bindsym $mod+m move workspace to output left
+bindsym $mod+Shift+Control+r move workspace to output right
+bindsym $mod+Shift+Control+l move workspace to output left
+bindsym $mod+Shift+Control+u move workspace to output up
+bindsym $mod+Shift+Control+d move workspace to output down
 
 # start dmenu (a program launcher)
 #bindsym $mod+d exec --no-startup-id i3-dmenu-desktop
