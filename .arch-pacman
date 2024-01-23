@@ -59,6 +59,7 @@ os-prober
 pangomm
 pavucontrol
 picom
+playerctl
 pulseaudio
 pulseaudio-alsa
 pulseaudio-bluetooth
