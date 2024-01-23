@@ -66,6 +66,7 @@ pulseaudio-equalizer
 pulseaudio-jack
 pulseaudio-lirc
 pulseaudio-zeroconf
+python-mysqlclient
 python-poetry
 python-pyusb
 rofi
