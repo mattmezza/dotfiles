@@ -1,2 +1,2 @@
 #!/bin/sh
-pacman -Qqe | grep -Fvx "$(pacman -Qqm)" > "$@"
+pacman -Qqe | grep -Fvx "$(pacman -Qqm)"
