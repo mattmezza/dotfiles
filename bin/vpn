@@ -1,0 +1,2 @@
+#!/bin/sh
+sudo openconnect $VPN_ENDPOINT -u $VPN_USER
