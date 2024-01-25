@@ -1,0 +1,7 @@
+#! /bin/sh
+
+max=$(brightnessctl max)
+val=$(brightnessctl get)
+
+percent=$(echo "scale=0 ; $val * 100 / $max" | bc)
+echo "$percent%"
