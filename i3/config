@@ -241,21 +241,16 @@ bindsym $mod+Shift+Escape exec i3lock --color "$bg-color"
 # https://wiki.archlinux.org/index.php/XDG_Autostart
 exec --no-startup-id dex --autostart --environment i3
 
-# The combination of xss-lock, nm-applet and pactl is a popular choice, so
-# they are included here as an example. Modify as you see fit.
-
 # xss-lock grabs a logind suspend inhibit lock and will use i3lock to lock the
-# screen before suspend. Use loginctl lock-session to lock your screen.
+# screen before suspend.
 exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --color "$bg-color" --nofork
 
 # NetworkManager is the most popular way to manage wireless networks on Linux,
 # and nm-applet is a desktop environment-independent system tray GUI for it.
 exec --no-startup-id nm-applet
 
-exec xcape -e 'Caps_Lock=Escape'
-exec setxkbmap -layout us -option "caps:ctrl_modifier"
+exec_always --no-startup-id xcape -e 'Caps_Lock=Escape'
+exec_always --no-startup-id setxkbmap -layout us -option "caps:ctrl_modifier"
 
-exec_always --no-startup-id ~/.config/i3/scripts/wallpaper-set "#222222" black ~/.config/i3/wallpaper.txt ~/.config/i3/wallpaper.png
+exec_always --no-startup-id wallpaper-set "#222222" black ~/.config/i3/wallpaper.txt ~/.config/i3/wallpaper.png
 exec_always --no-startup-id picom --config ~/.config/i3/picom.conf
-# exec firefox-work
-# exec firefox-personal
