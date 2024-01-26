@@ -1,0 +1,114 @@
+live_config_reload = true
+
+[bell]
+animation = "EaseOutExpo"
+color = "#ffffff"
+duration = 100
+
+[[colors.indexed_colors]]
+color = "0xcdab53"
+index = 17
+
+[[colors.indexed_colors]]
+color = "0x3a3432"
+index = 18
+
+[[colors.indexed_colors]]
+color = "0x4a4543"
+index = 19
+
+[[colors.indexed_colors]]
+color = "0x807d7c"
+index = 20
+
+[[colors.indexed_colors]]
+color = "0xd6d5d4"
+index = 21
+
+[colors.bright]
+black = "0x5c5855"
+blue = "0x01a0e4"
+cyan = "0xb5e4f4"
+green = "0x01a252"
+magenta = "0xa16a94"
+red = "0xdb2d20"
+white = "0xf7f7f7"
+yellow = "0xfded02"
+
+[colors.cursor]
+cursor = "0xa5a2a2"
+text = "0x090300"
+
+[colors.normal]
+black = "0x090300"
+blue = "0x01a0e4"
+cyan = "0xb5e4f4"
+green = "0x01a252"
+magenta = "0xa16a94"
+red = "0xdb2d20"
+white = "0xa5a2a2"
+yellow = "0xfded02"
+
+[colors.primary]
+background = "0x090300"
+foreground = "0xa5a2a2"
+
+[cursor]
+style = "Block"
+unfocused_hollow = true
+
+[env]
+TERM = "screen-256color"
+
+[font]
+size = 8.0
+
+[font.bold]
+style = "Bold"
+
+[font.bold_italic]
+style = "Bold Italic"
+
+[font.italic]
+style = "Italic"
+
+[font.normal]
+family = "Noto Sans Mono"
+style = "Regular"
+
+[[keyboard.bindings]]
+chars = """
+clear
+"""
+key = "K"
+mods = "Command"
+
+[mouse]
+hide_when_typing = false
+
+[scrolling]
+history = 100000
+multiplier = 1
+
+[selection]
+save_to_clipboard = true
+
+[window]
+decorations = "full"
+dynamic_padding = false
+dynamic_title = true
+opacity = 1
+startup_mode = "Windowed"
+title = ""
+
+[window.dimensions]
+columns = 180
+lines = 80
+
+[window.padding]
+x = 0
+y = 0
+
+[window.position]
+x = 0
+y = 0
