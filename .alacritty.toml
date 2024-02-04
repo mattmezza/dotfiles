@@ -73,7 +73,7 @@ style = "Bold Italic"
 style = "Italic"
 
 [font.normal]
-family = "Noto Sans Mono"
+family = "Source Code Pro"
 style = "Regular"
 
 [[keyboard.bindings]]
