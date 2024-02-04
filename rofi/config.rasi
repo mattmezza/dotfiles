@@ -1,6 +1,6 @@
 configuration {
     modi: "window,drun,combi";
-    font: "Noto Sans Mono 12";
+    font: "Source Code Pro 12";
     combi-modi: "window,drun";
 }
 @theme "solarized"
