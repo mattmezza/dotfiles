@@ -56,6 +56,7 @@ noto-fonts-extra
 ntfs-3g
 opensc
 os-prober
+pacman-contrib
 pangomm
 pavucontrol
 picom
@@ -73,6 +74,7 @@ python-pyusb
 rofi
 rofi-calc
 rofimoji
+rustup
 sbctl
 spectacle
 sudo
@@ -83,6 +85,7 @@ ttf-font-awesome
 ttf-hack
 unzip
 upower
+usb_modeswitch
 usbmuxd
 usbutils
 woff2
