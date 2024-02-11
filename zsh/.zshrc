@@ -131,7 +131,6 @@ export PACCO_FILE="$DOT/pacco.txt"
 #=========[ Functions ]===============
 gpip() { PIP_REQUIRE_VIRTUALENV="" pip "$@" }
 function gi() { curl -sLw "\n" https://www.gitignore.io/api/$@ ;}
-rand_hash() { cat /dev/urandom | head | md5 | cut -c1-${1-8} }
 c() { cd $1; ls; }
 pull() { git pull ;}
 push() { git push ;}

@@ -1,7 +1,8 @@
-bloc  git@github.com:mattmezza/bloc.git   1.0.1
-jump  git@github.com:mattmezza/jump.git   1.1.0
-note  git@github.com:mattmezza/note.git   1.0.1
-sp    git@github.com:mattmezza/sp.git     1.0.0
-spot  https://github.com/rauchg/spot.git  0.2.0
-timer git@github.com:mattmezza/timer.git  1.0.0
-todo  git@github.com:mattmezza/todo.git   1.1.1
+bloc      git@github.com:mattmezza/bloc.git      1.0.1
+jump      git@github.com:mattmezza/jump.git      1.1.0
+note      git@github.com:mattmezza/note.git      1.0.1
+rand_hash git@github.com:mattmezza/rand_hash.git 0.1.3
+sp        git@github.com:mattmezza/sp.git        1.0.0
+spot      https://github.com/rauchg/spot.git     0.2.0
+timer     git@github.com:mattmezza/timer.git     1.0.0
+todo      git@github.com:mattmezza/todo.git      1.1.1
