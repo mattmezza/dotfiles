@@ -128,13 +128,8 @@ export NVM_DIR="$HOME/.nvm"
 export PACCO_DIR="$DOT/pacchi"
 export PACCO_FILE="$DOT/pacco.txt"
 
-#=========[ Functions ]===============
 gpip() { PIP_REQUIRE_VIRTUALENV="" pip "$@" }
 function gi() { curl -sLw "\n" https://www.gitignore.io/api/$@ ;}
-c() { cd $1; ls; }
-pull() { git pull ;}
-push() { git push ;}
-push1() { git push1 ;}
 loop() {
     echo "Executing '${@:1}'..."
     clear
@@ -147,8 +142,6 @@ loop() {
     done
 }
 
-#=========[ Aliases ]===============
-alias copy=$DOT/copy.sh
 # alias vim="nvim -u $DOT/vim/init.vim"
 alias vim="nvim"
 alias vi="vim"
@@ -157,8 +150,6 @@ alias ..="cd .."
 alias ...="cd ../.."
 alias ....="cd ../../.."
 alias .....="cd ../../../.."
-alias -- -="cd -"
-alias tx="tmuxinator"
 alias g=git
 alias gti=git
 alias got=git
@@ -173,6 +164,9 @@ co() {
 bj() {
     git branch --list | grep ${1-" "} | grep ${2-${1-" "}} | sed 's/\*//' | xargs -n1
 }
+pull() { git pull ;}
+push() { git push ;}
+push1() { git push1 ;}
 # This is currently causing problems
 # (fails when you run it anywhere that isn't a git project's root directory)
 # alias vs="v `git status --porcelain | sed -ne 's/^ M //p'`"
@@ -186,12 +180,6 @@ if which exa > /dev/null; then
 fi
 if which bat > /dev/null; then alias cat=bat; fi
 alias k=kubectl
-
-if [[ "$OSTYPE" == "linux-gnu" ]]; then
-    alias pbcopy='xclip -selection clipboard'
-    alias pbpaste='xclip -selection clipboard -o'
-    # pbcopy now works on linux as in macos
-fi
 
 pid () {
     ps -A | grep "$1"  | grep -v "grep" | awk '{print $1}'
