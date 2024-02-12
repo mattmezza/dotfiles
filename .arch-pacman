@@ -71,6 +71,7 @@ pulseaudio-zeroconf
 python-mysqlclient
 python-poetry
 python-pyusb
+ripgrep
 rofi
 rofi-calc
 rofimoji
