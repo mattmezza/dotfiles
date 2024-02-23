@@ -14,9 +14,6 @@ bindsym $mod+XF86AudioMute exec --no-startup-id playerctl play-pause
 bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
 bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl --min-val=0 -q set 5%-
 bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl -q set 5%+
-# p is apparently the monitor key (F8) on my del latitude 5340
-bindsym $mod+p exec --no-startup-id xrandr --auto
-bindsym $mod+Shift+p exec --no-startup-id arandr
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
@@ -206,9 +203,6 @@ assign [class="firefox-personal"] $ws9
 assign [class="chromium-IKEA"] $ws2
 assign [class="chromium-personal"] $ws9
 
-# workspace default monitors
-# workspace $workspace1 output DVI-I-2
-
 bindsym $mod+Shift+Control+r move workspace to output right
 bindsym $mod+Shift+Control+l move workspace to output left
 bindsym $mod+Shift+Control+u move workspace to output up
@@ -218,6 +212,11 @@ bindsym $mod+d exec rofi -show combi
 bindsym $mod+i exec rofi -modi "emoji:rofimoji" -show emoji
 bindsym $mod+b exec rofi -modi "chromium:rofi-chromium-profiles" -show 'chromium'
 bindsym $mod+c exec rofi -show calc -modi calc -no-show-match -no-sort
+
+# p is apparently the monitor key (F8) on my laptop
+bindsym $mod+p exec rofi -modi "display:rofi-display-profiles" -show 'display'
+bindsym $mod+Control+p exec --no-startup-id arandr
+bindsym $mod+Shift+p exec --no-startup-id xrandr --auto
 
 # Suspend
 bindsym $mod+Shift+period exec systemctl suspend
