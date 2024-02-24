@@ -1,7 +1,11 @@
 #!/bin/bash
-while [ "$select" != "NO" -a "$select" != "YES" ]; do
-    select=$(echo -e 'NO\nYES' | dmenu -nb '#2f343f' -nf '#f3f4f5' -sb '#9575cd' -sf '#f3f4f5' -fn '-*-*-medium-r-normal-*-*-*-*-*-*-100-*-*' -i -p "Are you sure you want to logout?")
+while [ "$select" != "lock" -a "$select" != "exit" -a "$select" != "suspend" -a "$select" != "hibernate" -a "$select" != "sth (suspend-then-hibernate)" ]; do
+    select=$(echo -e 'sth (suspend-then-hibernate)\nhibernate\nsuspend\nlock\nexit' | dmenu -nb '#2f343f' -nf '#f3f4f5' -sb '#9575cd' -sf '#f3f4f5' -fn '-*-*-medium-r-normal-*-*-*-*-*-*-100-*-*' -i -p "What do you want to do?")
     [ -z "$select" ] && exit 0
 done
-[ "$select" = "NO" ] && exit 0
-i3-msg exit
+[ "$select" = "exit" ] && i3-msg exit
+[ "$select" = "lock" ] && lock "#222222" "#000000" "$(whoami)@$(hostnamectl hostname)" "Locked on $(date +%c)" /tmp/lock.png
+[ "$select" = "suspend" ] && systemctl suspend
+[ "$select" = "hibernate" ] && systemctl hibernate
+[ "$select" = "sth (suspend-then-hibernate)" ] && systemctl suspend-then-hibernate
+exit 0

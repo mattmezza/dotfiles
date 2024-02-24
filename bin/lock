@@ -1,0 +1,25 @@
+#!/bin/sh
+
+set -e
+
+# usage
+# $1 - text-color
+# $2 - bg-color
+# $3 - text
+# $4 - subtext
+# $5 - output file (will be a png)
+
+# get list of available fonts by
+# convert -list font | grep Font
+convert \
+    -size $(xdpyinfo | awk '/dimensions/{print $2}') \
+    "xc:$2" \
+    -fill "$1" \
+    -font Source-Code-Pro-Bold \
+    -gravity south \
+    -pointsize 24 -annotate +0+150 "$3" \
+    -pointsize 16 -annotate +0+120 "$4" \
+    -gravity center \
+    -pointsize 24 -annotate +0+0 "🔒" \
+    "$5"
+i3lock --nofork -i "$5" -tf -c "$2"

@@ -127,8 +127,6 @@ bindsym $mod+Shift+0 move container to workspace number $ws10
 bindsym $mod+Shift+c reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym $mod+Shift+r restart
-# exit i3 (logs you out of your X session)
-#bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
 bindsym $mod+Shift+e exec ~/.config/i3/scripts/exit_menu
 
 # resize window (you can also use the mouse for that)
@@ -219,17 +217,14 @@ bindsym $mod+Control+p exec --no-startup-id arandr
 bindsym $mod+Shift+p exec --no-startup-id xrandr --auto
 
 # Suspend
-bindsym $mod+Shift+period exec systemctl suspend
-bindsym $mod+Shift+Escape exec i3lock --color "$bg-color"
+bindsym $mod+Shift+period exec lock "#222222" "#000000" "$(whoami)@$(hostnamectl hostname)" "Locked on $(date +%c)" /tmp/lock.png
+# dpms [standby] [suspend] [off] (0 disables)
+exec_always --no-startup-id xset +dpms dpms 0 300 0
+exec_always --no-startup-id xss-lock --transfer-sleep-lock -- lock "#222222" "#000000" "$(whoami)@$(hostnamectl hostname)" "Suspended on $(date +%c)" /tmp/lock.png
 
 # startup
-# Start XDG autostart .desktop files using dex. See also
 # https://wiki.archlinux.org/index.php/XDG_Autostart
 exec --no-startup-id dex --autostart --environment i3
-
-# xss-lock grabs a logind suspend inhibit lock and will use i3lock to lock the
-# screen before suspend.
-exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --color "$bg-color" --nofork
 
 # NetworkManager is the most popular way to manage wireless networks on Linux,
 # and nm-applet is a desktop environment-independent system tray GUI for it.
