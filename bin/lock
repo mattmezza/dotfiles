@@ -8,6 +8,7 @@ set -e
 # $3 - text
 # $4 - subtext
 # $5 - output file (will be a png)
+# $6 - indicator icon (defaults to a lock icon)
 
 # get list of available fonts by
 # convert -list font | grep Font
@@ -20,6 +21,6 @@ convert \
     -pointsize 24 -annotate +0+150 "$3" \
     -pointsize 16 -annotate +0+120 "$4" \
     -gravity center \
-    -pointsize 24 -annotate +0+0 "🔒" \
+    -pointsize 24 -annotate +0+0 "${6-🔒}" \
     "$5"
-i3lock --nofork -i "$5" -tf -c "$2"
+i3lock -neft -i "$5" -c "$2"
