@@ -22,6 +22,7 @@ fakeroot
 feh
 firefox
 fprintd
+fwupd
 gcc
 git
 github-cli
@@ -36,6 +37,7 @@ i3status
 imagemagick
 intel-ucode
 iw
+libreoffice-still
 linux-firmware
 linux-lts
 maim
@@ -71,12 +73,14 @@ pulseaudio-zeroconf
 python-mysqlclient
 python-poetry
 python-pyusb
+reflector
 ripgrep
 rofi
 rofi-calc
 rofimoji
 rustup
 sbctl
+scrot
 spectacle
 sudo
 tlp

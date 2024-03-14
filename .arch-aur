@@ -1,12 +1,15 @@
-displaylink 5.8-1
-evdi-git 1.14.1.r7.g6747489-1
-firefox-profile-switcher-connector 0.1.1-1
-libfprint-2-tod1-broadcom 5.12.018.0-1
-libfprint-tod-git 1.94.6+tod1.r6.g54f02c7-1
-nvim-packer-git r574.ea0cc3c-1
-nvm 0.39.7-1
-obinskit 1.2.11-2
-pyenv-virtualenv 1:1.2.2-1
-rofi-power-menu 3.1.0-1
-xinit-xsession 1-5
-yay 12.2.0-1
+firefox-profile-switcher-connector
+libfprint-2-tod1-broadcom
+libfprint-tod-git
+noson-app
+noson-app-debug
+nvim-packer-git
+nvm
+obinskit
+pyenv-virtualenv
+rofi-power-menu
+x-on-resize
+x-on-resize-debug
+xinit-xsession
+yay
+yay-debug
