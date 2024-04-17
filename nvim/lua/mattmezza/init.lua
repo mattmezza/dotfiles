@@ -1,6 +1,8 @@
 require("mattmezza.set")
-require("mattmezza.remap")
 require("mattmezza.lazy_init")
+require("mattmezza.remap")
+
+vim.cmd.colorscheme("rose-pine")
 
 local augroup = vim.api.nvim_create_augroup
 local mattmezza_group = augroup('mattmezza', {})
