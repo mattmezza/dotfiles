@@ -114,8 +114,6 @@ fi
 
 #=========[ Exports ]===============
 export VISUAL=nvim
-export VIMCONFIG="$DOT/vim/init.vim"
-export MYVIMRC=$VIMCONFIG
 export EDITOR=nvim
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/jvm/java-21-openjdk/lib
 export PIP_REQUIRE_VIRTUALENV=true
@@ -142,9 +140,8 @@ loop() {
     done
 }
 
-# alias vim="nvim -u $DOT/vim/init.vim"
 alias vim="nvim"
-alias vi="vim"
+alias vi="nvim"
 mkdir -p /tmp/log  # TODO find out why we need it
 alias ..="cd .."
 alias ...="cd ../.."
