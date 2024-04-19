@@ -116,6 +116,7 @@ fi
 export VISUAL=nvim
 export EDITOR=nvim
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/jvm/java-21-openjdk/lib
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk
 export PIP_REQUIRE_VIRTUALENV=true
 export PATH=$PATH:$HOME/.poetry/bin
 export PYENV_ROOT="$HOME/.pyenv"
@@ -155,6 +156,7 @@ alias cs="git rev-parse HEAD | cut -c-7"
 alias b="git branch"
 alias br="git branch -d"
 alias cb="git checkout -b"
+alias mvn="mvn39"
 co() {
     git checkout $(git branch --list | grep $1 | sed 's/\*//' | xargs -n1)
 }
@@ -227,7 +229,10 @@ export PATH="/usr/local/opt/krb5/bin:$PATH"
 export PATH="/usr/local/opt/krb5/sbin:$PATH"
 export PATH="/usr/local/opt/openssl@1.1/bin:$PATH"
 export PATH="$BREW_PREFIX/Cellar/libpq/15.1/bin:$PATH"  # exported to use psql (not from postgresql) https://stackoverflow.com/questions/44654216/correct-way-to-install-psql-without-full-postgres-on-macos
-export PATH="$HOME/google-cloud-sdk/bin:$PATH"  # gcloud
+if test -d "$HOME/google-cloud-sdk"; then
+    source "$HOME/google-cloud-sdk/completion.zsh.inc"
+    source "$HOME/google-cloud-sdk/path.zsh.inc"
+fi
 export GPG_TTY=$(tty)
 
 # start tmux automatically
