@@ -17,9 +17,13 @@ function R(name)
     require("plenary.reload").reload_module(name)
 end
 
+-- sets filetype for extension
+-- e.g. files ending with "*.jinja" will get filetype "htmldjango"
+-- in this way, syntax highlighting will work as it should
 vim.filetype.add({
     extension = {
         templ = 'templ',
+        jinja = 'htmldjango',
     }
 })
 
