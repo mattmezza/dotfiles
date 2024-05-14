@@ -72,10 +72,7 @@ bindsym $mod+Shift+space floating toggle
 # change focus between tiling / floating windows
 bindsym $mod+space focus mode_toggle
 
-# focus the parent container
 bindsym $mod+a focus parent
-
-# focus the child container
 #bindsym $mod+d focus child
 
 # screenshots
@@ -192,7 +189,7 @@ bar {
 
 # floating
 for_window [class="Pavucontrol"] floating enable
-for_window [class="Skype"] floating enable
+for_window [class="Arandr"] floating enable
 
 # default workspaces
 assign [class="Spotify"] $ws9
@@ -217,7 +214,7 @@ bindsym $mod+Control+p exec --no-startup-id arandr
 bindsym $mod+Shift+p exec --no-startup-id xrandr --auto
 
 # Suspend
-bindsym $mod+Shift+period exec lock "#222222" "#000000" "$(whoami)@$(hostnamectl hostname)" "Locked on $(date +%c)" /tmp/lock.png
+bindsym $mod+Shift+period exec lock "#AEAEAE" "#000000" "$(whoami)@$(hostnamectl hostname)" "Locked on $(date +%c)" /tmp/lock.png
 # dpms [standby] [suspend] [off] (0 disables)
 exec_always --no-startup-id xset +dpms dpms 0 300 0
 exec_always --no-startup-id xss-lock --transfer-sleep-lock -- lock "#222222" "#000000" "$(whoami)@$(hostnamectl hostname)" "Suspended on $(date +%c)" /tmp/lock.png
