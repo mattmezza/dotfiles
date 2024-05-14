@@ -9,9 +9,9 @@
 # get list of available fonts by
 # convert -list font | grep Font
 convert \
+    -fill $1 \
     -background $2 \
     -size 800x400 \
-    -fill $1 \
     -font Source-Code-Pro-Bold \
     -pointsize 32 \
     -gravity center \
