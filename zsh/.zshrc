@@ -156,7 +156,6 @@ alias cs="git rev-parse HEAD | cut -c-7"
 alias b="git branch"
 alias br="git branch -d"
 alias cb="git checkout -b"
-alias mvn="mvn39"
 co() {
     git checkout $(git branch --list | grep $1 | sed 's/\*//' | xargs -n1)
 }
