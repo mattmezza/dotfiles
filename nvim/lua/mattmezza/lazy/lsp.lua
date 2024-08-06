@@ -85,5 +85,8 @@ return {
                 prefix = "",
             },
         })
-    end
+        require("lspconfig").jdtls.setup({
+            capabilities = capabilities
+        })
+end
 }

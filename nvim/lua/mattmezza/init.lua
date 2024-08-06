@@ -4,9 +4,6 @@ require("mattmezza.remap")
 
 vim.cmd.colorscheme("rose-pine")
 
-require("java").setup()
-require("lspconfig").jdtls.setup({})
-
 local augroup = vim.api.nvim_create_augroup
 local mattmezza_group = augroup('mattmezza', {})
 
