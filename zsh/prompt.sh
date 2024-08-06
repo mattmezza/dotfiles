@@ -32,7 +32,7 @@ set_prompt() {
         PS1+=' '
         BRANCH=$(git rev-parse --abbrev-ref HEAD 2> /dev/null)
         PS1+="%{$fg[blue]%}$(excerpt $BRANCH 15 15)%{$reset_color%}"
-        if [ $(git status --short | wc -l) -gt 0 ]; then 
+        if [ $(git status --short | wc -l) -gt 0 ]; then
             PS1+="%{$fg[red]%}+$(git status --short | wc -l | awk '{$1=$1};1')%{$reset_color%}"
         fi
     fi
@@ -45,10 +45,10 @@ set_prompt() {
     fi
 
     # PID
-    if [[ $! -ne 0 ]]; then
-        PS1+=' '
-        PS1+="%{$fg[yellow]%}PID:$!%{$reset_color%}"
-    fi
+    # if [[ $! -ne 0 ]]; then
+    #     PS1+=' '
+    #     PS1+="%{$fg[yellow]%}PID:$!%{$reset_color%}"
+    # fi
 
     # Sudo: https://superuser.com/questions/195781/sudo-is-there-a-command-to-check-if-i-have-sudo-and-or-how-much-time-is-left
     CAN_I_RUN_SUDO=$(sudo -n uptime 2>&1|grep "load"|wc -l)
