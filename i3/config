@@ -212,6 +212,9 @@ bindsym $mod+i exec rofi -modi "emoji:rofimoji" -show emoji
 bindsym $mod+b exec rofi -modi "chromium:rofi-chromium-profiles" -show 'chromium'
 bindsym $mod+c exec rofi -show calc -modi calc -no-show-match -no-sort
 
+# load extra bindings
+exec --no-startup-id xbindkeys -f ~/.xbindkeysrc
+
 # p is apparently the monitor key (F8) on my laptop
 bindsym $mod+p exec rofi -modi "display:rofi-display-profiles" -show 'display'
 bindsym $mod+Control+p exec --no-startup-id arandr
