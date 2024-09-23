@@ -13,7 +13,6 @@ plugins=(
     brew
     cask
     cargo
-    celery
     composer
     cp
     docker-compose
@@ -37,7 +36,6 @@ plugins=(
     redis-cli
     ruby
     sbt
-    scala
     screen
     sudo
     tmux
@@ -55,6 +53,7 @@ done
 completions_regen() {
     if which gh > /dev/null; then gh completion --shell zsh > $COMPLETIONS/gh; fi
 }
+
 fpath=($DOT/zsh/completions $fpath)
 autoload -U compinit && compinit
 
@@ -212,7 +211,7 @@ source $DOT/zsh/plugins/oh-my-zsh/lib/history.zsh
 source $DOT/zsh/plugins/oh-my-zsh/lib/key-bindings.zsh
 source $DOT/zsh/plugins/oh-my-zsh/lib/completion.zsh
 source $DOT/zsh/plugins/vi-mode.plugin.zsh
-# source $DOT/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+source $DOT/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 # source $BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source $DOT/zsh/prompt.sh
 
@@ -221,13 +220,7 @@ pacco source-all  # this sources all the pacco pkgs
 export NOTE_SCRATCH_DIR="$HOME/notes"
 alias spot=$PACCO_DIR/spot/spot.sh  # this pkg needs custom sourcing
 
-source $DOT/msg.sh
-source $DOT/env_var.sh
-
-export PATH="/usr/local/opt/krb5/bin:$PATH"
-export PATH="/usr/local/opt/krb5/sbin:$PATH"
 export PATH="/usr/local/opt/openssl@1.1/bin:$PATH"
-export PATH="$BREW_PREFIX/Cellar/libpq/15.1/bin:$PATH"  # exported to use psql (not from postgresql) https://stackoverflow.com/questions/44654216/correct-way-to-install-psql-without-full-postgres-on-macos
 if test -d "$HOME/google-cloud-sdk"; then
     source "$HOME/google-cloud-sdk/completion.zsh.inc"
     source "$HOME/google-cloud-sdk/path.zsh.inc"
@@ -237,6 +230,6 @@ export GPG_TTY=$(tty)
 # start tmux automatically
 # [ -z $TMUX ] && exec tmux new-session -A -s main
 
-export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$DOT/bin:$PATH"
-export PATH="$DOT/bin:$PATH"
+# add a path to the PATH
+# export PATH="/usr/local/bin:$PATH"
 export TERMINAL=alacritty

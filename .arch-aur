@@ -1,15 +1,26 @@
-firefox-profile-switcher-connector
-libfprint-2-tod1-broadcom
-libfprint-tod-git
-noson-app
-noson-app-debug
-nvim-packer-git
-nvm
-obinskit
-pyenv-virtualenv
-rofi-power-menu
-x-on-resize
-x-on-resize-debug
-xinit-xsession
-yay
-yay-debug
+chromium-widevine 1:4.10.2710.0-1
+firefox-profile-switcher-connector 0.1.1-1
+libfprint-2-tod1-broadcom 5.12.018.0-1
+libfprint-tod-git 1.94.6+tod1.r6.g54f02c7-1
+maven39 3.9.6-1
+noson-app 5.6.6.r0.ga5fd1331-1
+noson-app-debug 5.6.6.r0.ga5fd1331-1
+nvim-packer-git r574.ea0cc3c-1
+nvm 0.39.7-1
+obinskit 1.2.11-2
+pyenv-virtualenv 1:1.2.2-1
+quarkuscli-bin 3.7.3-1
+rofi-power-menu 3.1.0-1
+silo-gmail 0.3-1
+silo-office365 0.5-1
+silo-teams 0.2-1
+silo-telegram 0.3-1
+silo-whatsapp 0.5-1
+silos 0.2.7-1
+teams-for-linux 1.4.37-1
+teams-for-linux-debug 1.4.37-1
+x-on-resize 0.2-1
+x-on-resize-debug 0.2-1
+xinit-xsession 1-5
+yay 12.3.5-1
+yay-debug 12.3.5-1

@@ -1076,6 +1076,6 @@
 [includeIf "gitdir:~/dev/ikea/"]
   path = .gitconfig-ikea
 [include]
-	path = ~/dotfiles/gitalias.txt
+	path = /home/matteo/dotfiles/gitalias.txt
 [url "git@github.com:"]
 	insteadOf = https://github.com/

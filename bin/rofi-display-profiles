@@ -3,7 +3,7 @@
 # Populate an associative array that maps profiles names to directories
 # sourcing profiles from the .screenlayout directory
 declare -A profiles=()
-for profile in $DOT/.screenlayout/*.sh; do
+for profile in ~/.screenlayout/*.sh; do
     profiles["$(basename $profile | sed 's/\.sh//g')"]="$profile"
 done
 
