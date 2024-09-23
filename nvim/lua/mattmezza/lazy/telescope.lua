@@ -1,14 +1,14 @@
 return {
     "nvim-telescope/telescope.nvim",
-
-    tag = "0.1.5",
-
+    branch = "0.1.x",
+    lazy = true,
+    cmd = { "Telescope" },
     dependencies = {
         "nvim-lua/plenary.nvim"
     },
-
     config = function()
-        require('telescope').setup({})
+        local telescope = require('telescope')
+        telescope.setup({})
 
         local builtin = require('telescope.builtin')
         vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
@@ -23,6 +23,8 @@ return {
             builtin.grep_string({ search = word })
         end)
         vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})
-    end
+        -- Enable telescope fzf native, if installed
+		pcall(telescope.load_extension, "fzf")
+end
 }
 
