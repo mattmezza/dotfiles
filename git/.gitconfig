@@ -230,7 +230,6 @@
   lost = !"git fsck | awk '/dangling commit/ {print $3}' | git show --format='SHA1: %C(yellow)%h%Creset %f' --stdin | awk '/SHA1/ {sub(\"SHA1: \", \"\"); print}'"
 
   ### diff-* ###
-
   diff-all = !"for name in $(git diff --name-only $1); do git difftool $1 $name & done"
   diff-changes = diff --name-status -r
   diff-stat = diff --stat --ignore-space-change -r
@@ -1018,45 +1017,6 @@
 
   ##########################################################################
 
-  ##
-  # Git aliases suitable for particular software integrations and tooling,
-  # such as other version control system e.g. CVS, Subversion, etc.
-  ##
-
-  ### CVS ALIAS ###
-
-  cvs-i = cvsimport -k -a
-  cvs-e = cvsexportcommit -u -p
-
-  ### GitK ###
-
-  # show conflicting merge in gitk:
-  gitk-conflict = !gitk --left-right HEAD...MERGE_HEAD
-
-  # show full history in gitk (including "deleted" branches and stashes)
-  gitk-history-all = !gitk --all $( git fsck | awk '/dangling commit/ {print $3}' )
-
-  ### Ruby on Rails ###
-
-  # Do everything we can to synchronize all changes for a Ruby On Rails app.
-  # We like using rebase (instead of merge), bundle for gems, and rake db:migrate
-  rails-get = !"git pull --rebase; git submodule update --init --recursive; bundle check || bundle install; bundle exec rake db:migrate; bundle exec rake db:test:prepare"
-
-  ### Subversion ###
-
-  svn-b = svn branch
-  svn-m = merge --squash
-  svn-c = svn dcommit
-  svn-cp = !GIT_EDITOR='sed -i /^git-svn-id:/d' git cherry-pick --edit
-
-  ##########################################################################
-
-  ##
-  # Git aliases to correct common typing mistakes, which git built-in autocorrection
-  # does not handle
-  ##
-
-  ### Use with shell alias `gitp = git` ###
 
   ull = pull
   ush = push
@@ -1073,9 +1033,7 @@
 [init]
 	defaultBranch = main
 
-[includeIf "gitdir:~/dev/ikea/"]
-  path = .gitconfig-ikea
-[include]
-	path = /home/matteo/dotfiles/gitalias.txt
+[includeIf "gitdir:~/dev/work/"]
+  path = .gitconfig-work
 [url "git@github.com:"]
 	insteadOf = https://github.com/
