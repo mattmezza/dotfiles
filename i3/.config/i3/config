@@ -65,9 +65,9 @@ bindsym $mod+v split v
 bindsym $mod+f fullscreen toggle
 
 # change container layout (stacked, tabbed, toggle split)
-bindsym $mod+s layout stacking
-bindsym $mod+w layout tabbed
-bindsym $mod+e layout toggle split
+# bindsym $mod+s layout stacking  # kept for reference - never used
+bindsym $mod+t layout tabbed
+bindsym $mod+s layout toggle split
 
 # toggle tiling / floating
 bindsym $mod+Shift+space floating toggle
@@ -208,7 +208,7 @@ bindsym $mod+Shift+Control+u move workspace to output up
 bindsym $mod+Shift+Control+d move workspace to output down
 
 bindsym $mod+d exec rofi -show combi
-bindsym $mod+i exec rofi -modi "emoji:rofimoji" -show emoji
+bindsym $mod+e exec --no-startup-id rofimoji --action type --skin-tone neutral --prompt search
 bindsym $mod+b exec rofi -modi "chromium:rofi-chromium-profiles" -show 'chromium'
 bindsym $mod+c exec rofi -show calc -modi calc -no-show-match -no-sort
 
