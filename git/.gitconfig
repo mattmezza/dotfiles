@@ -1037,3 +1037,5 @@
   path = .gitconfig-work
 [url "git@github.com:"]
 	insteadOf = https://github.com/
+[include]
+	path = ~/dotfiles/gitalias.txt

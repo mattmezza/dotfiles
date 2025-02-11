@@ -5,14 +5,15 @@ setopt PROMPT_SUBST
 excerpt() {
     MAX_LENGTH=$(($2 + $3))
     if [ ${#1} -ge $MAX_LENGTH ]; then
-            echo $1 | sed -E 's/(.{0,15}).*(.{15})/\1...\2/'
+        echo $1 | sed -E 's/(.{0,15}).*(.{15})/\1...\2/'
     else
-            echo $1
+        echo $1
     fi
 }
 
 set_prompt() {
-    PS1=$''
+    PS1=''
+    RPS1=""
 
     if [[ $VIRTUAL_ENV != "" ]]; then
         PS1+="%{$fg[green]%}($(basename $VIRTUAL_ENV)) %{$reset_color%}"
@@ -29,36 +30,33 @@ set_prompt() {
 
     # Git
     if git rev-parse --is-inside-work-tree 2> /dev/null | grep -q 'true' ; then
-        PS1+=' '
         BRANCH=$(git rev-parse --abbrev-ref HEAD 2> /dev/null)
-        PS1+="%{$fg[blue]%}$(excerpt $BRANCH 15 15)%{$reset_color%}"
+        RPS1+="%{$fg[magenta]%}$(excerpt $BRANCH 15 15)%{$reset_color%}"
         if [ $(git status --short | wc -l) -gt 0 ]; then
-            PS1+="%{$fg[red]%}+$(git status --short | wc -l | awk '{$1=$1};1')%{$reset_color%}"
+            RPS1+="%{$fg[red]%}+$(git status --porcelain | wc -l | awk '{$1=$1};1')%{$reset_color%}"
         fi
     fi
 
 
     # Timer: http://stackoverflow.com/questions/2704635/is-there-a-way-to-find-the-running-time-of-the-last-executed-command-in-the-shel
     if [[ $_elapsed[-1] -gt 3 ]]; then
-        PS1+=' '
-        PS1+="%{$fg[magenta]%}$_elapsed[-1]s%{$reset_color%}"
+        RPS1="%{$fg[magenta]%}$_elapsed[-1]s%{$reset_color%} $RPS1"
     fi
 
     # PID
-    # if [[ $! -ne 0 ]]; then
-    #     PS1+=' '
-    #     PS1+="%{$fg[yellow]%}PID:$!%{$reset_color%}"
-    # fi
+    if [[ $! -ne 0 ]]; then
+        RPS1+="%{$fg[yellow]%}PID:$!%{$reset_color%} $RPS1"
+    fi
 
     # Sudo: https://superuser.com/questions/195781/sudo-is-there-a-command-to-check-if-i-have-sudo-and-or-how-much-time-is-left
     CAN_I_RUN_SUDO=$(sudo -n uptime 2>&1|grep "load"|wc -l)
     if [ ${CAN_I_RUN_SUDO} -gt 0 ]
     then
-        PS1+=' '
-        PS1+="%{$fg_bold[red]%}SUDO%{$reset_color%}"
+        PS1+=$'%{$fg[white]%} # %{$reset_color%}% '
+    else
+        PS1+=$'%{$fg[white]%} $ %{$reset_color%}% '
     fi
 
-    PS1+=$'%{$fg[white]%} $ %{$reset_color%}% '
 }
 
 precmd_functions+=set_prompt

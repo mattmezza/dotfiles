@@ -1,54 +1,14 @@
-export DOT="$HOME/dotfiles"
-export COMPLETIONS="$DOT/zsh/completions"
-if command -v brew &> /dev/null
-then
-    export BREW_PREFIX=$(brew --prefix)
-fi
-
 stty -ixon
 HISTFILE=~/.zsh_history
 SAVEHIST=10000
 
-plugins=(
-    brew
-    cask
-    cargo
-    composer
-    cp
-    docker-compose
-    git
-    git-extras
-    github
-    golang
-    gradle
-    history
-    kubectl
-    man
-    osx
-    node
-    npm
-    pep8
-    pip
-    postgres
-    pyenv
-    pylint
-    python
-    redis-cli
-    ruby
-    sbt
-    screen
-    sudo
-    tmux
-    wp-cli
-    yarn
-    docker
-    virtualenv
-    safe-paste
-)
+export DOT="$HOME/dotfiles"
+export COMPLETIONS="$DOT/zsh/completions"
 
-for plugin ($plugins); do
-    fpath=($DOT/zsh/plugins/oh-my-zsh/plugins/$plugin $fpath)
-done
+if command -v brew &> /dev/null
+then
+    export BREW_PREFIX=$(brew --prefix)
+fi
 
 completions_regen() {
     if which gh > /dev/null; then gh completion --shell zsh > $COMPLETIONS/gh; fi
@@ -58,41 +18,31 @@ fpath=($DOT/zsh/completions $fpath)
 autoload -U compinit && compinit
 
 #==============[ keybindings ]================
-gg() {
-    if [ -n "$BUFFER" ];
-        then
-            BUFFER="git add -A && git commit -m \"$BUFFER\""
-    fi
-
-    if [ -z "$BUFFER" ];
-        then
-            BUFFER="git add -A && git commit -v"
-    fi
-    zle accept-line
-}
-zle -N gg
-bindkey "^g" gg
-
-goto_home() { BUFFER="cd ~/"$BUFFER; zle end-of-line; zle accept-line; }
-zle -N goto_home
-bindkey "^h" goto_home
-
-edit_and_run() { BUFFER="fc"; zle accept-line; }
-zle -N edit_and_run
-bindkey "^b" edit_and_run
-
-ctrl_l() { BUFFER="ls"; zle accept-line; }
-zle -N ctrl_l
-bindkey "^l" ctrl_l
-
-enter_line() { zle accept-line }
-zle -N enter_line
-bindkey "^o" enter_line
-
 add_sudo() { BUFFER="sudo "$BUFFER; zle end-of-line; }
 zle -N add_sudo
 bindkey "^s" add_sudo
 bindkey "^k" clear-screen
+
+# Updates editor information when the keymap changes.
+zle-keymap-select() {
+  zle reset-prompt
+  zle -R
+}
+
+# Ensure that the prompt is redrawn when the terminal size changes.
+TRAPWINCH() {
+  zle &&  zle -R
+}
+
+zle -N zle-keymap-select
+
+bindkey '^p' up-history
+bindkey '^n' down-history
+# bindkey '^w' backward-kill-word # default
+bindkey '^b' backward-word
+bindkey '^a' beginning-of-line
+bindkey '^e' end-of-line
+bindkey '^r' history-incremental-search-backward
 
 setopt inc_append_history # To save every command before it is executed
 setopt share_history # setopt inc_append_history
@@ -114,35 +64,27 @@ fi
 #=========[ Exports ]===============
 export VISUAL=nvim
 export EDITOR=nvim
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/jvm/java-21-openjdk/lib
+export TERMINAL=alacritty
 export JAVA_HOME=/usr/lib/jvm/java-17-openjdk
 export PIP_REQUIRE_VIRTUALENV=true
-export PATH=$PATH:$HOME/.poetry/bin
 export PYENV_ROOT="$HOME/.pyenv"
-export PATH=$PATH:$PYENV_ROOT/bin
-#export PATH="$(brew --prefix)/opt/openjdk/bin:$PATH"
-#export JDK_HOME="$(brew --prefix)/opt/openjdk"
 export NVM_DIR="$HOME/.nvm"
 export PACCO_DIR="$DOT/pacchi"
 export PACCO_FILE="$DOT/pacco.txt"
+export GPG_TTY=$(tty)
 
 gpip() { PIP_REQUIRE_VIRTUALENV="" pip "$@" }
-function gi() { curl -sLw "\n" https://www.gitignore.io/api/$@ ;}
+gi() { curl -sLw "\n" https://www.gitignore.io/api/$@ ;}
 loop() {
-    echo "Executing '${@:1}'..."
-    clear
-    "${@:1}"
+    echo "executing '${@:1}' every time you press 'enter' (^C to quit)."
     while true; do
-        echo -n "At $(date)"
-        read
-        clear
+        echo "$(date --iso-8601=seconds)"
         "${@:1}"
+        read
     done
 }
-
 alias vim="nvim"
 alias vi="nvim"
-mkdir -p /tmp/log  # TODO find out why we need it
 alias ..="cd .."
 alias ...="cd ../.."
 alias ....="cd ../../.."
@@ -158,34 +100,17 @@ alias cb="git checkout -b"
 co() {
     git checkout $(git branch --list | grep $1 | sed 's/\*//' | xargs -n1)
 }
-bj() {
-    git branch --list | grep ${1-" "} | grep ${2-${1-" "}} | sed 's/\*//' | xargs -n1
-}
 pull() { git pull ;}
 push() { git push ;}
 push1() { git push1 ;}
-# This is currently causing problems
-# (fails when you run it anywhere that isn't a git project's root directory)
-# alias vs="v `git status --porcelain | sed -ne 's/^ M //p'`"
 alias compose=docker-compose
-if which exa > /dev/null; then
-    alias ls="exa";
-    alias l="exa";
-    alias ll="exa --long --header --group --inode --blocks --links --modified --accessed --created --git"
-    alias la="ll -a"
-    alias tree="exa -T"
-fi
-if which bat > /dev/null; then alias cat=bat; fi
-alias k=kubectl
-
-pid () {
-    ps -A | grep "$1"  | grep -v "grep" | awk '{print $1}'
-}
+alias k8=kubectl
+pid() {ps -A | grep "$1"  | grep -v "grep" | awk '{print $1}'}
 if ! command -v nproc &> /dev/null
 then
     alias nproc="sysctl -n hw.ncpu"
-    alias nproc-1="expr $(nproc) - 1"
 fi
+alias nproc-1="expr $(nproc) - 1"
 
 [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
 [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
@@ -207,12 +132,6 @@ if [ -f $HOME/.extras.sh ]; then
     source $HOME/.extras.sh
 fi
 
-source $DOT/zsh/plugins/oh-my-zsh/lib/history.zsh
-source $DOT/zsh/plugins/oh-my-zsh/lib/key-bindings.zsh
-source $DOT/zsh/plugins/oh-my-zsh/lib/completion.zsh
-source $DOT/zsh/plugins/vi-mode.plugin.zsh
-source $DOT/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
-# source $BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source $DOT/zsh/prompt.sh
 
 source $PACCO_DIR/pacco/pacco.sh
@@ -220,16 +139,13 @@ pacco source-all  # this sources all the pacco pkgs
 export NOTE_SCRATCH_DIR="$HOME/notes"
 alias spot=$PACCO_DIR/spot/spot.sh  # this pkg needs custom sourcing
 
-export PATH="/usr/local/opt/openssl@1.1/bin:$PATH"
 if test -d "$HOME/google-cloud-sdk"; then
     source "$HOME/google-cloud-sdk/completion.zsh.inc"
     source "$HOME/google-cloud-sdk/path.zsh.inc"
 fi
-export GPG_TTY=$(tty)
 
 # start tmux automatically
 # [ -z $TMUX ] && exec tmux new-session -A -s main
 
 # add a path to the PATH
-# export PATH="/usr/local/bin:$PATH"
-export TERMINAL=alacritty
+export PATH="/usr/local/opt/openssl@1.1/bin:$PATH"
