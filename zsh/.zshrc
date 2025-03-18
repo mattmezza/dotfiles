@@ -1,6 +1,7 @@
 stty -ixon
 HISTFILE=~/.zsh_history
 SAVEHIST=10000
+HISTSIZE=10000 # this limits search history
 
 export DOT="$HOME/dotfiles"
 export COMPLETIONS="$DOT/zsh/completions"
@@ -42,7 +43,7 @@ bindkey '^n' down-history
 bindkey '^b' backward-word
 bindkey '^a' beginning-of-line
 bindkey '^e' end-of-line
-bindkey '^r' history-incremental-search-backward
+bindkey '^r' history-incremental-pattern-search-backward
 
 setopt inc_append_history # To save every command before it is executed
 setopt share_history # setopt inc_append_history
