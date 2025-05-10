@@ -1,8 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=Firefox Work
-Comment=Firefox profile for work
-Exec=~/dotfiles/bin/firefox-work
-#Icon=leagueoflegends
-Terminal=false
-

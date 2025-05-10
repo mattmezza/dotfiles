@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-firefox -P work --no-remote --class firefox-work

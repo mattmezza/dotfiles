@@ -197,7 +197,7 @@ for_window [class="Arandr"] floating enable
 
 # default workspaces
 assign [class="chromium-personal"] $ws0
-assign [class="chromium-IKEA"] $ws1
+assign [class="chromium-work"] $ws1
 
 bindsym $mod+Shift+Control+r move workspace to output right
 bindsym $mod+Shift+Control+l move workspace to output left

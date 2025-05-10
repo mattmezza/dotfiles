@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# adapted from 
+# adapted from
 # https://raw.githubusercontent.com/claudiodangelis/rofi-chrome-profile-launcher/master/rofi-chrome-profile-launcher.sh
 
 ## If you don't want the script to automatically choose the Chrome version to
@@ -9,7 +9,7 @@ CHROME_VERSION="chromium"
 
 # Populate an associative array that maps profiles names to directories
 declare -A profiles=()
-profiles["IKEA"]="$HOME/.config/chromium-IKEA"
+profiles["work"]="$HOME/.config/chromium-work"
 profiles["personal"]="$HOME/.config/chromium-personal"
 
 # Check if the user data directories actually exist
