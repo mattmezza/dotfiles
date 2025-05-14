@@ -218,10 +218,10 @@ bindsym $mod+Control+p exec --no-startup-id arandr
 bindsym $mod+Shift+p exec --no-startup-id xrandr --auto
 
 # Suspend
-bindsym $mod+Shift+period exec lock "#AEAEAE" "#000000" "$(whoami)@$(hostnamectl hostname)" "Locked on $(date +%c)" /tmp/lock.png
+bindsym $mod+Shift+period exec lock
 # dpms [standby] [suspend] [off] (0 disables)
 exec_always --no-startup-id xset +dpms dpms 0 300 0
-exec_always --no-startup-id xss-lock --transfer-sleep-lock -- lock "#222222" "#000000" "$(whoami)@$(hostnamectl hostname)" "Suspended on $(date +%c)" /tmp/lock.png
+exec_always --no-startup-id xss-lock --transfer-sleep-lock -- lock -s "Suspended on $(date +%c)"
 
 # startup
 # https://wiki.archlinux.org/index.php/XDG_Autostart

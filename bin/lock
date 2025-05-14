@@ -1,6 +1,7 @@
 #!/bin/sh
-
 set -e
+
+OPTIND=1
 
 # usage
 # $1 - text-color
@@ -9,18 +10,53 @@ set -e
 # $4 - subtext
 # $5 - output file (will be a png)
 # $6 - indicator icon (defaults to a lock icon)
-
+# $7 - font
+FG="#222222"
+BG="#000000"
+TXT="$(whoami)@$(hostnamectl hostname)"
+SUB="Locked on $(date +%c)"
+OUT=/tmp/lock.png
+ICON="🔒"
 # get list of available fonts by
-# convert -list font | grep Font
-convert \
+# magick -list font | grep Font
+FONT="Fira-Code-Bold"
+
+while getopts "h?c:b:t:s:o:i:f:" opt; do
+    case "$opt" in
+        h|\?)
+            echo "Usage: lock h?c:b:t:s:o:i:f:"
+            echo "Get a list of available fonts via 'magick -list font'"
+            exit 0
+            ;;
+        fg) FG=$OPTARG
+            ;;
+        bg) BG=$OPTARG
+            ;;
+        t) TXT=$OPTARG
+            ;;
+        s) SUB=$OPTARG
+            ;;
+        o) OUT=$OPTARG
+            ;;
+        i) ICON=$OPTARG
+            ;;
+        f) FONT=$OPTARG
+            ;;
+    esac
+done
+
+shift $((OPTIND-1))
+[ "${1:-}" = "--" ] && shift
+
+magick \
     -size $(xdpyinfo | awk '/dimensions/{print $2}') \
-    "xc:$2" \
-    -fill "$1" \
-    -font Source-Code-Pro-Bold \
+    "xc:$BG" \
+    -fill "$FG" \
+    -font "$FONT" \
     -gravity south \
-    -pointsize 24 -annotate +0+150 "$3" \
-    -pointsize 16 -annotate +0+120 "$4" \
+    -pointsize 24 -annotate +0+150 "$TXT" \
+    -pointsize 16 -annotate +0+120 "$SUB" \
     -gravity center \
-    -pointsize 24 -annotate +0+0 "${6-🔒}" \
-    "$5"
-i3lock -neft -i "$5" -c "$2"
+    -pointsize 24 -annotate +0+0 "$ICON" \
+    "$OUT"
+i3lock -neft -i "$OUT" -c "$BG"
