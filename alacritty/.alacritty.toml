@@ -59,7 +59,7 @@ unfocused_hollow = true
 TERM = "screen-256color"
 
 [font]
-size = 10.0
+size = 9.0
 
 [font.bold]
 style = "Bold"
@@ -72,7 +72,7 @@ style = "Italic"
 
 [font.normal]
 family = "Fira Code"
-style = "Semibold"
+style = "Regular"
 
 [[keyboard.bindings]]
 chars = """
