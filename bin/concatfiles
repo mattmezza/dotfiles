@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Find all files in the current directory and subdirectories, excluding .git
+find . -type f -not -path '*/.git/*' | while read -r file; do
+  # Print the header
+  echo "// $file"
+
+  # Print the content of the file
+  cat "$file"
+
+  # Add a newline after each file's content for separation
+  echo ""
+done
