@@ -44,9 +44,9 @@ per se, but are hard to disentangle from the graphics implementation:
 
 <pre>
 (Zoom)
-alt  + comma            Zoom in <br>
-alt  + .                Zoom out <br>
-alt  + g                Reset Zoom<br>
+alt  + =                Zoom in <br>
+alt  + -                Zoom out <br>
+alt  + 0                Reset Zoom<br>
 </pre>
 
 ### Installation
