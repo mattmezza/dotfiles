@@ -45,8 +45,8 @@ install_suckless() {
     cd st && sudo make clean install && cd ..
 }
 
-#install_deps
-#install_pacco
-#pacco I
-#stow_all
-#install_suckless
+install_deps
+install_pacco
+pacco I
+stow_all
+install_suckless
