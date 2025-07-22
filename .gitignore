@@ -10,3 +10,4 @@ i3/.config/i3/wallpaper.png
 *.orig
 dmenu/dmenu
 dmenu/stest
+st/st
