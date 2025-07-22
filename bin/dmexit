@@ -1,6 +1,6 @@
 #!/bin/env bash
-while [ "$select" != "lock" -a "$select" != "exit" -a "$select" != "suspend" -a "$select" != "hibernate" -a "$select" != "sth (suspend-then-hibernate)" ]; do
-    select=$(echo -e 'sth (suspend-then-hibernate)\nhibernate\nsuspend\nlock\nexit' | dmenu -i -p "What do you want to do?")
+while [ "$select" != "lock" -a "$select" != "exit" -a "$select" != "suspend" -a "$select" != "hibernate" -a "$select" != "sth (suspend-then-hibernate)" -a "$select" != "shutdown" -a "$select" != "reboot" ]; do
+    select=$(echo -e 'sth (suspend-then-hibernate)\nhibernate\nsuspend\nlock\nexit\nshutdown\nreboot' | dmenu -i -p "What do you want to do?")
     [ -z "$select" ] && exit 0
 done
 [ "$select" = "exit" ] && pkill dwm
@@ -8,5 +8,7 @@ done
 [ "$select" = "suspend" ] && systemctl suspend
 [ "$select" = "hibernate" ] && systemctl hibernate
 [ "$select" = "sth (suspend-then-hibernate)" ] && systemctl suspend-then-hibernate
+[ "$select" = "shutdown" ] && sudo shutdown -h0
+[ "$select" = "reboot" ] && sudo reboot now
 exit 0
 
