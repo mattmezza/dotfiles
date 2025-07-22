@@ -7,3 +7,4 @@ zsh/completions
 nvim/plugin/packer_compiled.lua
 i3/.config/i3/wallpaper.png
 *.o
+*.orig
