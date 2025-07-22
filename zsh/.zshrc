@@ -125,10 +125,6 @@ fi
 
 eval "$(direnv hook zsh)"  # source .envrc if present
 
-#==========[ Defaults ]=============
-git config --global include.path $DOT/gitalias.txt
-git config --global push.default current
-
 if [ -f $HOME/.extras.sh ]; then
     source $HOME/.extras.sh
 fi
