@@ -27,7 +27,7 @@ install_pacco() {
 }
 
 stow_all() {
-    stow alacritty bookmarker git i3 nvim screenlayout tmux xorg
+    stow alacritty bookmarker dunst git i3 nvim picom screenlayout tmux xorg
     stow --no-folding zsh
     sudo stow --target=/usr/local/bin bin
 
@@ -36,7 +36,17 @@ stow_all() {
     fi
 }
 
+install_suckless() {
+    cd dmenu && sudo make clean install && cd ..
+    cd dwm && sudo make clean install && cd ..
+    cd sent && sudo make clean install && cd ..
+    cd slock && sudo make clean install && cd ..
+    cd slstatus && sudo make clean install && cd ..
+    cd st && sudo make clean install && cd ..
+}
+
 #install_deps
 #install_pacco
 #pacco I
 #stow_all
+#install_suckless
