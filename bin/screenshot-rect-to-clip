@@ -1,0 +1,4 @@
+#!/bin/env bash
+
+maim -s | xclip -selection clipboard -t image/png
+notify-send "Screenshot" "Rectangular selection copied to clipboard."

@@ -1,0 +1,115 @@
+[global]
+    # Font and Colors
+    font = Monospace 10
+    # The format of the notification (default: "%s\n%b")
+    #   %a: appname
+    #   %s: summary
+    #   %b: body
+    #   %i: iconname (filename of icon)
+    #   %I: iconpath (absolute path of icon)
+    #   %p: progress in percent (only for notifications with progress)
+    #   %v: urgency
+    #   %t: timeout
+    #   %n: count of currently displayed notifications
+    #   %%: literal %
+    #   Markup is enabled by default.
+    format = "<b>%s</b>\n%b"
+
+    # Background color of the notification.
+    background = "#222222"
+    # Foreground color of the notification.
+    foreground = "#eeeeee"
+    # The color of the border around the notification.
+    frame_color = "#222222"
+
+    # Transparency. (0.0 - 1.0)
+    transparency = 0
+
+    # The width of the border around the notification.
+    frame_width = 1
+
+    # The amount of padding within the notification.
+    padding = 12
+
+    # The horizontal padding between text and frame.
+    horizontal_padding = 14
+
+    # Defines the corner radius of the notification window.
+    # Set to 0 for square corners.
+    corner_radius = 5
+
+    # The gap between notifications.
+    gap_size = 5
+
+    # Position of the notification on the screen.
+    # Possible values:
+    #   top-left, top-center, top-right
+    #   center,
+    #   bottom-left, bottom-center, bottom-right
+    origin = top-right
+
+    # Offset from the screen edge.
+    offset = (15, 28)
+
+    # The duration in seconds after which notifications will be hidden.
+    timeout = 5
+
+    # Icon theme
+    icon_theme = Papirus
+
+
+    # The minimum icon size in pixels.
+    min_icon_size = 32
+
+    # Allow markup in notifications.
+    markup = full
+
+    # Sort notifications by urgency.
+    sort = yes
+
+    # Don't stack notifications.
+    stack_duplicates = false
+
+    # Display notification count.
+    indicate_hidden = yes
+
+    # Shrink notifications if they are too wide.
+    shrink = yes
+
+    # Show age of notification.
+    # age_threshold = 600
+
+    # Follow mouse cursor.
+    # follow_mouse = no
+    follow = keyboard
+
+    # Show notification history.
+    # history_length = 20
+
+    # Keyboard shortcuts
+    # Modifiers: ctrl, shift, alt
+    # Actions: close_current, close_all, history_next, history_prev
+    # Example:
+    # hotkeys = {
+    #     close = ctrl+shift+d
+    #     close_all = ctrl+shift+a
+    #     history_next = ctrl+shift+n
+    #     history_prev = ctrl+shift+p
+    # }
+
+[urgency_low]
+    background = "#222222"
+    foreground = "#eeeeee"
+    frame_color = "#222222"
+
+[urgency_normal]
+    background = "#222222"
+    foreground = "#eeeeee"
+    frame_color = "#bd93f9" # Dracula purple
+
+[urgency_critical]
+    background = "#222222" # Dracula red
+    foreground = "#eeeeee"
+    frame_color = "#ff5555"
+    timeout = 0 # Critical notifications stay until dismissed
+

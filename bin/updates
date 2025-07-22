@@ -1,0 +1,35 @@
+#!/bin/env sh
+
+CACHE_FILE="/tmp/updates_cache"
+CACHE_TIME=3600  # 1 hour in seconds
+
+calc_upgradable() {
+    echo "..." > "$CACHE_FILE"
+    (
+        count=$(yay -Qu 2> /dev/null)
+
+        if [ $? -eq 0 ]; then
+            count=$(echo -n "$count" | wc -l)
+            echo "$count" > "$CACHE_FILE"
+        else
+            echo "-1" > "$CACHE_FILE"
+        fi
+    ) &
+}
+
+if [ "$1" = "--force" ]; then
+    calc_upgradable
+    exit 0
+fi
+
+if [ -f "$CACHE_FILE" ]; then
+    last_update=$(stat -c %Y "$CACHE_FILE")
+    current_time=$(date +%s)
+    if [ $((current_time - last_update)) -gt $CACHE_TIME ]; then
+        calc_upgradable
+    else
+        cat "$CACHE_FILE"
+    fi
+else
+    calc_upgradable
+fi

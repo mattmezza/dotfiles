@@ -1,0 +1,31 @@
+#!/bin/env bash
+
+## If you don't want the script to automatically choose the Chrome version to
+## use, set the CHROME_VERSION variable below
+CHROME_VERSION="chromium"
+
+# Populate an associative array that maps profiles names to directories
+declare -A profiles=()
+profiles["work"]="$HOME/.config/chromium-work"
+profiles["personal"]="$HOME/.config/chromium-personal"
+
+# Check if the user data directories actually exist
+for profile in "${!profiles[@]}"; do
+    if [ ! -d "${profiles[$profile]}" ]; then
+        echo "unable to find Chrome user data dir"
+        echo "did you forget to 'mkdir ${profiles[$profile]}' ?"
+        exit 1
+    fi
+done
+
+if [ -z "$@" ]; then
+    # No argument passed, meaning that rofi was launched: show the profiles
+    for profile in "${!profiles[@]}"; do
+        echo $profile
+    done
+else
+    # One argument passed, meaning that user selected a profile: launch browser
+    NAME="${@}"
+    $CHROME_VERSION --user-data-dir="${profiles[$NAME]}" --class="chromium-$NAME" > /dev/null 2>&1 &
+fi
+

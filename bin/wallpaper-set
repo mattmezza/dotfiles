@@ -5,17 +5,16 @@
 # $2 - bg-color
 # $3 - input file (containing line separated words)
 # $4 - output file (will be a png)
+# $5 - font (optional, default: Fira-Code-Semibold)
 
 # get list of available fonts by
 # convert -list font | grep Font
-convert \
+magick \
     -fill $1 \
     -background $2 \
     -size 800x400 \
-    -font Source-Code-Pro-Bold \
+    -font ${5:-Fira-Code-Semibold} \
     -pointsize 32 \
     -gravity center \
     label:"$(shuf -n 1 $3)" \
-    $4
-
-feh --bg-center $4 --bg-center $4
+    $4 && feh --bg-center $4 --bg-center $4

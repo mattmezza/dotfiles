@@ -1,0 +1,29 @@
+#!/bin/env bash
+
+# Populate an associative array that maps profiles names to directories
+# sourcing profiles from the .screenlayout directory
+declare -A profiles=()
+for profile in ~/.screenlayout/*.sh; do
+    profiles["$(basename $profile | sed 's/\.sh//g')"]="$profile"
+done
+
+for profile in "${!profiles[@]}"; do
+    if [ ! -f "${profiles[$profile]}" ]; then
+        echo "unable to find display profile script"
+        echo "did you forget to create the profile script in '${profiles[$profile]}' ?"
+        exit 1
+    fi
+done
+
+if [ -z "$@" ]; then
+    # No argument passed, meaning that rofi was launched: show the profiles
+    for profile in "${!profiles[@]}"; do
+        echo $profile
+    done
+else
+    # One argument passed, meaning that user selected a profile: execute profile
+    NAME="${@}"
+    source "${profiles[$NAME]}"
+fi
+
+

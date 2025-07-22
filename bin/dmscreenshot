@@ -1,0 +1,53 @@
+#!/bin/env bash
+
+# Pre-defined directory for screenshots
+SCREENSHOT_DIR="$HOME/screenshots"
+
+# Create the directory if it doesn't exist
+mkdir -p "$SCREENSHOT_DIR"
+
+# Get current Unix epoch time
+EPOCH_TIME=$(date +%s)
+
+# Screenshot filename
+FILENAME="${SCREENSHOT_DIR}/${EPOCH_TIME}.png"
+
+# dmenu options
+OPTIONS="rect to clip\nrect to file\nwin to clip\nwin to file\nfull to clip\nfull to file\nall to file"
+
+# Use dmenu to select an option
+CHOICE=$(echo -e "$OPTIONS" | dmenu -p "Screenshot:")
+
+case "$CHOICE" in
+    "rect to clip")
+        maim -s | xclip -selection clipboard -t image/png
+        notify-send "Screenshot" "Rectangular selection copied to clipboard."
+        ;;
+    "rect to file")
+        maim -s "$FILENAME"
+        notify-send "Screenshot" "Rectangular selection saved to $FILENAME."
+        ;;
+    "win to clip")
+        maim -i "$(xdotool getactivewindow)" | xclip -selection clipboard -t image/png
+        notify-send "Screenshot" "Window selection copied to clipboard."
+        ;;
+    "win to file")
+        maim -i "$(xdotool getactivewindow)" "$FILENAME"
+        notify-send "Screenshot" "Window selection saved to $FILENAME."
+        ;;
+    "full to clip")
+        maim | xclip -selection clipboard -t image/png
+        notify-send "Screenshot" "Full screen copied to clipboard."
+        ;;
+    "full to file")
+        maim "$FILENAME"
+        notify-send "Screenshot" "Full screen saved to $FILENAME."
+        ;;
+    "all to file")
+        maim -a "$FILENAME"
+        notify-send "Screenshot" "All monitors saved to $FILENAME."
+        ;;
+    *)
+        echo "No selection made."
+        ;;
+esac
