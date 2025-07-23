@@ -8,8 +8,8 @@ if [ "$WM" = "i3" ]; then
 elif [ "$WM" = "dwm" ]; then
     exec xcape -e 'Caps_Lock=Escape' &
     exec setxkbmap -layout us -variant altgr-intl -option "caps:ctrl_modifier,compose:rctrl" &
-    # exec wallpaper-set "#111111" "#b43cbd" ~/.config/i3/wallpaper.txt /tmp/wall.png &
-    exec wallpaper-set "#eeeeee" black ~/.config/i3/wallpaper.txt /tmp/wall.png &
+    # exec wallpaper-set "#eeeeee" black ~/.config/i3/wallpaper.txt /tmp/wall.png &
+    exec wallpaper-set-img
     # make the mouse buttons back-fwd work
     exec xbindkeys -f /home/matteo/.xbindkeysrc &
     exec nm-applet &
