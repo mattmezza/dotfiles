@@ -62,7 +62,7 @@ static const int showtab                 = showtab_auto;        /* Default tab b
 static const int toptab                  = False;               /* False means bottom tab bar */
 #endif // TAB_PATCH
 #if BAR_HEIGHT_PATCH
-static const int bar_height              = 14;   /* 0 means derive from font, >= 1 explicit height */
+static const int bar_height              = 24;   /* 0 means derive from font, >= 1 explicit height */
 #endif // BAR_HEIGHT_PATCH
 #if BAR_PADDING_PATCH
 static const int vertpad                 = 5;  /* vertical padding of bar */
@@ -749,11 +749,11 @@ static const Layout layouts[] = {
 #else
 static const Layout layouts[] = {
 	/* symbol     arrange function */
-	#if FIBONACCI_SPIRAL_LAYOUT
-	{ "(@)",      spiral },     /* first entry is default */
-	#endif
 	#if TILE_LAYOUT
-	{ "[]=",      tile },
+	{ "[]=",      tile },     /* first entry is default */
+	#endif
+	#if FIBONACCI_SPIRAL_LAYOUT
+	{ "(@)",      spiral },
 	#endif
 	{ "><>",      NULL },    /* no layout function means floating behavior */
 	#if MONOCLE_LAYOUT
@@ -1228,9 +1228,8 @@ static const Key keys[] = {
 	#if XRDB_PATCH || XRESOURCES_PATCH
 	{ MODKEY|ShiftMask,             XK_F5,         xrdb,                   {.v = NULL } },
 	#endif // XRDB_PATCH | XRESOURCES_PATCH
-	{ MODKEY,                       XK_t,          setlayout,              {.v = &layouts[1]} },
-	{ MODKEY,                       XK_f,          setlayout,              {.v = &layouts[2]} },
-	{ MODKEY,                       XK_m,          setlayout,              {.v = &layouts[5]} },
+	{ MODKEY,                       XK_t,          setlayout,              {.v = &layouts[0]} },
+	{ MODKEY,                       XK_f,          setlayout,              {.v = &layouts[1]} },
 	#if COLUMNS_LAYOUT
 	{ MODKEY,                       XK_c,          setlayout,              {.v = &layouts[4]} },
 	#endif // COLUMNS_LAYOUT
