@@ -19,4 +19,4 @@ static const char * message = "Matteo Merola: enter password to unlock";
 static const char * text_color = "#ffffff";
 
 /* text size (must be a valid size) */
-static const char * font_name = "6x13";
+static const char * font_name = "-misc-fira code semibold-semibold-r-normal--0-0-0-0-m-0-ascii-0";
