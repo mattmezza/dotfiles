@@ -37,12 +37,12 @@ stow_all() {
 }
 
 install_suckless() {
-    cd dmenu && sudo make clean install && cd ..
-    cd dwm && sudo make clean install && cd ..
-    cd sent && sudo make clean install && cd ..
-    cd slock && sudo make clean install && cd ..
-    cd slstatus && sudo make clean install && cd ..
-    cd st && sudo make clean install && cd ..
+    cd dmenu && rm -f config.h && sudo make clean install && cd ..
+    cd dwm && rm -f config.h patches.h && sudo make clean install && cd ..
+    cd sent && rm -f config.h && sudo make clean install && cd ..
+    cd slock && rm -f config.h && sudo make clean install && cd ..
+    cd slstatus && rm -f config.h && sudo make clean install && cd ..
+    cd st && rm -f config.h && sudo make clean install && cd ..
 }
 
 if [[ "$1" =~ ^.*(deps).*$ ]]; then
