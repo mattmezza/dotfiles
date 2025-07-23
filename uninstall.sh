@@ -17,8 +17,8 @@ uninstall_deps() {
 }
 
 unstow_all() {
-    stow -D alacritty bookmarker git i3 nvim screenlayout tmux xorg
-    stow -D -no-folding zsh
+    stow -D alacritty bookmarker dunst git i3 nvim picom screenlayout tmux xorg
+    stow -D zsh
     sudo stow -D --target=/usr/local/bin bin
 
     if [[ $OSTYPE == darwin* ]]; then
@@ -26,6 +26,29 @@ unstow_all() {
     fi
 }
 
-#unstow_all
-#pacco U
-#uninstall_deps
+uninstall_suckless() {
+    cd dmenu && sudo make uninstall && cd ..
+    cd dwm && sudo make uninstall && cd ..
+    cd sent && sudo make uninstall && cd ..
+    cd slock && sudo make uninstall && cd ..
+    cd slstatus && sudo make uninstall && cd ..
+    cd st && sudo make uninstall && cd ..
+}
+
+
+if [[ "$1" =~ ^.*(suckless).*$ ]]; then
+    echo "Uninstalling suckless..."
+    uninstall_suckless
+fi
+if [[ "$1" =~ ^.*(stow|stowed).*$ ]]; then
+    echo "Unstowing files..."
+    unstow_all
+fi
+if [[ "$1" =~ ^.*(pacco).*$ ]]; then
+    echo "Uninstalling pacco..."
+    pacco U
+fi
+if [[ "$1" =~ ^.*(deps).*$ ]]; then
+    echo "Uninstalling dependencies..."
+    uninstall_deps
+fi

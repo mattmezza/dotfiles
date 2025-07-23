@@ -45,8 +45,20 @@ install_suckless() {
     cd st && sudo make clean install && cd ..
 }
 
-install_deps
-install_pacco
-pacco I
-stow_all
-install_suckless
+if [[ "$1" =~ ^.*(deps).*$ ]]; then
+    echo "Installing dependencies..."
+    install_deps
+fi
+if [[ "$1" =~ ^.*(pacco).*$ ]]; then
+    echo "Installing pacco..."
+    install_pacco
+    pacco I
+fi
+if [[ "$1" =~ ^.*(stow|stowed).*$ ]]; then
+    echo "Stowing files..."
+    stow_all
+fi
+if [[ "$1" =~ ^.*(suckless).*$ ]]; then
+    echo "Installing suckless..."
+    install_suckless
+fi
