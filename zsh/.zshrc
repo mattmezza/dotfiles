@@ -1,10 +1,11 @@
 stty -ixon
-HISTFILE=~/.zsh_history
+HISTFILE=$HOME/.zsh_history
 SAVEHIST=10000
 HISTSIZE=10000 # this limits search history
 
 export DOT="$HOME/dotfiles"
-export COMPLETIONS="$DOT/zsh/completions"
+export XDG_CONFIG_HOME="$HOME/.config"
+export COMPLETIONS="$XDG_CONFIG_HOME/zsh/completions"
 
 if command -v brew &> /dev/null
 then
@@ -15,7 +16,7 @@ completions_regen() {
     if which gh > /dev/null; then gh completion --shell zsh > $COMPLETIONS/gh; fi
 }
 
-fpath=($DOT/zsh/completions $fpath)
+fpath=($COMPLETIONS $fpath)
 autoload -U compinit && compinit
 
 #==============[ keybindings ]================
@@ -125,11 +126,7 @@ fi
 
 eval "$(direnv hook zsh)"  # source .envrc if present
 
-if [ -f $HOME/.extras.sh ]; then
-    source $HOME/.extras.sh
-fi
-
-source $DOT/zsh/prompt.sh
+source $XDG_CONFIG_HOME/zsh/prompt.sh
 
 source $PACCO_DIR/pacco/pacco.sh
 pacco source-all  # this sources all the pacco pkgs
