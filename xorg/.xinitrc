@@ -1,7 +1,10 @@
 #!/bin/env sh
 export PATH="/home/matteo/dotfiles/bin:$PATH"
 
-# WM="dwm"
+# if $WM is not set, default to dwm
+if [ -z "$WM" ]; then
+    WM="dwm"
+fi
 
 if [ "$WM" = "i3" ]; then
    exec i3
