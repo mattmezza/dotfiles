@@ -75,10 +75,15 @@ static const struct arg args[] = {
 
 	{ ram_used,             " M%s",         NULL },
 
-	{ disk_free,            " D%s",         "/" },
+	{ disk_free,            " S%s",         "/" },
 
-    { netspeed_rx,          " ↓%s",         "wlan0" },
+    // Can only show properly one of these two because net_speed_rx and
+    // net_speed_tx use static variables and whatever comes last will be shown
+    // overriding the previous interface (which will display as 16.4Pi rx/tx.
+    { netspeed_rx,          " W↓%s",        "wlan0" },
     { netspeed_tx,          "↑%s",          "wlan0" },
+    //{ netspeed_rx,          " E↓%s",        "enp0s13f0u1u4" },
+    //{ netspeed_tx,          "↑%s",          "enp0s13f0u1u4" },
 
 	{ run_command,          " V%s",         "volume" },
 
@@ -87,9 +92,6 @@ static const struct arg args[] = {
 	{ run_command,          " K%s",         "key-light" },
 
 	{ run_command,          " U%s",         "updates" },
-
-	{ wifi_essid,           " W_%s",        "wlan0" },
-	{ wifi_perc,            "_%s%%",        "wlan0" },
 
 	{ datetime,             " %s",          "%FT%H:%M" },
 };
