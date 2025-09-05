@@ -1,0 +1,2 @@
+#!/bin/env sh
+st -t "calc" -e bc -l

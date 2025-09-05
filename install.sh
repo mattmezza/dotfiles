@@ -27,7 +27,7 @@ install_pacco() {
 }
 
 stow_all() {
-    stow alacritty bookmarker dunst git i3 nvim picom screenlayout tmux xorg wallpapers zsh
+    stow alacritty bookmarker dunst git i3 nvim picom screenlayout sxhkd tmux xorg wallpapers zsh
     sudo stow --target=/usr/local/bin bin
 
     if [[ $OSTYPE == darwin* ]]; then
