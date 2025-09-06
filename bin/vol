@@ -1,0 +1,24 @@
+#!/bin/env bash
+
+synopsis() {
+    echo "usage:"
+    echo "  vol up # raises volume on DEFAULT_SINK of 5%"
+    echo "  vol down # lowers volume on DEFAULT_SINK of 5%"
+    echo "  vol mute # toggles mute on DEFAULT_SINK"
+}
+
+CMD=$1
+
+case $CMD in
+    "up")
+        pactl set-sink-volume "@DEFAULT_SINK@" "+5%"
+        ;;
+    "down")
+        pactl set-sink-volume "@DEFAULT_SINK@" "-5%"
+        ;;
+    "mute")
+        pactl set-sink-mute "@DEFAULT_SINK@" toggle
+        ;;
+    *)
+        synopsis
+esac
