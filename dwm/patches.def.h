@@ -1509,7 +1509,7 @@
  * columns (i.e. left to right).
  * https://dwm.suckless.org/patches/columns/
  */
-#define COLUMNS_LAYOUT 0
+#define COLUMNS_LAYOUT 1
 
 /* Deck layout.
  * https://dwm.suckless.org/patches/deck/

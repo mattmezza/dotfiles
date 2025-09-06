@@ -749,8 +749,11 @@ static const Layout layouts[] = {
 #else
 static const Layout layouts[] = {
 	/* symbol     arrange function */
+	#if COLUMNS_LAYOUT
+	{ "|||",      col },     /* first entry is default */
+	#endif
 	#if TILE_LAYOUT
-	{ "[]=",      tile },     /* first entry is default */
+	{ "[]=",      tile },
 	#endif
 	#if FIBONACCI_SPIRAL_LAYOUT
 	{ "(@)",      spiral },
@@ -770,9 +773,6 @@ static const Layout layouts[] = {
 	#endif
 	#if CENTEREDFLOATINGMASTER_LAYOUT
 	{ ">M>",      centeredfloatingmaster },
-	#endif
-	#if COLUMNS_LAYOUT
-	{ "|||",      col },
 	#endif
 	#if DECK_LAYOUT
 	{ "[D]",      deck },
@@ -1031,6 +1031,18 @@ ResourcePref resources[] = {
 
 static const Key keys[] = {
 	/* modifier                     key            function                argument */
+
+    /* layout selection */
+	#if COLUMNS_LAYOUT
+	{ MODKEY,                       XK_c,          setlayout,              {.v = &layouts[0]} },
+	#endif // COLUMNS_LAYOUT
+	{ MODKEY,                       XK_t,          setlayout,              {.v = &layouts[1]} },
+	#if FIBONACCI_SPIRAL_LAYOUT
+	{ MODKEY,                       XK_s,          setlayout,              {.v = &layouts[2]} },
+	#endif // FIBONACCI_SPIRAL_LAYOUT
+	{ MODKEY,                       XK_f,          setlayout,              {.v = &layouts[3]} },
+    /* end layout selection */
+
 	#if KEYMODES_PATCH
 	{ MODKEY,                       XK_Escape,     setkeymode,             {.ui = COMMANDMODE} },
 	#endif // KEYMODES_PATCH
@@ -1211,11 +1223,6 @@ static const Key keys[] = {
 	#if XRDB_PATCH || XRESOURCES_PATCH
 	{ MODKEY|ShiftMask,             XK_F5,         xrdb,                   {.v = NULL } },
 	#endif // XRDB_PATCH | XRESOURCES_PATCH
-	{ MODKEY,                       XK_t,          setlayout,              {.v = &layouts[0]} },
-	{ MODKEY,                       XK_f,          setlayout,              {.v = &layouts[1]} },
-	#if COLUMNS_LAYOUT
-	{ MODKEY,                       XK_c,          setlayout,              {.v = &layouts[4]} },
-	#endif // COLUMNS_LAYOUT
 	#if FLEXTILE_DELUXE_LAYOUT
 	{ MODKEY|ControlMask,           XK_t,          rotatelayoutaxis,       {.i = +1 } },   /* flextile, 1 = layout axis */
 	{ MODKEY|ControlMask,           XK_Tab,        rotatelayoutaxis,       {.i = +2 } },   /* flextile, 2 = master axis */
