@@ -1,7 +1,45 @@
 #! /bin/sh
 
-max=$(brightnessctl max)
-val=$(brightnessctl get)
+synopsis() {
+    echo "Show and change current screen brightness as a percentage."
+    echo "Requires brightnessctl to be installed."
+    echo "If no arguments are passed, current value is printed on screen."
+    echo "Use 'up' and 'down' arguments to increase or decrease brightness by 5%."
+    echo "Use '-h' or '--help' for more information."
+    echo "Use '-s' or '--synopsis' to see this short description."
+    echo
+}
 
-percent=$(echo "scale=0 ; $val * 100 / $max" | bc)
-echo "$percent%"
+help() {
+    echo "Example usage:"
+    echo "  brightness        # Show current brightness"
+    echo "  brightness up     # Increase brightness by 5%"
+    echo "  brightness down   # Decrease brightness by 5%"
+    echo "  brightness -h     # Show help message"
+    echo "  brightness -s     # Show synopsis"
+    echo
+    echo "Requires brightnessctl to be installed."
+}
+
+current() {
+    max=$(brightnessctl max)
+    val=$(brightnessctl get)
+    percent=$(echo "scale=0 ; $val * 100 / $max" | bc)
+    echo "$percent%"
+}
+
+up() {
+    brightnessctl set "+5%"
+}
+
+down() {
+    brightnessctl set "5-%"
+}
+
+case "$1" in
+    -h|--help) help ;;
+    -s|--synopsis) synopsis ;;
+    up) up ;;
+    down) down ;;
+    *) current ;;
+esac
