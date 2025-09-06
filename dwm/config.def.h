@@ -1034,13 +1034,13 @@ static const Key keys[] = {
 
     /* layout selection */
 	#if COLUMNS_LAYOUT
-	{ MODKEY,                       XK_c,          setlayout,              {.v = &layouts[0]} },
+	{ MODKEY|ShiftMask,             XK_c,          setlayout,              {.v = &layouts[0]} },
 	#endif // COLUMNS_LAYOUT
-	{ MODKEY,                       XK_t,          setlayout,              {.v = &layouts[1]} },
+	{ MODKEY|ShiftMask,             XK_t,          setlayout,              {.v = &layouts[1]} },
 	#if FIBONACCI_SPIRAL_LAYOUT
-	{ MODKEY,                       XK_s,          setlayout,              {.v = &layouts[2]} },
+	{ MODKEY|ShiftMask,             XK_s,          setlayout,              {.v = &layouts[2]} },
 	#endif // FIBONACCI_SPIRAL_LAYOUT
-	{ MODKEY,                       XK_f,          setlayout,              {.v = &layouts[3]} },
+	{ MODKEY|ShiftMask,             XK_f,          setlayout,              {.v = &layouts[3]} },
     /* end layout selection */
 
 	#if KEYMODES_PATCH
