@@ -25,6 +25,9 @@ mod4 + shift + control + 4
 mod4 + escape
     slock
 
+mod4 + shift + escape
+    dmexit
+
 mod4 + e
     nemo ~/Downloads
 
