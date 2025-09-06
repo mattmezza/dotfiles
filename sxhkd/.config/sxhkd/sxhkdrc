@@ -34,3 +34,4 @@ mod4 + e
 
 # mod4 + enter is bound in dwm to 'st'
 # mod4 + p is bound in dwm to 'dmenu'
+# mod4 + stfc bound to layout selection [spiral tile float columns]
