@@ -1029,30 +1029,13 @@ ResourcePref resources[] = {
 };
 #endif // XRESOURCES_PATCH
 
-static const char *mutecmd[] = { "pactl", "set-sink-mute", "@DEFAULT_SINK@", "toggle", NULL };
-static const char *volumedowncmd[] = { "pactl", "set-sink-volume", "@DEFAULT_SINK@", "-5%", NULL };
-static const char *volumeupcmd[] = { "pactl", "set-sink-volume", "@DEFAULT_SINK@", "+5%", NULL };
-static const char *brightnessupcmd[] = { "brightnessctl", "set", "+5%", NULL };
-static const char *brightnessdowncmd[] = { "brightnessctl", "set", "-5%", NULL };
-static const char *explorercmd[] = { "nemo", NULL };
-static const char *screenshotcmd[] = { "screenshot-rect-to-clip", NULL };
-static const char *slockcmd[] = { "slock", NULL };
-
 static const Key keys[] = {
-    { 0,                            XF86XK_AudioMute,             spawn,    {.v = mutecmd } },
-    { 0,                            XF86XK_AudioLowerVolume,      spawn,    {.v = volumedowncmd } },
-    { 0,                            XF86XK_AudioRaiseVolume,      spawn,    {.v = volumeupcmd } },
-    { 0,                            XF86XK_MonBrightnessUp,       spawn,    {.v = brightnessupcmd } },
-    { 0,                            XF86XK_MonBrightnessDown,     spawn,    {.v = brightnessdowncmd } },
 	/* modifier                     key            function                argument */
 	#if KEYMODES_PATCH
 	{ MODKEY,                       XK_Escape,     setkeymode,             {.ui = COMMANDMODE} },
 	#endif // KEYMODES_PATCH
 	{ MODKEY,                       XK_p,          spawn,                  {.v = dmenucmd } },
 	{ MODKEY,                       XK_Return,     spawn,                  {.v = termcmd } },
-	{ MODKEY,                       XK_e,          spawn,                  {.v = explorercmd } },
-	{ MODKEY,                       XK_Escape,     spawn,                  {.v = slockcmd } },
-	{ MODKEY|ShiftMask|ControlMask, XK_4,          spawn,                  {.v = screenshotcmd } },
 	#if RIODRAW_PATCH
 	{ MODKEY|ControlMask,           XK_p,          riospawnsync,           {.v = dmenucmd } },
 	{ MODKEY|ControlMask,           XK_Return,     riospawn,               {.v = termcmd } },
