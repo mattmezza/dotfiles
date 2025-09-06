@@ -17,7 +17,7 @@ XF86MonBrightnessDown
     brightness down
 
 Print
-    screenshot-rect-to-clip
+    dmscreenshot
 
 mod4 + shift + control + 4
     screenshot-rect-to-clip
