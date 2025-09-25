@@ -31,6 +31,12 @@ mod4 + shift + escape
 mod4 + e
     nemo ~/Downloads
 
+mod4 + shift + control + w
+    wallpaper-set-img
+
+mod4 + control + b
+    btop
+
 
 # mod4 + enter is bound in dwm to 'st'
 # mod4 + p is bound in dwm to 'dmenu'
