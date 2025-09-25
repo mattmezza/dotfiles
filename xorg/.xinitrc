@@ -21,6 +21,7 @@ elif [ "$WM" = "dwm" ]; then
     xset s 300 # Set XScreenSaver idle timeout to 5 minutes (300 seconds)
     xset dpms 420 600 900 # screen: blanked +7m, suspended +10m, off +15m
     xss-lock -l slock &
+    x-on-resize -sc 'autorandr --change' & # automatically change display config on connect/disconnect
     # sleep for 1s to allow for dwm and xorg to start properly before setting
     # the wallpaper
     (sleep 1 && exec wallpaper-set-img) &
