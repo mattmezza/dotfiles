@@ -1,0 +1,10 @@
+#!/bin/env sh
+
+SCREENRECORD_DIR="$HOME/screenrecord"
+mkdir -p "$SCREENRECORD_DIR"
+EPOCH_TIME=$(date +%s)
+FILENAME="${SCREENRECORD_DIR}/${EPOCH_TIME}.mp4"
+
+X=(); Y=(); W=(); H=(); # Initialize variables
+read -r X Y W H <<< $(slop -f "%x %y %w %h")
+ffmpeg -f x11grab -r 30 -video_size "$W"x"$H" -i :0.0+"$X","$Y" -c:v libx264 -preset ultrafast -crf 23 "$FILENAME"
