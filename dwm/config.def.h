@@ -527,8 +527,10 @@ static const Rule rules[] = {
 	RULE(.wintype = WTYPE "UTILITY", .isfloating = 1)
 	RULE(.wintype = WTYPE "TOOLBAR", .isfloating = 1)
 	RULE(.wintype = WTYPE "SPLASH", .isfloating = 1)
-	RULE(.class = "Pavucontrol", .isfloating = 1)
+	RULE(.class = "pavucontrol", .isfloating = 1)
 	RULE(.class = "Arandr", .isfloating = 1)
+	RULE(.class = "st-256color", .title = "termfloat", .isfloating = 1)
+	RULE(.class = "st-256color", .title = "calcfloat", .isfloating = 1)
 	RULE(.class = "chromium-personal", .tags = 1 << 8)
 	RULE(.class = "chromium-work", .tags = 1 << 0)
 	#if RENAMED_SCRATCHPADS_PATCH

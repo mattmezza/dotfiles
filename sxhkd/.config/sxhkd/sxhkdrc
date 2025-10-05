@@ -1,5 +1,11 @@
+mod4 + b
+    dmbrowser
+
 mod4 + c
     calc
+
+mod4 + shift + c
+    calc calcfloat
 
 XF86AudioMute
     vol mute
@@ -35,11 +41,13 @@ mod4 + shift + control + w
     wallpaper-set-img
 
 mod4 + control + b
-    st -T "btop" btop
+    st -t "btop" btop
 
 mod4 + e
     BEMOJI_PICKER_CMD="dmenu" bemoji
 
+mod4 + t
+    st -t "termfloat" -g 85x25+550+300
 
 # mod4 + enter is bound in dwm to 'st'
 # mod4 + p is bound in dwm to 'dmenu'

@@ -1,2 +1,2 @@
 #!/bin/env sh
-st -t "calc" -e bc -ql
+st -t "${1:-calc}" -e bc -ql
