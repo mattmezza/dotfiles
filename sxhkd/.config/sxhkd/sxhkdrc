@@ -35,7 +35,7 @@ mod4 + shift + control + w
     wallpaper-set-img
 
 mod4 + control + b
-    btop
+    st -T "btop" btop
 
 mod4 + e
     BEMOJI_PICKER_CMD="dmenu" bemoji
