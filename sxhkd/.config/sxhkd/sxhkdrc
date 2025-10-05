@@ -22,13 +22,13 @@ Print
 mod4 + shift + control + 4
     screenshot-rect-to-clip
 
-mod4 + escape
+mod4 + Escape
     slock
 
-mod4 + shift + escape
+mod4 + shift + Escape
     dmexit
 
-mod4 + e
+mod4 + f
     nemo ~/Downloads
 
 mod4 + shift + control + w
@@ -36,6 +36,9 @@ mod4 + shift + control + w
 
 mod4 + control + b
     btop
+
+mod4 + e
+    BEMOJI_PICKER_CMD="dmenu" bemoji
 
 
 # mod4 + enter is bound in dwm to 'st'
