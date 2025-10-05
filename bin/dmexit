@@ -8,7 +8,7 @@ done
 [ "$select" = "suspend" ] && systemctl suspend
 [ "$select" = "hibernate" ] && systemctl hibernate
 [ "$select" = "sth (suspend-then-hibernate)" ] && systemctl suspend-then-hibernate
-[ "$select" = "shutdown" ] && sudo shutdown -h0
-[ "$select" = "reboot" ] && sudo reboot now
+[ "$select" = "shutdown" ] && sudo systemctl poweroff
+[ "$select" = "reboot" ] && sudo systemctl reboot
 exit 0
 
