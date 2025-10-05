@@ -1,0 +1,5 @@
+#!/bin/env bash
+
+# The '-e' flag tells the terminal to execute the following command
+# $* passes all arguments given to the script (the command you type in dmenu)
+st -t "termfloat" -g 85x25 -e sh -c "sudo $*"
