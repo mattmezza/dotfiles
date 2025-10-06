@@ -66,7 +66,7 @@ fi
 #=========[ Exports ]===============
 export VISUAL=nvim
 export EDITOR=nvim
-export TERMINAL=alacritty
+export TERMINAL=st
 export JAVA_HOME=/usr/lib/jvm/java-17-openjdk
 export PIP_REQUIRE_VIRTUALENV=true
 export PYENV_ROOT="$HOME/.pyenv"
@@ -74,6 +74,8 @@ export NVM_DIR="$HOME/.nvm"
 export PACCO_DIR="$DOT/pacchi"
 export PACCO_FILE="$DOT/pacco.txt"
 export GPG_TTY=$(tty)
+export LC_ALL=en_US.UTF-8
+export TERM=xterm-256color
 
 gpip() { PIP_REQUIRE_VIRTUALENV="" pip "$@" }
 gi() { curl -sLw "\n" https://www.gitignore.io/api/$@ ;}
