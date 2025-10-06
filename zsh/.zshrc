@@ -75,7 +75,7 @@ export PACCO_DIR="$DOT/pacchi"
 export PACCO_FILE="$DOT/pacco.txt"
 export GPG_TTY=$(tty)
 export LC_ALL=en_US.UTF-8
-export TERM=xterm-256color
+export TERM=st-256color
 
 gpip() { PIP_REQUIRE_VIRTUALENV="" pip "$@" }
 gi() { curl -sLw "\n" https://www.gitignore.io/api/$@ ;}
@@ -89,6 +89,7 @@ loop() {
 }
 alias vim="nvim"
 alias vi="nvim"
+alias tmux="TERM=xterm-256color tmux"
 alias ..="cd .."
 alias ...="cd ../.."
 alias ....="cd ../../.."
