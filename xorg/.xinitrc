@@ -11,8 +11,6 @@ if [ "$WM" = "i3" ]; then
 elif [ "$WM" = "dwm" ]; then
     xcape -e 'Caps_Lock=Escape' &
     setxkbmap -layout us -variant altgr-intl -option "caps:ctrl_modifier,compose:rctrl" &
-    # make the mouse buttons back-fwd work
-    xbindkeys -f /home/matteo/.xbindkeysrc &
     nm-applet &
     slstatus &
     picom &
@@ -22,8 +20,7 @@ elif [ "$WM" = "dwm" ]; then
     xset dpms 420 600 900 # screen: blanked +7m, suspended +10m, off +15m
     xss-lock -l slock &
     x-on-resize -sc 'autorandr --change' & # automatically change display config on connect/disconnect
-    # sleep for 1s to allow for dwm and xorg to start properly before setting
-    # the wallpaper
+    # delay to allow dwm to start properly before setting the wallpaper
     (sleep 1 && exec wallpaper-set-img) &
     # wallpaper-set "#eeeeee" black ~/.config/i3/wallpaper.txt /tmp/wall.png &
     exec dwm

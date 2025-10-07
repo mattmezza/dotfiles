@@ -22,6 +22,14 @@ XF86MonBrightnessUp
 XF86MonBrightnessDown
     brightness down
 
+# prev button on mouse
+button8
+    xdotool key alt+Left
+
+# next button on mouse
+button9
+    xdotool key alt+Right
+
 Print
     dmscreenshot
 
