@@ -1034,6 +1034,6 @@
 	defaultBranch = main
 
 [includeIf "gitdir:~/dev/work/"]
-  path = .gitconfig-work
+  path = ~/dev/work/.gitconfig-work
 [url "git@github.com:"]
 	insteadOf = https://github.com/
