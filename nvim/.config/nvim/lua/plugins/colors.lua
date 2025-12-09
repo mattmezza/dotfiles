@@ -8,14 +8,25 @@ function SetColorScheme(color)
 end
 
 return {
-    {
-        "rose-pine/neovim",
-        name = "rose-pine",
-        config = function()
-            require('rose-pine').setup({
-                disable_background = true,
-            })
-            SetColorScheme()
-        end
-    },
+    "nendix/zen.nvim",
+    config = function()
+        require("zen").setup {
+            palette = {bg0 = "#000000"}
+        }
+        SetColorScheme("zen")
+    end,
+    lazy = false,
+    priority = 1000,
 }
+-- return {
+--     {
+--         "rose-pine/neovim",
+--         name = "rose-pine",
+--         config = function()
+--             require('rose-pine').setup({
+--                 disable_background = true,
+--             })
+--             SetColorScheme()
+--         end
+--     },
+-- }
