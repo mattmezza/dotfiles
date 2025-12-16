@@ -34,7 +34,7 @@ Print
     dmscreenshot
 
 mod4 + shift + control + 4
-    screenshot-rect-to-clip
+    flameshot gui
 
 mod4 + Escape
     slock

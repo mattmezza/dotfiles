@@ -17,7 +17,21 @@ uninstall_deps() {
 }
 
 unstow_all() {
-    stow -D alacritty bookmarker dunst git i3 nvim picom screenlayout sxhkd tmux xorg wallpapers zsh
+    stow -D
+        alacritty \
+        bookmarker \
+        dunst \
+        flameshot \
+        git \
+        i3 \
+        nvim \
+        picom \
+        screenlayout \
+        sxhkd \
+        tmux \
+        wallpapers \
+        xorg \
+        zsh
     sudo stow -D --target=/usr/local/bin bin
 
     if [[ $OSTYPE == darwin* ]]; then
