@@ -6,7 +6,7 @@
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
 static char *font = "Liberation Mono:pixelsize=15:antialias=true:autohint=true";
-static int borderpx = 15;
+static int borderpx = 2;
 
 /* How to align the content in the window when the size of the terminal
  * doesn't perfectly match the size of the window. The values are percentages.
@@ -128,33 +128,35 @@ char *xdndescchar = " !\"#$&'()*;<>?[\\]^`{|}~";
 
 /* Terminal colors (16 first used in escape sequence) */
 static const char *colorname[] = {
+    /* taken from https://github.com/nendix/zen.nvim/blob/main/extras/ghostty/zen_dark */
+
 	/* 8 normal colors */
-	"#45475A",
-	"#F38BA8",
-	"#A6E3A1",
-	"#F9E2AF",
-	"#89B4FA",
-	"#F5C2E7",
-	"#94E2D5",
-	"#BAC2DE",
+    "#222222",
+    "#B9A0A0",
+    "#a0b9a0",
+    "#b9b0a0",
+    "#a0a0b9",
+    "#b0a0b9",
+    "#a0b0b0",
+    "#b2b2b2",
 
 	/* 8 bright colors */
-	"#585B70",
-	"#F38BA8",
-	"#A6E3A1",
-	"#F9E2AF",
-	"#89B4FA",
-	"#F5C2E7",
-	"#94E2D5",
-	"#A6ADC8",
+    "#323232",
+    "#b9a0a0",
+    "#a0b9a0",
+    "#b9b0a0",
+    "#a0a0b9",
+    "#b0a0b9",
+    "#a0b0b0",
+    "#d0d0d0",
 
 	[255] = 0,
 
 	/* more colors can be added after 255 to use with DefaultXX */
-	"#cccccc",
+	"#E0E0E0",
 	"#555555",
-	"#EFEFEF", /* default foreground colour */
-	"#101010", /* default background colour */
+	"#E0E0E0", /* default foreground colour */
+	"#121212", /* default background colour */
 };
 
 
