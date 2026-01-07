@@ -4,6 +4,10 @@
 
 include config.mk
 
+# Auto-detect hostname for compile-time configuration
+HOSTNAME := $(shell cat /proc/sys/kernel/hostname 2>/dev/null || hostname 2>/dev/null || echo "unknown")
+CPPFLAGS += -DHOST_$(HOSTNAME)
+
 REQ = util
 COM =\
 	components/battery\

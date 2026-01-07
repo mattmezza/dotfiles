@@ -9,6 +9,22 @@ static const char unknown_str[] = "n/a";
 /* maximum output string length */
 #define MAXLEN 2048
 
+/* Hostname-specific configurations */
+#if defined(HOST_arch)
+	/* ThinkPad T480 configuration */
+	#define WIFI_INTERFACE "wlp3s0"
+	#define HAS_DUAL_BATTERY 1
+#elif defined(HOST_muletto)
+	/* Dell laptop configuration */
+	#define WIFI_INTERFACE "wlan0"
+	#define HAS_DUAL_BATTERY 0
+#else
+	/* Fallback default configuration */
+	#define WIFI_INTERFACE "wlan0"
+	#define HAS_DUAL_BATTERY 0
+	#warning "Unknown hostname, using default configuration"
+#endif
+
 /*
  * function            description                     argument (example)
  *
@@ -66,9 +82,22 @@ static const char unknown_str[] = "n/a";
  */
 static const struct arg args[] = {
 	/* function             format          argument */
+
+	/* Battery configuration - conditional based on hardware */
+#if HAS_DUAL_BATTERY
+	/* ThinkPad T480: Show both batteries separately */
 	{ battery_perc,         "B0_%s%%",      "BAT0" },
 	{ battery_state,        "_%s",          "BAT0" },
 	{ battery_remaining,    "%s",           "BAT0" },
+	{ battery_perc,         " B1_%s%%",     "BAT1" },
+	{ battery_state,        "_%s",          "BAT1" },
+	{ battery_remaining,    "%s",           "BAT1" },
+#else
+	/* Dell: Single battery */
+	{ battery_perc,         "B0_%s%%",      "BAT0" },
+	{ battery_state,        "_%s",          "BAT0" },
+	{ battery_remaining,    "%s",           "BAT0" },
+#endif
 
 	{ cpu_perc,             " C%s%%",       NULL },
 	{ temp,                 "%s°c",         "/sys/class/thermal/thermal_zone1/temp" },
@@ -77,13 +106,12 @@ static const struct arg args[] = {
 
 	{ disk_free,            " S%s",         "/" },
 
-    // Can only show properly one of these two because net_speed_rx and
-    // net_speed_tx use static variables and whatever comes last will be shown
-    // overriding the previous interface (which will display as 16.4Pi rx/tx.
-    { netspeed_rx,          " W↓%s",        "wlan0" },
-    { netspeed_tx,          "↑%s",          "wlan0" },
-    //{ netspeed_rx,          " E↓%s",        "enp0s13f0u1u4" },
-    //{ netspeed_tx,          "↑%s",          "enp0s13f0u1u4" },
+	// Can only show properly one of these two because net_speed_rx and
+	// net_speed_tx use static variables and whatever comes last will be shown
+	// overriding the previous interface (which will display as 16.4Pi rx/tx.
+	/* Network configuration - use detected interface */
+	{ netspeed_rx,          " W↓%s",        WIFI_INTERFACE },
+	{ netspeed_tx,          "↑%s",          WIFI_INTERFACE },
 
 	{ run_command,          " V%s",         "volume" },
 
