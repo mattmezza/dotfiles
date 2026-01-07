@@ -1,0 +1,50 @@
+#compdef hop
+
+_hop() {
+    local curcontext="$curcontext" state line
+    typeset -A opt_args
+
+    local -a commands
+    commands=(
+        'mark:Register project with template'
+        'unmark:Remove project from registry'
+        'allow:Trust modified .tmux-session'
+        'refresh:Re-copy template from source'
+        'list:Show all registered projects'
+        'templates:List available templates'
+        'tpls:List available templates (alias)'
+        'edit:Open registry in editor'
+        'gc:Remove entries for deleted directories'
+        'prune:Kill sessions for deleted directories'
+        'version:Print version'
+        'help:Print usage'
+        'self-update:Update hop to latest version'
+        'extras:Manage extra templates'
+        'completion:Output shell completions'
+        'uninstall:Remove hop from system'
+    )
+
+    _arguments -C \
+        '(-n --dry-run)'{-n,--dry-run}'[Preview actions]' \
+        '1: :->command' \
+        '*:: :->args'
+
+    case $state in
+        command) _describe -t commands 'hop command' commands ;;
+        args)
+            case $line[1] in
+                mark)
+                    local templates_dir="${HOME}/.config/hop/templates"
+                    _arguments '1:template:_files -W "$templates_dir"' '2:path:_files -/'
+                    ;;
+                unmark) _arguments '(-d --delete-template)'{-d,--delete-template}'[Delete template]' '(-k --keep-template)'{-k,--keep-template}'[Keep template]' ;;
+                refresh|prune) _arguments '(-f --force)'{-f,--force}'[Skip confirmation]' ;;
+                completion) _arguments '1:shell:(bash zsh --how-to)' ;;
+                extras) _arguments '1:action:(list install)' ;;
+                uninstall) _arguments '(-f --force)'{-f,--force}'[Skip confirmation]' '--keep-templates[Keep templates]' ;;
+            esac
+            ;;
+    esac
+}
+
+_hop "$@"
