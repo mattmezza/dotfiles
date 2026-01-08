@@ -90,6 +90,7 @@ loop() {
 alias vim="nvim"
 alias vi="nvim"
 alias tmux="TERM=xterm-256color tmux"
+alias hop="TERM=xterm-256color hop"
 alias ..="cd .."
 alias ...="cd ../.."
 alias ....="cd ../../.."
