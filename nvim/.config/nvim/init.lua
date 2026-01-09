@@ -57,7 +57,6 @@ vim.opt.hidden = true
 vim.opt.errorbells = false
 vim.opt.backspace = "indent,eol,start"
 vim.opt.autochdir = false
-vim.opt.iskeyword:append("-")
 vim.opt.isfname:append("@-@")
 vim.opt.path:append("**")
 vim.opt.selection = "exclusive"
