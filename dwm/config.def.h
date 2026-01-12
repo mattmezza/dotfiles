@@ -1036,7 +1036,8 @@ static const Key keys[] = {
 
     /* layout selection */
 	#if COLUMNS_LAYOUT
-	{ MODKEY|ShiftMask,             XK_c,          setlayout,              {.v = &layouts[0]} },
+	/* mod4+shift+c is used by sxhkd for calc calcfloat */
+	// { MODKEY|ShiftMask,             XK_c,          setlayout,              {.v = &layouts[0]} },
 	#endif // COLUMNS_LAYOUT
 	{ MODKEY|ShiftMask,             XK_t,          setlayout,              {.v = &layouts[1]} },
 	#if FIBONACCI_SPIRAL_LAYOUT
@@ -1441,7 +1442,11 @@ static const Key keys[] = {
 	TAGKEYS(                        XK_1,                                  0)
 	TAGKEYS(                        XK_2,                                  1)
 	TAGKEYS(                        XK_3,                                  2)
-	TAGKEYS(                        XK_4,                                  3)
+	/* TAGKEYS(XK_4, 3) expanded - mod4+ctrl+shift+4 omitted, used by sxhkd for flameshot */
+	{ MODKEY,                       XK_4,      view,           {.ui = 1 << 3} },
+	{ MODKEY|ControlMask,           XK_4,      toggleview,     {.ui = 1 << 3} },
+	{ MODKEY|ShiftMask,             XK_4,      tag,            {.ui = 1 << 3} },
+	/* { MODKEY|ControlMask|ShiftMask, XK_4,      toggletag,      {.ui = 1 << 3} }, // used by sxhkd for flameshot */
 	TAGKEYS(                        XK_5,                                  4)
 	TAGKEYS(                        XK_6,                                  5)
 	TAGKEYS(                        XK_7,                                  6)
