@@ -26,6 +26,7 @@ unstow_all() {
         i3 \
         nvim \
         picom \
+        screenkey \
         screenlayout \
         sxhkd \
         tmux \
