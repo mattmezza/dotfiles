@@ -157,3 +157,6 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 
 # .local/bin
 export PATH="$HOME/.local/bin:$PATH"
+
+# source my secrets
+[[ -f ~/.secrets ]] && source $HOME/.secrets
