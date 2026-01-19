@@ -1,0 +1,22 @@
+services:
+  minimal:
+    build:
+      context: .
+      dockerfile: Dockerfile.minimal
+    image: sandbox:minimal
+    container_name: sandbox-minimal
+    hostname: sandbox-minimal
+    stdin_open: true
+    tty: true
+    security_opt:
+      - seccomp:unconfined
+    environment:
+      - TERM=xterm-256color
+    env_file:
+      - .env
+    volumes:
+      - ${HOME}/.ssh:/home/matteo/.ssh:ro
+      - sandbox-minimal-workspace:/workspace
+
+volumes:
+  sandbox-minimal-workspace:

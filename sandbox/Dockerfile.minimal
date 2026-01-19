@@ -4,10 +4,10 @@ FROM archlinux:base-devel
 ARG USER_UID=1000
 ARG USER_GID=1000
 
-# 1. Install system dependencies & your shell
+# 1. Install minimal system dependencies (no nodejs, npm, ripgrep, gh)
 RUN pacman-key --init && \
     pacman -Syu --noconfirm && \
-    pacman -S --noconfirm git zsh tmux neovim stow sudo openssh direnv curl nodejs npm ripgrep github-cli
+    pacman -S --noconfirm git zsh tmux neovim stow sudo openssh curl
 
 RUN echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen && \
     locale-gen
@@ -22,27 +22,15 @@ RUN groupadd -g $USER_GID $USERNAME && \
 USER $USERNAME
 WORKDIR /home/$USERNAME
 
-# install opencode
-RUN sudo curl -L "https://github.com/anomalyco/opencode/releases/latest/download/opencode-linux-amd64" \
-    -o /usr/local/bin/opencode && \
-    sudo chmod +x /usr/local/bin/opencode
-# install claude-code
-RUN curl -fsSL https://claude.ai/install.sh | bash
+# No AI CLIs (no opencode, no claude-code)
 
 # Ensure ~/.local/bin is in the PATH for the session
 ENV PATH="/home/matteo/.local/bin:${PATH}"
 
-# 3. Clone and apply dotfiles
+# 3. Clone and apply dotfiles (minimal: tmux, zsh only)
 RUN git clone https://github.com/mattmezza/dotfiles.git dotfiles && \
     cd dotfiles && \
-    stow git nvim tmux zsh
-
-RUN mkdir -p /home/matteo/dotfiles/pacchi/pacco && \
-    curl -s -L https://raw.githubusercontent.com/mattmezza/pacco/master/pacco.sh \
-    -o /home/matteo/dotfiles/pacchi/pacco/pacco.sh && \
-    chmod +x /home/matteo/dotfiles/pacchi/pacco/pacco.sh
-
-RUN GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no" bash /home/matteo/dotfiles/pacchi/pacco/pacco.sh i pacco https://github.com/mattmezza/pacco.git 1.0.0
+    stow tmux zsh
 
 # 4. Create workspace and ssh directories with correct permissions
 RUN sudo mkdir -p /workspace && \

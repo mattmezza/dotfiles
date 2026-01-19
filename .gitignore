@@ -14,3 +14,4 @@ st/st
 slock/slock
 slstatus/slstatus
 .tmux-session
+sandbox/.env

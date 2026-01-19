@@ -1,0 +1,15 @@
+services:
+  dev:
+    extends:
+      file: compose.yaml
+      service: sandbox-base
+    container_name: sandbox-dev
+    hostname: sandbox-dev
+    command: ["sandbox-dev"]
+    volumes:
+      - ${HOME}/.ssh:/home/matteo/.ssh:ro
+      - ${HOME}/.gnupg:/home/matteo/.gnupg:ro
+      - sandbox-dev-workspace:/workspace
+
+volumes:
+  sandbox-dev-workspace:
