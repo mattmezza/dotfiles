@@ -3,7 +3,7 @@ FROM archlinux:base-devel
 # 1. Install system dependencies & your shell
 RUN pacman-key --init && \
     pacman -Syu --noconfirm && \
-    pacman -S --noconfirm git zsh tmux neovim stow sudo openssh direnv
+    pacman -S --noconfirm git zsh tmux neovim stow sudo openssh direnv curl
 
 RUN echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen && \
     locale-gen
@@ -16,6 +16,10 @@ RUN useradd -m -G wheel -s /bin/zsh $USERNAME && \
     echo "$USERNAME ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 USER $USERNAME
 WORKDIR /home/$USERNAME
+
+RUN sudo curl -L "https://github.com/anomalyco/opencode/releases/latest/download/opencode-linux-amd64" \
+    -o /usr/local/bin/opencode && \
+    sudo chmod +x /usr/local/bin/opencode
 
 # 3. Clone and apply dotfiles
 RUN git clone https://github.com/mattmezza/dotfiles.git dotfiles && \
