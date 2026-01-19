@@ -29,6 +29,7 @@ RUN mkdir -p /home/matteo/dotfiles/pacchi/pacco && \
 
 RUN GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no" bash /home/matteo/dotfiles/pacchi/pacco/pacco.sh i pacco https://github.com/mattmezza/pacco.git 1.0.0
 
+SHELL ["/usr/bin/zsh", "-c"]
 # Set ZSH as default
 # ENTRYPOINT ["/bin/zsh", "-l"]
 # Or directly start in tmux
