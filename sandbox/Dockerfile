@@ -32,4 +32,4 @@ RUN GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no" bash /home/matteo/dotfiles
 # Set ZSH as default
 # ENTRYPOINT ["/bin/zsh", "-l"]
 # Or directly start in tmux
-ENTRYPOINT ["/bin/zsh", "-c", "tmux new-session -d -s sandbox"]
+ENTRYPOINT ["/bin/zsh", "-c", "tmux new-session -d -s sandbox; sleep infinity"]
