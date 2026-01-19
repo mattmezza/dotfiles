@@ -128,19 +128,25 @@ run_sandbox() {
     local FULL_NAME="sandbox-$NAME"
     [ -z "$NAME" ] && { show_help; exit 1; }
 
+    # Check if container exists (running or stopped)
     if [ "$(docker ps -aq -f name=^/${FULL_NAME}$)" ]; then
-        echo "--> Sandbox '$FULL_NAME' exists. Starting/Attaching..."
-        # Ensure it is running
+        echo "--> Sandbox '$FULL_NAME' exists. Ensuring it is started..."
         docker start "$FULL_NAME" >/dev/null
-        # Use our attach logic
         attach_sandbox "$NAME"
     else
-        echo "--> Creating new sandbox: $FULL_NAME"
-        # ... (rest of your env logic)
-        docker run -it --init --name "$FULL_NAME" $ENV_FLAG \
+        echo "--> Creating brand-new sandbox: $FULL_NAME"
+        # Run DETACHED - the entrypoint's sleep infinity keeps it alive
+        docker run -d --name "$FULL_NAME" \
             -e TERM=xterm-256color \
+            $ENV_FLAG \
             --security-opt seccomp=unconfined \
             "$IMAGE_NAME" "$FULL_NAME"
+
+        # Give tmux a moment to initialize
+        sleep 0.5
+
+        # Now attach to the tmux session via exec
+        attach_sandbox "$NAME"
     fi
 }
 
@@ -149,13 +155,12 @@ attach_sandbox() {
     local NAME=$1
     local FULL_NAME="sandbox-$NAME"
 
-    # Ensure container is running
-    docker start "$FULL_NAME" 2>/dev/null
+    # Start it if it's stopped
+    docker start "$FULL_NAME" >/dev/null 2>&1
 
-    # Exec into the existing tmux session
-    # We use -t FULL_NAME because that's what we passed to the entrypoint
-    docker exec -it "$FULL_NAME" tmux attach-session -t "$FULL_NAME" || \
-    docker exec -it "$FULL_NAME" /usr/bin/zsh -l
+    # Use exec to "peek" into the already running tmux session
+    # This leaves the container's main 'sleep infinity' process alone
+    docker exec -it "$FULL_NAME" tmux attach-session -t "$FULL_NAME"
 }
 
 # --- Command Router ---

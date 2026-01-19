@@ -32,20 +32,25 @@ RUN GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no" bash /home/matteo/dotfiles
 SHELL ["/usr/bin/zsh", "-c"]
 ENV TERM=xterm-256color
 
-RUN echo '#!/bin/zsh\n\
-SESSION_NAME=${1:-sandbox}\n\
-tmux has-session -t "$SESSION_NAME" 2>/dev/null\n\
-if [ $? != 0 ]; then\n\
-  tmux new-session -d -s "$SESSION_NAME"\n\
-fi\n\
-\n\
-# If we are in an interactive terminal, attach to tmux\n\
-if [ -t 0 ]; then\n\
-  tmux attach-session -t "$SESSION_NAME"\n\
-else\n\
-  # If no TTY (background), just wait so the container stays up\n\
-  tail -f /dev/null\n\
-fi' > /home/matteo/entrypoint.sh && \
-chmod +x /home/matteo/entrypoint.sh
+RUN <<EOF cat > /home/matteo/entrypoint.sh
+#!/bin/zsh
+SESSION_NAME=\${1:-sandbox}
 
+# 1. Ensure the tmux server is running a session in the background
+tmux has-session -t "\$SESSION_NAME" 2>/dev/null
+if [ \$? != 0 ]; then
+  tmux new-session -d -s "\$SESSION_NAME" -n "main" "/usr/bin/zsh"
+fi
+
+# 2. If we are in an interactive terminal, attach to that session
+if [ -t 0 ]; then
+  tmux attach-session -t "\$SESSION_NAME"
+fi
+
+# 3. CRITICAL: This line keeps the container alive after you detach
+# or if the attach command above exits.
+sleep infinity
+EOF
+
+RUN chmod +x /home/matteo/entrypoint.sh
 ENTRYPOINT ["/home/matteo/entrypoint.sh"]
