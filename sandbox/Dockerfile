@@ -38,7 +38,14 @@ tmux has-session -t "$SESSION_NAME" 2>/dev/null\n\
 if [ $? != 0 ]; then\n\
   tmux new-session -d -s "$SESSION_NAME"\n\
 fi\n\
-tmux attach-session -t "$SESSION_NAME"' > /home/matteo/entrypoint.sh && \
+\n\
+# If we are in an interactive terminal, attach to tmux\n\
+if [ -t 0 ]; then\n\
+  tmux attach-session -t "$SESSION_NAME"\n\
+else\n\
+  # If no TTY (background), just wait so the container stays up\n\
+  tail -f /dev/null\n\
+fi' > /home/matteo/entrypoint.sh && \
 chmod +x /home/matteo/entrypoint.sh
 
 ENTRYPOINT ["/home/matteo/entrypoint.sh"]

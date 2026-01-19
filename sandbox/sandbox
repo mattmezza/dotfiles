@@ -129,18 +129,16 @@ run_sandbox() {
     [ -z "$NAME" ] && { show_help; exit 1; }
 
     if [ "$(docker ps -aq -f name=^/${FULL_NAME}$)" ]; then
-        echo "--> Sandbox '$FULL_NAME' already exists. Switching to attach..."
+        echo "--> Sandbox '$FULL_NAME' exists. Starting/Attaching..."
+        # Ensure it is running
+        docker start "$FULL_NAME" >/dev/null
+        # Use our attach logic
         attach_sandbox "$NAME"
     else
         echo "--> Creating new sandbox: $FULL_NAME"
-        local ENV_FLAG=""
-        if [ -f "$SECRETS_FILE" ]; then
-            ENV_FLAG="--env-file $SECRETS_FILE"
-            echo "    (Config: Loaded secrets from $SECRETS_FILE)"
-        fi
-        docker run -it --init --name "$FULL_NAME" \
+        # ... (rest of your env logic)
+        docker run -it --init --name "$FULL_NAME" $ENV_FLAG \
             -e TERM=xterm-256color \
-            $ENV_FLAG \
             --security-opt seccomp=unconfined \
             "$IMAGE_NAME" "$FULL_NAME"
     fi
@@ -150,13 +148,14 @@ run_sandbox() {
 attach_sandbox() {
     local NAME=$1
     local FULL_NAME="sandbox-$NAME"
-    if [ "$(docker ps -aq -f name=^/${FULL_NAME}$)" ]; then
-        [ ! "$(docker ps -q -f name=^/${FULL_NAME}$)" ] && { docker start "$FULL_NAME"; sleep 1; }
-        docker exec -it "$FULL_NAME" tmux attach-session -t "$FULL_NAME" || \
-        docker exec -it "$FULL_NAME" /usr/bin/zsh -l
-    else
-        echo "Error: Sandbox '$FULL_NAME' does not exist."; exit 1
-    fi
+
+    # Ensure container is running
+    docker start "$FULL_NAME" 2>/dev/null
+
+    # Exec into the existing tmux session
+    # We use -t FULL_NAME because that's what we passed to the entrypoint
+    docker exec -it "$FULL_NAME" tmux attach-session -t "$FULL_NAME" || \
+    docker exec -it "$FULL_NAME" /usr/bin/zsh -l
 }
 
 # --- Command Router ---
