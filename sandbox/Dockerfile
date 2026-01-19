@@ -30,7 +30,15 @@ RUN mkdir -p /home/matteo/dotfiles/pacchi/pacco && \
 RUN GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no" bash /home/matteo/dotfiles/pacchi/pacco/pacco.sh i pacco https://github.com/mattmezza/pacco.git 1.0.0
 
 SHELL ["/usr/bin/zsh", "-c"]
-# Set ZSH as default
-# ENTRYPOINT ["/bin/zsh", "-l"]
-# Or directly start in tmux
-ENTRYPOINT ["/bin/zsh", "-c", "tmux new-session -d -s sandbox; sleep infinity"]
+ENV TERM=xterm-256color
+
+RUN echo '#!/bin/zsh\n\
+SESSION_NAME=${1:-sandbox}\n\
+tmux has-session -t "$SESSION_NAME" 2>/dev/null\n\
+if [ $? != 0 ]; then\n\
+  tmux new-session -d -s "$SESSION_NAME"\n\
+fi\n\
+tmux attach-session -t "$SESSION_NAME"' > /home/matteo/entrypoint.sh && \
+chmod +x /home/matteo/entrypoint.sh
+
+ENTRYPOINT ["/home/matteo/entrypoint.sh"]
