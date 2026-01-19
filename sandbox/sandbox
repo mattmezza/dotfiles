@@ -138,7 +138,7 @@ run_sandbox() {
             ENV_FLAG="--env-file $SECRETS_FILE"
             echo "    (Config: Loaded secrets from $SECRETS_FILE)"
         fi
-        docker run -it --name "$FULL_NAME" $ENV_FLAG --security-opt seccomp=unconfined "$IMAGE_NAME"
+        docker run -it --init --name "$FULL_NAME" $ENV_FLAG --security-opt seccomp=unconfined "$IMAGE_NAME"
     fi
 }
 
