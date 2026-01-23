@@ -1,0 +1,18 @@
+#! /bin/env bash
+
+if [ -z "$1" ] || [ -z "$2" ]; then
+    echo "Usage: $0 input.pdf output.pdf [setting]"
+    echo "Settings: screen (low), ebook (medium), printer (high)"
+    exit 1
+fi
+
+# Default to 'screen' if no setting is provided
+QUALITY=${3:-/screen}
+
+# Add leading slash if missing
+[[ $QUALITY != /* ]] && QUALITY="/$QUALITY"
+
+gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=$QUALITY \
+   -dNOPAUSE -dQUIET -dBATCH -sOutputFile="$2" "$1"
+
+echo "Done! File saved as $2 using $QUALITY settings."
