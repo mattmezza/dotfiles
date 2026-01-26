@@ -12,6 +12,7 @@ bluez
 bluez-utils
 bolt
 brightnessctl
+btop
 ccid
 chromium
 clang
@@ -28,6 +29,7 @@ efibootmgr
 fakeroot
 fastfetch
 feh
+flameshot
 fprintd
 fwupd
 fzf
@@ -54,6 +56,7 @@ jq
 kitty
 kubectl
 kubectx
+libfdk-aac
 libreoffice-still
 linux
 linux-firmware
@@ -71,11 +74,13 @@ net-tools
 network-manager-applet
 networkmanager
 networkmanager-openconnect
+nmap
 noto-fonts
 noto-fonts-emoji
 noto-fonts-extra
 ntfs-3g
 nvm
+obs-studio
 ollama
 opensc
 os-prober
@@ -86,6 +91,7 @@ pavucontrol
 picom
 playerctl
 postgresql-libs
+pre-commit
 pulseaudio
 pulseaudio-alsa
 pulseaudio-bluetooth
@@ -140,10 +146,12 @@ rofimoji
 rsync
 rustup
 sbctl
+screenkey
 scrot
 spectacle
 stow
 sudo
+sxhkd
 terraform
 tlp
 tmux
@@ -151,7 +159,6 @@ transmission-cli
 tree
 tslib
 ttf-fira-code
-ttf-font-awesome
 ttf-hack
 unzip
 upower
@@ -159,9 +166,12 @@ usb_modeswitch
 usbmuxd
 usbutils
 vault
+vhs
 webkit2gtk-4.1
 woff2
+woff2-font-awesome
 xapp
+xbindkeys
 xcape
 xclip
 xcolor

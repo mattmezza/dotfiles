@@ -1,7 +1,10 @@
+bemoji 0.4.0-1
 chromium-widevine 1:4.10.2891.0-1
 clipscreen-git r27.b654271-1
 farbfeld 4-2
 farbfeld-debug 4-2
+globalprotect-openconnect-git 2.4.5.r0.g2aa875a-1
+keyviz-bin-debug 2.0.0a-1
 libfprint-2-tod1-broadcom 5.14.003.0-1
 libfprint-tod-git 1.94.7+tod1.r46.g5d0de75-1
 maven39 3.9.6-1
@@ -9,9 +12,13 @@ neofetch 7.1.0-2
 noson-app 5.6.13-1
 noson-app-debug 5.6.13-1
 obinskit 1.2.11-2
+opencode-bin 0.14.1-1
 openconnect-sso 0.8.0-6
 pyenv-virtualenv 1:1.2.4-1
 python-ewmh 0.1.6-7
+python-pyqt5-webengine 5.15.7-2
+qt5-webchannel 5.15.17+kde+r3-1
+qt5-webengine 5.15.19-3
 quarkuscli-bin 3.21.2-1
 r8152-dkms 2.20.1-1
 rofi-power-menu 3.1.0-1
@@ -25,4 +32,5 @@ udevil 0.4.4-4
 vial-appimage v0.7.3-1
 x-on-resize 0.2-1
 xinit-xsession 1-5
-yay 12.4.2-1
+yay 12.5.7-1
+yay-debug 12.5.7-1
