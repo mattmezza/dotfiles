@@ -23,7 +23,7 @@ elif [ "$WM" = "dwm" ]; then
     # delay to allow dwm to start properly before setting the wallpaper
     (sleep 1 && exec wallpaper-set-img) &
     # wallpaper-set "#eeeeee" black ~/.config/i3/wallpaper.txt /tmp/wall.png &
-    exec dwm
+    exec dbus-run-session dwm
 else
     echo "Unsupported window manager: $WM"
     exit 1
