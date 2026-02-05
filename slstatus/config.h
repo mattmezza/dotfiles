@@ -101,6 +101,7 @@ static const struct arg args[] = {
 
 	{ cpu_perc,             " C%s%%",       NULL },
 	{ temp,                 "%s°c",         "/sys/class/thermal/thermal_zone1/temp" },
+	{ load_avg,             " L%s",         NULL },
 
 	{ ram_used,             " M%s",         NULL },
 
