@@ -1,0 +1,5 @@
+#! /bin/env bash
+
+KEY="${1:-Shift_L}"
+
+while true; do xdotool key $KEY; sleep 60; done
