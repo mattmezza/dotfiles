@@ -15,6 +15,7 @@ elif [ "$WM" = "dwm" ]; then
     slstatus &
     picom &
     dunst &
+    clipmenud &
     sxhkd &
     xset s 300 # Set XScreenSaver idle timeout to 5 minutes (300 seconds)
     xset dpms 420 600 900 # screen: blanked +7m, suspended +10m, off +15m

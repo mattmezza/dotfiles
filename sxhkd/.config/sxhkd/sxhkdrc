@@ -34,7 +34,7 @@ Print
     dmscreenshot
 
 mod4 + shift + control + 4
-    flameshot gui -c
+    flameshot gui
 
 mod4 + Escape
     slock
