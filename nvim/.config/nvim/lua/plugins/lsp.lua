@@ -24,30 +24,32 @@ return {
 
         require("fidget").setup({})
         require("mason").setup()
+
+        vim.lsp.config('lua_ls', {
+            capabilities = capabilities,
+            settings = {
+                Lua = {
+                    diagnostics = {
+                        globals = { "vim", "it", "describe", "before_each", "after_each" },
+                    }
+                }
+            }
+        })
+
+        vim.lsp.config('jdtls', {
+            capabilities = capabilities
+        })
+
+        vim.lsp.enable('lua_ls')
+        vim.lsp.enable('jdtls')
+
         require("mason-lspconfig").setup({
             ensure_installed = {
                 "lua_ls",
             },
             handlers = {
-                function(server_name) -- default handler (optional)
-
-                    require("lspconfig")[server_name].setup {
-                        capabilities = capabilities
-                    }
-                end,
-
-                ["lua_ls"] = function()
-                    local lspconfig = require("lspconfig")
-                    lspconfig.lua_ls.setup {
-                        capabilities = capabilities,
-                        settings = {
-                            Lua = {
-                                diagnostics = {
-                                    globals = { "vim", "it", "describe", "before_each", "after_each" },
-                                }
-                            }
-                        }
-                    }
+                function(server_name)
+                    pcall(vim.lsp.enable, server_name)
                 end,
             }
         })
@@ -57,7 +59,7 @@ return {
         cmp.setup({
             snippet = {
                 expand = function(args)
-                    require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
+                    require('luasnip').lsp_expand(args.body)
                 end,
             },
             mapping = cmp.mapping.preset.insert({
@@ -68,14 +70,13 @@ return {
             }),
             sources = cmp.config.sources({
                 { name = 'nvim_lsp' },
-                { name = 'luasnip' }, -- For luasnip users.
+                { name = 'luasnip' },
             }, {
                 { name = 'buffer' },
             })
         })
 
         vim.diagnostic.config({
-            -- update_in_insert = true,
             float = {
                 focusable = false,
                 style = "minimal",
@@ -85,8 +86,5 @@ return {
                 prefix = "",
             },
         })
-        require("lspconfig").jdtls.setup({
-            capabilities = capabilities
-        })
-end
+    end
 }
