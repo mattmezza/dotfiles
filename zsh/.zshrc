@@ -76,6 +76,9 @@ export PACCO_FILE="$DOT/pacco.txt"
 export GPG_TTY=$(tty)
 export LC_ALL=en_US.UTF-8
 export TERM=st-256color
+export QT_QPA_PLATFORMTHEME=qt5ct
+export QT_QPA_PLATFORMTHEME=qt6ct
+export GTK_THEME=Adwaita:dark
 
 gpip() { PIP_REQUIRE_VIRTUALENV="" pip "$@" }
 gi() { curl -sLw "\n" https://www.gitignore.io/api/$@ ;}
