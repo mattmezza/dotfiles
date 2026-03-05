@@ -12,6 +12,7 @@ elif [ "$WM" = "dwm" ]; then
     xcape -e 'Caps_Lock=Escape' &
     setxkbmap -layout us -variant altgr-intl -option "caps:ctrl_modifier,compose:rctrl" &
     nm-applet &
+    blueman-applet &
     slstatus &
     picom &
     dunst &
