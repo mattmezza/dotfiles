@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Web template - four windows [src, ai, srv, misc]
+# Available variables: $SESSION_NAME, $PROJECT_PATH
+
+tmux rename-window -t "$SESSION_NAME:1" "src"
+tmux send-keys -t "$SESSION_NAME:src" " clear && printf '\033[0;37m# Use this shell to start your editor\033[0m\n'" C-m
+
+tmux new-window -t "$SESSION_NAME" -n "ai"
+tmux send-keys -t "$SESSION_NAME:ai" " clear && printf '\033[0;37m# Use this shell to start your agent\033[0m\n'" C-m
+
+tmux new-window -t "$SESSION_NAME" -n "srv"
+tmux send-keys -t "$SESSION_NAME:srv" " clear && printf '\033[0;37m# Use this shell to start your servers\033[0m\n'" C-m
+
+tmux new-window -t "$SESSION_NAME" -n "misc"
+tmux send-keys -t "$SESSION_NAME:misc" " clear && printf '\033[0;37m# Use this shell to perform misc tasks\033[0m\n'" C-m
+
+tmux select-window -t "$SESSION_NAME:1"
+

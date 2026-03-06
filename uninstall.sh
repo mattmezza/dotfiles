@@ -23,6 +23,7 @@ unstow_all() {
         dunst \
         flameshot \
         git \
+        hop \
         i3 \
         nvim \
         picom \
