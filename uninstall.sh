@@ -22,7 +22,9 @@ unstow_all() {
         bookmarker \
         dunst \
         flameshot \
+        fonts \
         git \
+        gnupg \
         hop \
         i3 \
         nvim \
