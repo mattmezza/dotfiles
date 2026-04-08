@@ -26,6 +26,6 @@ if [ -z "$@" ]; then
 else
     # One argument passed, meaning that user selected a profile: launch browser
     NAME="${@}"
-    $CHROME_VERSION --user-data-dir="${profiles[$NAME]}" --class="chromium-$NAME" > /dev/null 2>&1 &
+    GTK_USE_PORTAL=1 $CHROME_VERSION --user-data-dir="${profiles[$NAME]}" --class="chromium-$NAME" > /dev/null 2>&1 &
 fi
 

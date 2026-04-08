@@ -1,0 +1,7 @@
+#! /bin/env bash
+
+LANG=$1
+VARIANT=$2
+
+setxkbmap -layout ${LANG:-us} -variant ${VARIANT:-altgr-intl} -option -option "ctrl:nocaps,compose:menu"
+xmodmap -e "keycode 201 = Multi_key Multi_key Multi_key Multi_key"
