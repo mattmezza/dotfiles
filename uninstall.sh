@@ -29,6 +29,7 @@ unstow_all() {
         i3 \
         nvim \
         picom \
+        portals \
         screenkey \
         screenlayout \
         sxhkd \
