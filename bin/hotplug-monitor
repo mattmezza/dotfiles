@@ -1,0 +1,5 @@
+#!/bin/sh
+sleep 2
+export DISPLAY=:0
+export XAUTHORITY=/home/matteo/.Xauthority
+xrandr --output DP-2-2 --auto --output DP-2-3 --auto
