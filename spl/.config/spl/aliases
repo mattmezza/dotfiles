@@ -1,0 +1,12 @@
+v=v50
+h=h50
+s=s0
+2x2=v h 3 h 0
+1x2=v h 0
+2x1=v 0 h 0
+2x2@30=v70 h 3 h 0
+3x1=v33 v 0
+1x3=h33 h 0
+master-detail=v80 1
+bottom-term=h20 0
+side-term=v30 0

@@ -1,0 +1,251 @@
+#!/bin/bash
+
+CONFIG_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/spl/aliases"
+
+read_aliases() {
+    declare -gA aliases
+    if [[ -f "$CONFIG_FILE" ]]; then
+        while IFS='=' read -r key value; do
+            [[ -z "$key" || "$key" =~ ^# ]] && continue
+            aliases["$key"]="$value"
+        done < <(cat "$CONFIG_FILE")
+    fi
+}
+
+show_help() {
+    cat << 'EOF'
+NAME
+       sp - split tmux windows with smart pane selection
+
+SYNOPSIS
+       sp [DIRECTIVES...]
+
+DESCRIPTION
+       Split tmux windows into multiple panes with percentage-based
+       positioning and pane selection.
+
+       Directives are processed sequentially. By default, after each split,
+       the newly created pane is selected.
+
+DIRECTIVES
+       v<1-99>   Split vertically at specified percentage (right pane selected)
+       h<1-99>  Split horizontally at specified percentage (bottom pane selected)
+       s<n>      Select pane by index
+       <n>       Shortcut for s<n>
+
+EXAMPLES
+       sp v50 h50              Split vertically 50%, then horizontally 50%
+       sp v50 s0 h50 s0        2x2 layout with explicit selection
+       sp 0                    Select pane 0
+
+CONFIG FILE
+       ${XDG_CONFIG_HOME:-$HOME/.config}/spl/aliases
+
+       Format: key=value
+       Example:
+         v=v50
+         h=h50
+         s=s0
+         2x2=v h s h s
+         2x2@30=v30 h s h s
+
+       Use @<n> after an alias to override percentage values.
+
+EOF
+    exit 0
+}
+
+expand_aliases() {
+    local input="$1"
+    local -n alias_ref="$2"
+    
+    if [[ "$input" =~ ^(v[0-9]+|h[0-9]+|s[0-9]+|[0-9]+)$ ]]; then
+        echo "$input"
+        return
+    fi
+    
+    if [[ -v "alias_ref[$input]" ]]; then
+        echo "${alias_ref[$input]}"
+        return
+    fi
+    
+    local suffix=""
+    local key="$input"
+    
+    if [[ "$input" =~ ^([^@]+)@([0-9]+)$ ]]; then
+        key="${BASH_REMATCH[1]}"
+        suffix="${BASH_REMATCH[2]}"
+    fi
+    
+    if [[ -v "alias_ref[$key]" ]]; then
+        local value="${alias_ref[$key]}"
+        if [[ -n "$suffix" ]]; then
+            value="${value//v[0-9]*/v$suffix}"
+            value="${value//h[0-9]*/h$suffix}"
+            value="${value//s[0-9]*/s$suffix}"
+        fi
+        echo "$value"
+        return
+    fi
+    
+    local result=""
+    local i=0
+    
+    while [[ $i -lt ${#input} ]]; do
+        local matched=0
+        local longest_match=""
+        local longest_value=""
+        
+        for ak in "${!alias_ref[@]}"; do
+            local klen=${#ak}
+            [[ $klen -lt 1 ]] && continue
+            if [[ "${input:$i:$klen}" == "$ak" ]]; then
+                if [[ ${#longest_match} -lt $klen ]]; then
+                    longest_match="$ak"
+                    longest_value="${alias_ref[$ak]}"
+                    matched=1
+                fi
+            fi
+        done
+        
+        if [[ $matched -eq 1 ]]; then
+            local j=$((i + ${#longest_match}))
+            local override=""
+            
+            if [[ $j -lt ${#input} && "${input:$j:1}" == "@" ]]; then
+                local k=$((j + 1))
+                while [[ $k -lt ${#input} && "${input:$k:1}" =~ ^[0-9]$ ]]; do
+                    k=$((k + 1))
+                done
+                override="${input:$j:$((k - j))}"
+            elif [[ $j -lt ${#input} && "${input:$j:1}" =~ ^[0-9]$ ]]; then
+                local k=$j
+                while [[ $k -lt ${#input} && "${input:$k:1}" =~ ^[0-9]$ ]]; do
+                    k=$((k + 1))
+                done
+                override="${input:$j:$((k - j))}"
+            fi
+            
+            if [[ -n "$override" ]]; then
+                local num="${override:1}"
+                local expanded="${longest_value}"
+                expanded="${expanded//v[0-9]*/v$num}"
+                expanded="${expanded//h[0-9]*/h$num}"
+                expanded="${expanded//s[0-9]*/s$num}"
+                result+="$expanded "
+            else
+                result+="$longest_value "
+            fi
+            
+            i=$((i + ${#longest_match} + ${#override}))
+        else
+            local char="${input:$i:1}"
+            result+="$char "
+            i=$((i + 1))
+        fi
+    done
+    
+    echo "$result"
+}
+
+validate_directive() {
+    local directive="$1"
+    
+    if [[ "$directive" == "v" ]]; then
+        return 0
+    fi
+    if [[ "$directive" == "h" ]]; then
+        return 0
+    fi
+    if [[ "$directive" == "s" ]]; then
+        return 0
+    fi
+    
+    case "$directive" in
+        v[0-9]*)
+            local pct="${directive:1}"
+            if [[ -z "$pct" || "$pct" -eq 0 || "$pct" -ge 100 ]]; then
+                echo "Invalid: v$pct (must be 1-99)" >&2
+                return 1
+            fi
+            ;;
+        h[0-9]*)
+            local pct="${directive:1}"
+            if [[ -z "$pct" || "$pct" -eq 0 || "$pct" -ge 100 ]]; then
+                echo "Invalid: h$pct (must be 1-99)" >&2
+                return 1
+            fi
+            ;;
+    esac
+    return 0
+}
+
+execute_directive() {
+    local directive="$1"
+    
+    validate_directive "$directive" || return 1
+    
+    case "$directive" in
+        v)
+            tmux split-window -h -l 50%
+            tmux select-pane -t +1
+            ;;
+        h)
+            tmux split-window -v -l 50%
+            tmux select-pane -t +1
+            ;;
+        s)
+            tmux select-pane -t 0
+            ;;
+        v[0-9]*)
+            local pct="${directive:1}"
+            tmux split-window -h -l "${pct}%"
+            tmux select-pane -t +1
+            ;;
+        h[0-9]*)
+            local pct="${directive:1}"
+            tmux split-window -v -l "${pct}%"
+            tmux select-pane -t +1
+            ;;
+        s[0-9]*)
+            local pane="${directive:1}"
+            tmux select-pane -t "$pane"
+            ;;
+        [0-9]*)
+            local pane="$directive"
+            tmux select-pane -t "$pane"
+            ;;
+        *)
+            echo "Unknown directive: $directive" >&2
+            return 1
+            ;;
+    esac
+}
+
+main() {
+    read_aliases
+    
+    if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "-?" ]]; then
+        show_help
+    fi
+    
+    if [[ $# -eq 0 ]]; then
+        echo "Usage: sp <directives>" >&2
+        echo "Run 'sp --help' for more information." >&2
+        exit 1
+    fi
+    
+    local tokens=()
+    for arg in "$@"; do
+        expanded=$(expand_aliases "$arg" aliases)
+        for word in $expanded; do
+            [[ -n "$word" ]] && tokens+=("$word")
+        done
+    done
+    
+    for token in "${tokens[@]}"; do
+        execute_directive "$token" || exit 1
+    done
+}
+
+[[ "${BASH_SOURCE[0]}" != "${0}" ]] || main "$@"

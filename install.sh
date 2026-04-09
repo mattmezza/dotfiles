@@ -42,6 +42,7 @@ stow_all() {
         portals \
         screenkey \
         screenlayout \
+        spl \
         sxhkd \
         tmux \
         wallpapers \
