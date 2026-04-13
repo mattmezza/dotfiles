@@ -7,7 +7,7 @@ PRINT_ONLY=false
 TITLE=""
 
 usage() {
-    echo "Usage: remind-me [OPTIONS] 'CONTENT'"
+    echo "Usage: remind-me [OPTIONS] CONTENT..."
     echo "Options:"
     echo "  -i, --important  Sticky (Critical urgency)"
     echo "  -p, --print      Print command string (for 'at')"
@@ -35,20 +35,20 @@ while getopts "ipt:" opt; do
 done
 shift $((OPTIND-1))
 
-# The only remaining positional argument is the content
+# Check if there is any content left
 if [ "$#" -lt 1 ]; then
     usage
 fi
 
-CONTENT="$1"
+# SQUASH: Take all remaining arguments and join them with spaces
+CONTENT="$*"
 
-# Environment context for X11/Wayland/DBus
+# Environment context
 ENV_VARS=$(printf "DISPLAY=%q DBUS_SESSION_BUS_ADDRESS=%q" \
     "${DISPLAY:-:0}" \
     "${DBUS_SESSION_BUS_ADDRESS:-unix:path=/run/user/$(id -u)/bus}")
 
 # Construct the command
-# If TITLE is empty, it passes an empty string which notify-send handles gracefully
 CMD=$(printf "notify-send -u %s -t %s %q %q" \
     "$URGENCY" \
     "$TIMEOUT" \
