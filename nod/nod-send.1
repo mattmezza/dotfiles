@@ -1,0 +1,170 @@
+.Dd April 14, 2026
+.Dt NOD-SEND 1
+.Os
+.Sh NAME
+.Nm nod-send
+.Nd notify-send-compatible CLI for nod
+.Sh SYNOPSIS
+.Nm
+.Op Fl u Ar level
+.Op Fl t Ar msec
+.Op Fl a Ar app
+.Op Fl i Ar icon
+.Op Fl c Ar cat
+.Op Fl h Ar type:name:value
+.Op Fl p
+.Op Fl r Ar id
+.Op Fl e
+.Op Fl w
+.Op Fl A Oo Ar name Ns = Oc Ns Ar label
+.Ar summary
+.Op Ar body
+.Sh DESCRIPTION
+.Nm
+is a
+.Xr notify-send 1
+drop-in replacement written as a POSIX shell script. It speaks D-Bus
+via
+.Xr gdbus 1
+and can wait for the notification to be closed, printing the invoked
+action key to standard output.
+.Pp
+All arguments are
+.Xr notify-send 1 Ns -compatible.
+Flags that
+.Xr nod 1
+does not support (icon, category, transient) are accepted and
+silently ignored so that scripts written for
+.Xr notify-send 1
+continue to work.
+.Sh OPTIONS
+.Bl -tag -width Ds
+.It Fl u , Fl \-urgency Ns = Ns Ar LEVEL
+Urgency:
+.Sy low ,
+.Sy normal ,
+or
+.Sy critical
+(or numeric 0, 1, 2). Default:
+.Sy normal .
+.It Fl t , Fl \-expire-time Ns = Ns Ar MSEC
+Expire timeout in milliseconds.
+.Sy -1
+means use the daemon default;
+.Sy 0
+means persistent (must click to dismiss).
+.It Fl a , Fl \-app-name Ns = Ns Ar NAME
+Application name. Default:
+.Sy nod-send .
+.It Fl i , Fl \-icon Ns = Ns Ar ICON
+Ignored.
+.Xr nod 1
+does not render icons.
+.It Fl c , Fl \-category Ns = Ns Ar TYPE
+Ignored.
+.It Fl h , Fl \-hint Ns = Ns Ar TYPE:NAME:VALUE
+Set an arbitrary hint.
+.Ar TYPE
+may be
+.Sy byte , int , uint32 , boolean , double ,
+or
+.Sy string .
+Only
+.Sy urgency
+is meaningfully consumed by
+.Xr nod 1 .
+.It Fl p , Fl \-print-id
+Print the notification id to standard output after sending.
+.It Fl r , Fl \-replace-id Ns = Ns Ar ID
+Replace an existing notification with the given id.
+.It Fl e , Fl \-transient
+Ignored.
+.It Fl w , Fl \-wait
+Block until the notification is closed.
+.It Fl A , Fl \-action Ns = Ns Oo Ar NAME Ns = Oc Ns Ar LABEL
+Register an action. Without an explicit
+.Ar NAME ,
+the key is
+.Sy default .
+Implies
+.Fl w :
+.Nm
+will block until the notification is dismissed, and if an action is
+invoked its key is printed to standard output.
+.It Fl \-version
+Print version and exit.
+.It Fl ? , Fl \-help
+Print brief usage and exit.
+.El
+.Sh WAIT BEHAVIOUR
+When
+.Fl A
+or
+.Fl w
+is used,
+.Nm
+blocks on a
+.Xr gdbus 1
+.Sy monitor
+stream. The wait is bounded to prevent indefinite hangs:
+.Bl -tag -width "finite timeout "
+.It Sy finite timeout
+.Ar MSEC
+/ 1000 + 3 seconds of slack.
+.It Sy persistent No ( Fl t Sy 0 )
+Unbounded. Kill with SIGINT to give up.
+.It Sy default No ( Fl t Sy -1 No or unspecified)
+33 seconds (assumes daemon default of ~10s plus slack).
+.El
+.Sh EXIT STATUS
+.Bl -tag -width Ds
+.It 0
+The notification was sent successfully.
+.It 1
+Argument parsing error or the
+.Sy Notify
+D-Bus call failed.
+.El
+.Sh OUTPUT
+With
+.Fl p ,
+the notification id is printed on its own line right after dispatch.
+.Pp
+When waiting for an action, the invoked action key (e.g.
+.Sy default )
+is printed to standard output after the notification is closed.
+Nothing is printed if the notification is dismissed without an action
+being invoked.
+.Sh EXAMPLES
+Basic:
+.Bd -literal -offset indent
+nod-send "Hello" "This is a test"
+nod-send -u critical -t 3000 "Critical" "Server down"
+.Ed
+.Pp
+Default action:
+.Bd -literal -offset indent
+key=$(nod-send -A "Open" "New mail" "3 unread")
+[ "$key" = default ] && xdg-open https://mail.example.com
+.Ed
+.Pp
+Replace an existing notification:
+.Bd -literal -offset indent
+id=$(nod-send -p "Downloading" "0%")
+# ...
+nod-send -r "$id" "Downloading" "42%"
+.Ed
+.Sh DEPENDENCIES
+.Xr gdbus 1
+from
+.Sy glib2 ,
+a running session bus, and
+.Xr nod 1
+or another notification daemon owning
+.Pa org.freedesktop.Notifications .
+.Sh SEE ALSO
+.Xr nod 1 ,
+.Xr notify-send 1 ,
+.Xr gdbus 1
+.Sh AUTHORS
+.An Matteo Merola

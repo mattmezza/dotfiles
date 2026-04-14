@@ -9,13 +9,14 @@ fi
 if [ "$WM" = "i3" ]; then
    exec i3
 elif [ "$WM" = "dwm" ]; then
+    nod &
     setxkb us altgr-intl
     xcape -e 'Control_L=Escape' &
     nm-applet &
+    gsettings set org.blueman.general plugin-list "['!ConnectionNotifier']"
     blueman-applet &
     slstatus &
     picom &
-    dunst &
     clipmenud &
     sxhkd &
 

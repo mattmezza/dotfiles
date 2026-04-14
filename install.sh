@@ -62,6 +62,7 @@ install_suckless() {
     cd slock && rm -f config.h && sudo make clean install && cd ..
     cd slstatus && rm -f config.h && sudo make clean install && cd ..
     cd st && rm -f config.h && sudo make clean install && cd ..
+    cd nod && rm -f config.h && sudo make clean install && cd ..
 }
 
 if [[ "$1" =~ ^.*(deps).*$ ]]; then

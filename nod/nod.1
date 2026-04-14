@@ -1,0 +1,102 @@
+.Dd April 14, 2026
+.Dt NOD 1
+.Os
+.Sh NAME
+.Nm nod
+.Nd suckless notification daemon
+.Sh SYNOPSIS
+.Nm
+.Op Fl v
+.Sh DESCRIPTION
+.Nm
+is a minimal notification daemon for X11 that implements enough of the
+Desktop Notifications Specification 1.2 over D-Bus to work with
+.Xr notify-send 1
+and any application that emits standard notifications.
+.Pp
+.Nm
+claims the well-known name
+.Pa org.freedesktop.Notifications
+on the session bus and displays notifications as override-redirect
+X11 windows rendered with Xft.
+Only one notification daemon can own that name at a time.
+.Pp
+Configuration is compile-time only: edit
+.Pa config.h
+and rebuild.
+.Sh OPTIONS
+.Bl -tag -width Ds
+.It Fl v
+Print version and exit.
+.El
+.Sh INTERACTION
+.Bl -tag -width "Left-click "
+.It Sy Left-click
+Invoke the
+.Dq default
+action if the notification registered one, then dismiss.
+.It Sy Right-click
+Dismiss only. Never invoke action.
+.It Sy Timeout
+Auto-dismiss after the notification's expire time.
+.El
+.Sh SUPPORTED HINTS
+.Bl -tag -width "urgency (byte)  "
+.It Sy urgency No (byte)
+0 = low, 1 = normal, 2 = critical.
+Selects colors and default timeout from
+.Pa config.h .
+.El
+.Pp
+All other hints are ignored.
+HTML/pango markup in
+.Sy summary
+and
+.Sy body
+is stripped; only plain text is rendered.
+.Sh CAPABILITIES
+.Nm
+advertises
+.Sy body
+and
+.Sy actions
+via
+.Sy GetCapabilities .
+It does not advertise
+.Sy body-markup ,
+.Sy body-images ,
+.Sy icon-static ,
+.Sy persistence ,
+or
+.Sy sound .
+.Sh SIGNALS
+.Bl -tag -width "SIGTERM "
+.It Sy SIGINT , SIGTERM
+Clean up windows, release the D-Bus name, exit.
+.El
+.Sh FILES
+.Bl -tag -width "config.def.h "
+.It Pa config.h
+Per-user appearance, timeouts, position, stacking.
+Copied from
+.Pa config.def.h
+on first build.
+.El
+.Sh EXAMPLES
+Start from
+.Pa ~/.xinitrc
+before the window manager:
+.Bd -literal -offset indent
+nod &
+exec dwm
+.Ed
+.Sh SEE ALSO
+.Xr nod-send 1 ,
+.Xr notify-send 1 ,
+.Xr gdbus 1
+.Sh AUTHORS
+.An Matteo Merola
+.Sh BUGS
+Only one default action is respected;
+other action keys are ignored.
+No icon, sound, or markup support by design.

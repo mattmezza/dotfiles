@@ -1,0 +1,225 @@
+#!/bin/sh
+# nod-send - notify-send-compatible CLI for nod
+#
+# Drop-in replacement for `notify-send` that also handles the `-A` /
+# `--action` flag by blocking until the notification is closed and
+# printing the invoked action key to stdout (same behaviour as recent
+# notify-send versions).
+#
+# Exit status 0 on success. Prints invoked action key to stdout if any.
+
+set -eu
+
+VERSION="0.1"
+
+print_help() {
+	cat <<'EOF'
+Usage: nod-send [OPTIONS] <SUMMARY> [BODY]
+
+Send a desktop notification. notify-send compatible.
+
+Options:
+  -u, --urgency=LEVEL        low | normal | critical  (default: normal)
+  -t, --expire-time=MSEC     timeout in ms (-1 = default, 0 = persistent)
+  -a, --app-name=NAME        app name (default: nod-send)
+  -i, --icon=ICON            ignored (nod has no icons)
+  -c, --category=TYPE        ignored
+  -h, --hint=TYPE:NAME:VALUE hint (types: byte, int, boolean, string, double)
+  -p, --print-id             print notification id to stdout
+  -r, --replace-id=ID        replace an existing notification
+  -e, --transient            ignored (nod doesn't persist)
+  -w, --wait                 block until notification is closed
+  -A, --action=[NAME=]LABEL  register an action (implicit NAME=default);
+                             blocks until dismissed. Invoked key → stdout.
+      --version              print version and exit
+  -?, --help                 this help
+
+With `-A` or `-w`, nod-send blocks until the notification is dismissed
+or an action is invoked. The wait is bounded: expire-time + 3s slack
+for finite timeouts, or indefinite for persistent (timeout=0).
+EOF
+}
+
+# --- arg parsing ---------------------------------------------------------
+
+app="nod-send"
+urgency=1
+timeout=-1
+replaces=0
+print_id=0
+wait_mode=0
+summary=""
+body=""
+actions_gv=""      # accumulates: 'key','label','key2','label2'
+hints_extra=""     # accumulates: ,'name': <type value>
+have_action=0
+
+# gvariant-escape a string: ' → \' and \ → \\
+gv_esc() { printf '%s' "$1" | sed -e 's/\\/\\\\/g' -e "s/'/\\\\'/g"; }
+
+add_action() {
+	_key="$1"; _label="$2"
+	_ek=$(gv_esc "$_key"); _el=$(gv_esc "$_label")
+	if [ -z "$actions_gv" ]; then
+		actions_gv="'$_ek','$_el'"
+	else
+		actions_gv="$actions_gv,'$_ek','$_el'"
+	fi
+	have_action=1
+}
+
+add_hint() {
+	# $1 = TYPE:NAME:VALUE
+	_t=$(printf '%s' "$1" | cut -d: -f1)
+	_n=$(printf '%s' "$1" | cut -d: -f2)
+	_v=$(printf '%s' "$1" | cut -d: -f3-)
+	_en=$(gv_esc "$_n")
+	case "$_t" in
+		byte|int|int32|uint32|double|boolean) _gv="<$_t $_v>" ;;
+		string) _ev=$(gv_esc "$_v"); _gv="<string '$_ev'>" ;;
+		*) echo "nod-send: unknown hint type: $_t" >&2; return 0 ;;
+	esac
+	hints_extra="$hints_extra, '$_en': $_gv"
+
+	# -u sets urgency too, but a -h byte:urgency:N overrides.
+	if [ "$_n" = "urgency" ] && [ "$_t" = "byte" ]; then
+		urgency="$_v"
+	fi
+}
+
+# Support --long=value form by splitting.
+while [ $# -gt 0 ]; do
+	case "$1" in
+		--*=*)
+			_opt="${1%%=*}"
+			_val="${1#*=}"
+			shift
+			set -- "$_opt" "$_val" "$@"
+			;;
+	esac
+	case "$1" in
+		-u|--urgency)
+			case "${2:-}" in
+				low|0)        urgency=0 ;;
+				normal|1)     urgency=1 ;;
+				critical|2)   urgency=2 ;;
+				*) echo "nod-send: bad urgency: ${2:-}" >&2; exit 1 ;;
+			esac
+			shift 2 ;;
+		-t|--expire-time) timeout="${2:-}"; shift 2 ;;
+		-a|--app-name)    app="${2:-}"; shift 2 ;;
+		-i|--icon)        shift 2 ;;  # ignored
+		-c|--category)    shift 2 ;;  # ignored
+		-h|--hint)        add_hint "${2:-}"; shift 2 ;;
+		-p|--print-id)    print_id=1; shift ;;
+		-r|--replace-id)  replaces="${2:-0}"; shift 2 ;;
+		-e|--transient)   shift ;;    # ignored
+		-w|--wait)        wait_mode=1; shift ;;
+		-A|--action)
+			_arg="${2:-}"
+			case "$_arg" in
+				*=*) _k="${_arg%%=*}"; _l="${_arg#*=}" ;;
+				*)   _k="default";    _l="$_arg" ;;
+			esac
+			add_action "$_k" "$_l"
+			shift 2 ;;
+		--version) echo "nod-send $VERSION"; exit 0 ;;
+		-\?|--help) print_help; exit 0 ;;
+		--) shift; break ;;
+		-*) echo "nod-send: unknown option: $1" >&2; exit 1 ;;
+		*)  break ;;
+	esac
+done
+
+if [ $# -lt 1 ]; then
+	echo "nod-send: summary required" >&2
+	exit 1
+fi
+summary="$1"
+body="${2:-}"
+
+# --- build gvariant payloads --------------------------------------------
+
+# actions: as
+actions_arg="[$actions_gv]"
+# hints: a{sv} — always include urgency
+hints_arg="{'urgency': <byte $urgency>$hints_extra}"
+
+# --- call Notify ---------------------------------------------------------
+
+out=$(gdbus call --session \
+	--dest=org.freedesktop.Notifications \
+	--object-path=/org/freedesktop/Notifications \
+	--method=org.freedesktop.Notifications.Notify \
+	-- \
+	"$app" "$replaces" "" "$summary" "$body" \
+	"$actions_arg" "$hints_arg" "$timeout") || {
+		echo "nod-send: Notify failed" >&2
+		exit 1
+	}
+
+# output like: "(uint32 5,)"
+id=$(printf '%s' "$out" | sed -n 's/.*uint32 \([0-9][0-9]*\).*/\1/p')
+if [ -z "$id" ]; then
+	echo "nod-send: could not parse notification id from: $out" >&2
+	exit 1
+fi
+
+[ "$print_id" = 1 ] && echo "$id"
+
+# --- wait for close / action --------------------------------------------
+
+if [ "$wait_mode" = 1 ] || [ "$have_action" = 1 ]; then
+	# bound the wait: expire-time + slack; unbounded for persistent.
+	case "$timeout" in
+		-1)          slack=33 ;;
+		0)           slack="" ;;
+		*[!0-9]*|"") slack=33 ;;
+		*)           slack=$(( timeout / 1000 + 3 )) ;;
+	esac
+
+	fifo=$(mktemp -u -t nod-send.XXXXXX)
+	mkfifo -m 600 "$fifo"
+
+	mpid=""
+	cleanup() {
+		if [ -n "$mpid" ]; then
+			# SIGTERM propagates from `timeout` to gdbus child.
+			kill -TERM "$mpid" 2>/dev/null || :
+			wait "$mpid" 2>/dev/null || :
+		fi
+		rm -f "$fifo"
+	}
+	trap cleanup EXIT INT TERM
+
+	# `timeout --foreground` bounds the monitor and forwards signals
+	# to the child process, so we don't need a separate timer.
+	if [ -n "$slack" ]; then
+		timeout --foreground "${slack}s" gdbus monitor --session \
+			--dest=org.freedesktop.Notifications \
+			>"$fifo" 2>/dev/null &
+	else
+		gdbus monitor --session \
+			--dest=org.freedesktop.Notifications \
+			>"$fifo" 2>/dev/null &
+	fi
+	mpid=$!
+
+	# read until we see our id in ActionInvoked or NotificationClosed
+	while IFS= read -r line; do
+		case "$line" in
+			*ActionInvoked*"uint32 $id,"*)
+				# extract key between first pair of single quotes after our id
+				k=$(printf '%s' "$line" | \
+				    sed -n "s/.*uint32 $id, '\\([^']*\\)'.*/\\1/p")
+				[ -n "$k" ] && printf '%s\n' "$k"
+				break
+				;;
+			*NotificationClosed*"uint32 $id,"*)
+				break
+				;;
+		esac
+	done <"$fifo"
+fi
+
+exit 0
