@@ -8,6 +8,7 @@ CHROME_VERSION="chromium"
 declare -A profiles=()
 profiles["work"]="$HOME/.config/chromium-work"
 profiles["personal"]="$HOME/.config/chromium-personal"
+profiles["personal-vivaldi"]="$HOME/.vivaldi-personal"
 
 # Check if the user data directories actually exist
 for profile in "${!profiles[@]}"; do
@@ -26,6 +27,11 @@ if [ -z "$@" ]; then
 else
     # One argument passed, meaning that user selected a profile: launch browser
     NAME="${@}"
-    GTK_USE_PORTAL=1 $CHROME_VERSION --user-data-dir="${profiles[$NAME]}" --class="chromium-$NAME" > /dev/null 2>&1 &
+    WM_CLASS_NAME=$NAME
+    if [[ $NAME == "personal-vivaldi" ]]; then
+        CHROME_VERSION="vivaldi"
+        WM_CLASS_NAME="personal"
+    fi
+    GTK_USE_PORTAL=1 $CHROME_VERSION --user-data-dir="${profiles[$NAME]}" --class="chromium-$WM_CLASS_NAME" > /dev/null 2>&1 &
 fi
 
