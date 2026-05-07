@@ -46,9 +46,11 @@ stow_all() {
         sxhkd \
         tmux \
         wallpapers \
+        wireplumber \
         xorg \
         zsh
     sudo stow --target=/usr/local/bin bin
+    sudo stow --target=/etc/keyd keyd
 
     if [[ $OSTYPE == darwin* ]]; then
         stow hammerspoon

@@ -36,9 +36,11 @@ unstow_all() {
         sxhkd \
         tmux \
         wallpapers \
+        wireplumber \
         xorg \
         zsh
     sudo stow -D --target=/usr/local/bin bin
+    sudo stow -D --target=/etc/keyd keyd
 
     if [[ $OSTYPE == darwin* ]]; then
         stow -D hammerspoon
