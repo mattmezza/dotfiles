@@ -50,7 +50,6 @@ unstow_all() {
 
 uninstall_suckless() {
     cd dmenu && sudo make uninstall && cd ..
-    # cd dwm && sudo make uninstall && cd ..
     cd mwm && sudo make uninstall && cd ..
     cd sent && sudo make uninstall && cd ..
     cd slock && sudo make uninstall && cd ..

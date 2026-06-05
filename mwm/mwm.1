@@ -1,0 +1,59 @@
+.TH MWM 1 mwm\-VERSION
+.SH NAME
+mwm \- matteo's window manager
+.SH SYNOPSIS
+.B mwm
+.RB [ \-v ]
+.SH DESCRIPTION
+.B mwm
+is a small dynamic tiling window manager for X. It manages windows in two
+tiling layouts (equal columns and master+stack) plus floating, with
+configurable gaps and optional rounded corners. It draws a translucent,
+three\-segment bar (tags+layout, focused title, and status read from the root
+window name) and embeds an XEmbed system tray.
+.PP
+mwm has no built\-in keybindings. All control happens through the
+.BR mwmc (1)
+client over an X11 ClientMessage IPC channel, so keys are bound externally
+(e.g. with sxhkd). Tags form one global pool shared across monitors; each tag
+is owned by a single monitor and can be moved between monitors with its
+windows.
+.SH OPTIONS
+.TP
+.B \-v
+print version information to stderr, then exit.
+.SH USAGE
+Start mwm from your
+.B ~/.xinitrc :
+.PP
+.RS
+.nf
+exec mwm
+.fi
+.RE
+.PP
+Control it at runtime:
+.PP
+.RS
+.nf
+mwmc focus next
+mwmc move win 3
+mwmc layout stack
+mwmc query state
+.fi
+.RE
+.PP
+See
+.B mwmc help
+for the full command grammar.
+.SH CONFIGURATION
+mwm is configured by editing
+.B config.h
+and recompiling. See
+.B config.def.h
+for the documented defaults.
+.SH SEE ALSO
+.BR mwmc (1),
+.BR sxhkd (1),
+.BR slstatus (1),
+.BR picom (1)

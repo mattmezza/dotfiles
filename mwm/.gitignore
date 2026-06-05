@@ -1,0 +1,14 @@
+# Build artifacts
+mwm
+mwmc
+*.o
+config.h
+*.tar.gz
+
+# Vagrant
+.vagrant/
+
+# Editor / OS
+*~
+.*.swp
+.DS_Store
