@@ -94,7 +94,7 @@ static const struct arg args[] = {
 	{ battery_remaining,    "%s",           "BAT1" },
 #else
 	/* Dell: Single battery */
-	{ battery_perc,         "B_%s%%",      "BAT0" },
+	{ battery_perc,         "B%s%%",        "BAT0" },
 	// { battery_state,        "_%s",          "BAT0" },
 	// { battery_remaining,    "%s",           "BAT0" },
 #endif
@@ -118,9 +118,9 @@ static const struct arg args[] = {
 
 	{ run_command,          " B%s",         "brightness" },
 
-	{ run_command,          " K%s",         "key-light" },
+	// { run_command,          " K%s",         "key-light" },
 
 	// { run_command,          " U%s",         "updates" },
 
-	{ datetime,             " %s",          "%F %H:%M" },
+	{ datetime,             " %s",          "%b %d %H:%M" },
 };
