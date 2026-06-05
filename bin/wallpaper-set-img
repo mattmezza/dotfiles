@@ -2,3 +2,7 @@
 
 img=$(find $(readlink -f ~/.config/wallpapers) -maxdepth 1 -type f \( -name "*.jpg" -o -name "*.png" -o -name "*.jpeg" -o -name "*.webp" \) | shuf -n 1)
 feh --bg-fill $img --bg-fill $img
+timeout 3 wallust run "$img"
+xrdb -merge ~/.Xresources
+# tell already-running st windows to reload Xresources (colors/font)
+pkill -USR1 -x st 2>/dev/null

@@ -38,6 +38,8 @@ mod4 + shift + control + 4
 
 mod4 + Escape
     slock
+#   lock and suspend-then-hibernate (uncomment to enable; remove the plain slock line above)
+#   slock & systemctl suspend-then-hibernate
 
 mod4 + shift + Escape
     dmexit
@@ -45,10 +47,10 @@ mod4 + shift + Escape
 mod4 + f
     nemo ~/Downloads &> /dev/null
 
-mod4 + shift + control + w
-    wallpaper-set-img
+mod4 + control + w
+    wallpaper-set-img && mwmc reload
 
-mod4 + control + b
+mod4 + shift + b
     st -t "btop" btop
 
 mod4 + e
@@ -57,6 +59,78 @@ mod4 + e
 mod4 + t
     st -t "termfloat" -g 85x25+550+300
 
-# mod4 + enter is bound in dwm to 'st'
-# mod4 + p is bound in dwm to 'dmenu'
-# mod4 + stfc bound to layout selection [spiral tile float columns]
+mod4 + Return
+	st
+
+mod4 + p
+	dmenu_run
+
+# WM control
+# --- focus ---
+mod4 + j
+    mwmc focus next
+mod4 + k
+	mwmc focus prev mod4 + Tab
+	mwmc focus last
+mod4 + {1-9}
+    mwmc focus tag {1-9}
+mod4 + 0
+	mwmc focus tag 10
+mod4 + bracketright
+	mwmc focus tag next
+mod4 + bracketleft
+    mwmc focus tag prev
+mod4 + {comma,period}
+	mwmc focus mon {prev,next}
+
+# --- move windows / tags ---
+mod4 + shift + {1-9}
+    mwmc move win {1-9}
+mod4 + shift + 0
+ 	mwmc move win 10
+mod4 + shift + {bracketright,bracketleft}
+	mwmc move win {next,prev}
+mod4 + m
+    mwmc move win master
+mod4 + shift + {comma,period}
+	mwmc move tag {prev,next}
+mod4 + ctrl + {comma,period}
+	mwmc move win mon {prev,next}
+mod4 + shift + {j,k}
+    mwmc swap {next,prev}
+
+# --- layout / geometry ---
+mod4 + ctrl + {t,s,f}
+    mwmc layout {cols,stack,float}
+mod4 + ctrl + space
+	mwmc layout next
+mod4 + {h,l}
+	mwmc master ratio {-0.05,+0.05}
+mod4 + {i,o}
+    mwmc master {+1,-1}
+mod4 + {minus,equal}
+	mwmc gap {-5,+5}
+
+# --- floating window geometry (also: hold mod4 and drag = move, mod4+right-drag = resize) ---
+mod4 + ctrl + c
+    mwmc win center
+mod4 + ctrl + {h,j,k,l}
+	mwmc win resize {-20 0,0 20,0 -20,20 0} mod4 + alt + {h,j,k,l}
+	mwmc win move {-20 0,0 20,0 -20,20 0}
+
+# --- window state ---
+mod4 + shift + space
+    mwmc win toggle float
+mod4 + shift + f
+	mwmc win toggle full mod4 + shift + s
+	mwmc win toggle sticky
+mod4 + q
+    mwmc win close
+
+# --- session ---
+mod4 + ctrl + r
+    mwmc reload
+mod4 + ctrl + b
+    mwmc bar toggle
+mod4 + shift + ctrl + Escape
+	mwmc quit

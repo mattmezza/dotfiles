@@ -30,7 +30,21 @@ _hop() {
         '*:: :->args'
 
     case $state in
-        command) _describe -t commands 'hop command' commands ;;
+        command)
+            # Include registered project names as top-level suggestions
+            local registry="${HOME}/.hop-projects"
+            if [[ -f "$registry" ]]; then
+                local projects=()
+                while IFS=: read -r p _ _; do
+                    [[ -z "$p" || "$p" == \#* ]] && continue
+                    projects+=("${p##*/}:Registered project")
+                done < "$registry"
+                _describe -t commands 'hop command' commands
+                _describe -t projects 'project' projects
+            else
+                _describe -t commands 'hop command' commands
+            fi
+            ;;
         args)
             case $line[1] in
                 mark)

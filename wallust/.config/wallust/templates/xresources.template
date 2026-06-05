@@ -1,0 +1,42 @@
+*.foreground: {{foreground}}
+*.background: {{background}}
+*.cursorColor: {{cursor}}
+*.color0: {{color0}}
+*.color1: {{color1}}
+*.color2: {{color2}}
+*.color3: {{color3}}
+*.color4: {{color4}}
+*.color5: {{color5}}
+*.color6: {{color6}}
+*.color7: {{color7}}
+*.color8: {{color8}}
+*.color9: {{color9}}
+*.color10: {{color10}}
+*.color11: {{color11}}
+*.color12: {{color12}}
+*.color13: {{color13}}
+*.color14: {{color14}}
+*.color15: {{color15}}
+
+! ---- mwm (matteos window manager) ----
+mwm.font:       monospace:size=10
+mwm.normfg:     {{foreground}}
+mwm.normbg:     {{background}}
+mwm.normborder: {{color8}}
+
+! selected tag highlight + focused window border (your accent colour)
+mwm.selfg:      {{background}}
+mwm.selbg:      {{color4}}
+mwm.selborder:  {{color4}}
+! urgent tag
+mwm.urgfg:      {{background}}
+mwm.urgbg:      {{color1}}
+mwm.urgborder:  {{color1}}
+! center title pill
+mwm.titlefg:    {{foreground}}
+mwm.titlebg:    {{background}}
+! right status pill
+mwm.statusfg:   {{foreground}}
+mwm.statusbg:   {{background}}
+! bar background strip (raise mwm.barbgalpha in config/Xresources for a solid bar)
+mwm.barbg:      {{background}}

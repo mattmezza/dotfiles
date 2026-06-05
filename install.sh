@@ -46,6 +46,7 @@ stow_all() {
         sxhkd \
         tmux \
         wallpapers \
+        wallust \
         wireplumber \
         xorg \
         zsh
@@ -59,7 +60,8 @@ stow_all() {
 
 install_suckless() {
     cd dmenu && rm -f config.h && sudo make clean install && cd ..
-    cd dwm && rm -f config.h patches.h && sudo make clean install && cd ..
+    # cd dwm && rm -f config.h patches.h && sudo make clean install && cd ..
+    cd mwm && sudo make clean install && cd ..
     cd sent && rm -f config.h && sudo make clean install && cd ..
     cd slock && rm -f config.h && sudo make clean install && cd ..
     cd slstatus && rm -f config.h && sudo make clean install && cd ..

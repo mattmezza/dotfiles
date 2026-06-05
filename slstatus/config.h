@@ -94,25 +94,25 @@ static const struct arg args[] = {
 	{ battery_remaining,    "%s",           "BAT1" },
 #else
 	/* Dell: Single battery */
-	{ battery_perc,         "B0_%s%%",      "BAT0" },
-	{ battery_state,        "_%s",          "BAT0" },
-	{ battery_remaining,    "%s",           "BAT0" },
+	{ battery_perc,         "B_%s%%",      "BAT0" },
+	// { battery_state,        "_%s",          "BAT0" },
+	// { battery_remaining,    "%s",           "BAT0" },
 #endif
 
 	{ cpu_perc,             " C%s%%",       NULL },
-	{ temp,                 "%s°c",         "/sys/class/thermal/thermal_zone1/temp" },
+	// { temp,                 "%s°c",         "/sys/class/thermal/thermal_zone1/temp" },
 	{ load_avg,             " L%s",         NULL },
 
 	{ ram_used,             " M%s",         NULL },
 
-	{ disk_free,            " S%s",         "/" },
+	// { disk_free,            " S%s",         "/" },
 
 	// Can only show properly one of these two because net_speed_rx and
 	// net_speed_tx use static variables and whatever comes last will be shown
 	// overriding the previous interface (which will display as 16.4Pi rx/tx.
 	/* Network configuration - use detected interface */
-	{ netspeed_rx,          " W↓%s",        WIFI_INTERFACE },
-	{ netspeed_tx,          "↑%s",          WIFI_INTERFACE },
+	// { netspeed_rx,          " W↓%s",        WIFI_INTERFACE },
+	// { netspeed_tx,          "↑%s",          WIFI_INTERFACE },
 
 	{ run_command,          " V%s",         "volume" },
 
@@ -120,7 +120,7 @@ static const struct arg args[] = {
 
 	{ run_command,          " K%s",         "key-light" },
 
-	{ run_command,          " U%s",         "updates" },
+	// { run_command,          " U%s",         "updates" },
 
-	{ datetime,             " %s",          "%FT%H:%M" },
+	{ datetime,             " %s",          "%F %H:%M" },
 };

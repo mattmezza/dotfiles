@@ -1,0 +1,8 @@
+[entry]
+# Controls the color selection logic (e.g., lab, kmean, full)
+backend = "kmean"
+color_space = "lab"
+
+[templates]
+# format: { template = "path/to/template", target = "path/to/output" }
+xresources = { template = "xresources.template", target = "~/.cache/wallust/colors.Xresources" }
