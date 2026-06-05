@@ -2,7 +2,10 @@
 
 img=$(find $(readlink -f ~/.config/wallpapers) -maxdepth 1 -type f \( -name "*.jpg" -o -name "*.png" -o -name "*.jpeg" -o -name "*.webp" \) | shuf -n 1)
 feh --bg-fill $img --bg-fill $img
-timeout 3 wallust run "$img"
+# --check-contrast: lift any palette colour that is too dark to read on the
+# generated background (esp. for dark/low-contrast wallpapers). NOTE: wallust
+# 3.5.2 only honours this as a CLI flag, not from wallust.toml.
+timeout 3 wallust run "$img" --check-contrast
 xrdb -merge ~/.Xresources
 # tell already-running st windows to reload Xresources (colors/font)
 pkill -USR1 -x st 2>/dev/null

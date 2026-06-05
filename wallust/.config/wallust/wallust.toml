@@ -1,7 +1,14 @@
 [entry]
-# Controls the color selection logic (e.g., lab, kmean, full)
-backend = "kmean"
+# backend: how pixels are sampled. "kmeans" spreads picks across the image for a
+# diverse palette. (Was "kmean" — an invalid value that made wallust silently
+# fall back to its defaults for this whole section.)
+backend = "kmeans"
+# color_space used when sorting/comparing colors.
 color_space = "lab"
+# Lift colors too dark to read on the background. NOTE: wallust 3.5.2 ignores
+# this key from the config file — it only takes effect as the `--check-contrast`
+# CLI flag (see wallpaper-set-img). Kept here to document intent / future-proof.
+check_contrast = true
 
 [templates]
 # format: { template = "path/to/template", target = "path/to/output" }
