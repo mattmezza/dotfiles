@@ -56,7 +56,7 @@ mod4 + shift + b
 mod4 + e
     BEMOJI_PICKER_CMD="dmenu" bemoji
 
-mod4 + t
+mod4 + shift + t
     st -t "termfloat" -g 85x25+550+300
 
 mod4 + Return
@@ -70,7 +70,8 @@ mod4 + p
 mod4 + j
     mwmc focus next
 mod4 + k
-	mwmc focus prev mod4 + Tab
+	mwmc focus prev
+mod4 + Tab
 	mwmc focus last
 mod4 + {1-9}
     mwmc focus tag {1-9}
@@ -100,9 +101,9 @@ mod4 + shift + {j,k}
     mwmc swap {next,prev}
 
 # --- layout / geometry ---
-mod4 + ctrl + {t,s,f}
+mod4 + ctrl + {c,s,f}
     mwmc layout {cols,stack,float}
-mod4 + ctrl + space
+mod4 + ctrl + shift + space
 	mwmc layout next
 mod4 + {h,l}
 	mwmc master ratio {-0.05,+0.05}
@@ -112,17 +113,19 @@ mod4 + {minus,equal}
 	mwmc gap {-5,+5}
 
 # --- floating window geometry (also: hold mod4 and drag = move, mod4+right-drag = resize) ---
-mod4 + ctrl + c
+mod4 + ctrl + space
     mwmc win center
 mod4 + ctrl + {h,j,k,l}
-	mwmc win resize {-20 0,0 20,0 -20,20 0} mod4 + alt + {h,j,k,l}
-	mwmc win move {-20 0,0 20,0 -20,20 0}
+	mwmc win resize {-20 0,0 20,0 -20,20 0}
+#mod4 + alt + {h,j,k,l}
+#mwmc win move {-20 0,0 20,0 -20,20 0}
 
 # --- window state ---
-mod4 + shift + space
+mod4 + ctrl + shift + f
     mwmc win toggle float
-mod4 + shift + f
-	mwmc win toggle full mod4 + shift + s
+mod4 + shift + z
+	mwmc win toggle full
+mod4 + shift + s
 	mwmc win toggle sticky
 mod4 + q
     mwmc win close
@@ -132,5 +135,7 @@ mod4 + ctrl + r
     mwmc reload
 mod4 + ctrl + b
     mwmc bar toggle
+mod4 + ctrl + t
+    mwmc traybar toggle
 mod4 + shift + ctrl + Escape
 	mwmc quit
