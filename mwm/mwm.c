@@ -13,6 +13,7 @@
  * The code intentionally mirrors dwm's structure where it can, so dwm patches
  * and idioms map over cleanly. See LICENSE (MIT/X) for copyright details.
  */
+#include <ctype.h>
 #include <errno.h>
 #include <locale.h>
 #include <signal.h>
@@ -187,6 +188,7 @@ static void resizerequest(XEvent *e);
 static void restack(Monitor *m);
 static void maskroundrect(Pixmap mask, GC g, int x, int y, int w, int h, int rad);
 static void roundwin(Window win, int w, int h, int rad, int bw);
+static void shapebar(Monitor *m, int rects[][2], int n);
 static void run(void);
 static void scan(void);
 static int sendevent(Window w, Atom proto, int mask, long d0, long d1, long d2, long d3, long d4);
@@ -207,6 +209,7 @@ static int tagcount(void);
 static int taglabel(int t, char *buf, size_t n);
 static void tile(Monitor *m, int t);
 static void togglebar(void);
+static void toggletraybar(void);
 static void togglefloating(void);
 static void togglefullscreen(void);
 static void togglesticky(void);
@@ -377,6 +380,27 @@ nexttiled(Client *c, Monitor *m, int t)
 
 /* ---- rules ----------------------------------------------------------- */
 
+/* case-insensitive strstr: rule class/instance/title matches ignore
+ * capitalisation, so a rule "pinentry" matches WM_CLASS res_class
+ * "Pinentry-gtk" (and "Pavucontrol", "Arandr", etc. likewise). Portable
+ * (no strcasestr/_GNU_SOURCE), uses only C99 tolower. */
+static char *
+ci_strstr(const char *hay, const char *needle)
+{
+	size_t i, nl = strlen(needle);
+
+	if (!nl)
+		return (char *)hay;
+	for (; *hay; hay++) {
+		for (i = 0; needle[i] && hay[i]; i++)
+			if (tolower((unsigned char)hay[i]) != tolower((unsigned char)needle[i]))
+				break;
+		if (!needle[i])
+			return (char *)hay;
+	}
+	return NULL;
+}
+
 void
 applyrules(Client *c)
 {
@@ -397,9 +421,9 @@ applyrules(Client *c)
 
 	for (i = 0; i < LENGTH(rules); i++) {
 		r = &rules[i];
-		if ((!r->title || strstr(c->name, r->title))
-		&& (!r->class || strstr(class, r->class))
-		&& (!r->instance || strstr(instance, r->instance))
+		if ((!r->title || ci_strstr(c->name, r->title))
+		&& (!r->class || ci_strstr(class, r->class))
+		&& (!r->instance || ci_strstr(instance, r->instance))
 		&& (!r->wintype || (wt != None && wt == XInternAtom(dpy, r->wintype, False)))) {
 			c->isfloating = r->isfloating;
 			if (r->tag && r->tag[0]) {
@@ -1093,6 +1117,7 @@ setgap(const char *arg)
 }
 
 static int barvisible = 1;
+static int systrayvisible = 1;
 
 void
 togglebar(void)
@@ -1122,6 +1147,17 @@ togglebar(void)
 	if (showsystray)
 		updatesystray();
 	arrange(NULL);
+}
+
+void
+toggletraybar(void)
+{
+	if (!showsystray)
+		return;
+	systrayvisible = !systrayvisible;
+	/* drawbar reclaims the status pill's space (getsystraywidth -> 0 when
+	 * hidden) and updatesystray (un)maps the tray window + its icons */
+	drawbars();
 }
 
 /* ---- client state actions ------------------------------------------- */
@@ -1554,6 +1590,31 @@ clearround(Window w)
 		XShapeCombineMask(dpy, w, ShapeBounding, 0, 0, None, ShapeSet);
 }
 
+/* Shape the bar window down to just its pill rectangles so the gaps between
+ * pills are not part of the window at all — the wallpaper shows through there
+ * untouched (no fill, no compositor blur). Rebuilt on every drawbar() since the
+ * pills move. Without the Shape extension the bar stays a full rectangle. */
+void
+shapebar(Monitor *m, int rects[][2], int n)
+{
+	Pixmap mask;
+	GC g;
+	int i;
+
+	if (!shapeext || (int)m->mw <= 0 || bh <= 0)
+		return;
+	mask = XCreatePixmap(dpy, m->barwin, m->mw, bh, 1);
+	g = XCreateGC(dpy, mask, 0, NULL);
+	XSetForeground(dpy, g, 0);
+	XFillRectangle(dpy, mask, g, 0, 0, m->mw, bh);
+	XSetForeground(dpy, g, 1);
+	for (i = 0; i < n; i++)
+		maskroundrect(mask, g, rects[i][0], 0, rects[i][1], bh, segradius);
+	XShapeCombineMask(dpy, m->barwin, ShapeBounding, 0, 0, mask, ShapeSet);
+	XFreeGC(dpy, g);
+	XFreePixmap(dpy, mask);
+}
+
 /* ---- the bar --------------------------------------------------------- */
 
 void
@@ -1563,17 +1624,17 @@ drawbar(Monitor *m)
 	int i;
 	char buf[64];
 	Client *c;
+	int pills[3][2]; /* {x, width} of each drawn pill, for window shaping */
+	int np = 0;
 
 	if (m->by < 0)
 		return;
 
-	/* clear to fully transparent, then paint the bar background as a rounded
-	 * strip inset by barmargin (honors SchemeBar's bg colour AND its alpha;
-	 * alpha 0 = no visible background) */
+	/* clear the whole bar to fully transparent; only the pills get painted,
+	 * and the window is shaped to them below so the gaps between pills stay
+	 * out of the bar window entirely (wallpaper/compositor untouched there) */
 	XSetForeground(dpy, drw->gc, 0);
 	XFillRectangle(dpy, drw->drawable, drw->gc, 0, 0, m->mw, bh);
-	if ((int)m->mw > 2 * barmargin)
-		drw_roundrect(drw, barmargin, 0, m->mw - 2 * barmargin, bh, segradius, &fillcol[SchemeBar]);
 
 	if (showsystray && m->num == systraymon)
 		sysw = getsystraywidth();
@@ -1592,6 +1653,7 @@ drawbar(Monitor *m)
 		lw += TEXTW(m->ltsymbol);
 
 	if (lw > 0) {
+		pills[np][0] = barmargin; pills[np][1] = lw; np++;
 		drw_roundrect(drw, barmargin, 0, lw, bh, segradius, &fillcol[SchemeNorm]);
 		x = barmargin;
 		for (i = 0; i < tagcount(); i++) {
@@ -1627,6 +1689,7 @@ drawbar(Monitor *m)
 	if (rw > 0) {
 		if (rw > rightedge - barmargin)
 			rw = rightedge - barmargin;
+		pills[np][0] = rightedge - rw; pills[np][1] = rw; np++;
 		drw_roundrect(drw, rightedge - rw, 0, rw, bh, segradius, &fillcol[SchemeStatus]);
 		drw_setscheme(drw, scheme[SchemeStatus]);
 		drw_text(drw, rightedge - rw, 0, rw, bh, lrpad / 2, stext, 0);
@@ -1643,6 +1706,7 @@ drawbar(Monitor *m)
 			int cx = titlealign == 0 ? lo
 			       : titlealign == 2 ? hi - cw
 			       : lo + (hi - lo - cw) / 2;
+			pills[np][0] = cx; pills[np][1] = cw; np++;
 			drw_roundrect(drw, cx, 0, cw, bh, segradius, &fillcol[SchemeTitle]);
 			drw_setscheme(drw, scheme[SchemeTitle]);
 			drw_text(drw, cx, 0, cw, bh, lrpad / 2, m->sel->name, 0);
@@ -1650,6 +1714,7 @@ drawbar(Monitor *m)
 	}
 
 	drw_map(drw, m->barwin, 0, 0, m->mw, bh);
+	shapebar(m, pills, np);
 }
 
 void
@@ -2188,8 +2253,15 @@ dispatchcmd(int argc, char **argv, char *reply, size_t rsz)
 		if (argc > 1) setgap(noun);
 		else { snprintf(reply, rsz, "error: gap +5|-5|<px>"); return; }
 	} else if (EQ(verb, "bar")) {
-		if (EQ(noun, "toggle") || EQ(noun, "show") || EQ(noun, "hide")) togglebar();
+		if (EQ(noun, "toggle")) togglebar();
+		else if (EQ(noun, "show")) { if (!barvisible) togglebar(); }
+		else if (EQ(noun, "hide")) { if (barvisible) togglebar(); }
 		else { snprintf(reply, rsz, "error: bar toggle|show|hide"); return; }
+	} else if (EQ(verb, "traybar")) {
+		if (EQ(noun, "toggle")) toggletraybar();
+		else if (EQ(noun, "show")) { if (!systrayvisible) toggletraybar(); }
+		else if (EQ(noun, "hide")) { if (systrayvisible) toggletraybar(); }
+		else { snprintf(reply, rsz, "error: traybar toggle|show|hide"); return; }
 	} else if (EQ(verb, "win")) {
 		if (EQ(noun, "close")) killfocused();
 		else if (EQ(noun, "move")) {
@@ -2270,10 +2342,12 @@ dispatchcmd(int argc, char **argv, char *reply, size_t rsz)
 		    "  layout cols|stack|float|next|prev\n"
 		    "  master +1|-1|<n> | master ratio +0.05|-0.05|<f>\n"
 		    "  gap +5|-5|<px> | bar toggle|show|hide\n"
+		    "  traybar toggle|show|hide\n"
 		    "  win close | win tag <name> | win toggle float|full|sticky\n"
 		    "  win move <dx> <dy> | win resize <dw> <dh> | win center\n"
 		    "  query tags|windows|monitors|layout|state\n"
-		    "  reload (re-read Xresources) | quit | version\n");
+		    "  reload (re-read Xresources) | quit | version\n"
+		    "  completions bash|zsh (mwmc client-side; print shell completion)\n");
 		return;
 	} else {
 		snprintf(reply, rsz, "error: unknown command '%s' (try: mwmc help)", verb);
@@ -2490,7 +2564,7 @@ getsystraywidth(void)
 	int n = 0;
 	Client *i;
 
-	if (!showsystray || !systray)
+	if (!showsystray || !systray || !systrayvisible)
 		return 0;
 	for (i = systray->icons; i; i = i->next) {
 		w += i->w + systrayspacing;
@@ -2623,6 +2697,21 @@ updatesystray(void)
 			return;
 		}
 	}
+
+	/* tray hidden via `mwmc traybar toggle`: unmap ONLY the container window.
+	 * The icons are reparented children of it, so they vanish with it but stay
+	 * mapped in their own right — do NOT unmap them individually, or the
+	 * resulting UnmapNotify makes unmapnotify() call removesystrayicon() and the
+	 * icons are gone for good (they never reappear on show). We keep owning the
+	 * tray selection while hidden so new icons still dock. */
+	if (!systrayvisible) {
+		XUnmapWindow(dpy, systray->win);
+		return;
+	}
+
+	/* re-map the tray window: it is only mapped once at creation, so after a
+	 * `traybar hide` (which unmaps it) we must map it again to show it. */
+	XMapRaised(dpy, systray->win);
 
 	int pad = lrpad / 2; /* match the bar pills' left/right padding */
 
@@ -3204,6 +3293,10 @@ setup(void)
 	/* override styling defaults from xrdb / ~/.Xresources before anything
 	 * (fonts, colors, geometry) is read */
 	load_xresources();
+
+	/* initial bar / tray visibility (live-toggled via mwmc bar|traybar) */
+	barvisible = showbar;
+	systrayvisible = showtraybar;
 
 	/* prefer a 32-bit ARGB visual so the bar can be translucent */
 	if (XMatchVisualInfo(dpy, screen, 32, TrueColor, &vinfo)) {

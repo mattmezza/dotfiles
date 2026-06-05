@@ -11,6 +11,7 @@
 #include <X11/Xatom.h>
 
 #include "ipc.h"
+#include "completions.h"   /* generated: completion_bash[], completion_zsh[] */
 
 #define REPLY_TIMEOUT_MS 2000
 
@@ -33,7 +34,8 @@ usage(void)
 	"  master +1|-1|<n>                adjust master count\n"
 	"  master ratio +0.05|-0.05|<f>    adjust master width\n"
 	"  gap +5|-5|<px>                  adjust gaps\n"
-	"  bar toggle|show|hide\n"
+	"  bar toggle|show|hide            show/hide the bar\n"
+	"  traybar toggle|show|hide        show/hide the system tray\n"
 	"  win close                       close focused window\n"
 	"  win tag <name>                  move focused window to a tag\n"
 	"  win toggle float|full|sticky\n"
@@ -43,6 +45,9 @@ usage(void)
 	"  (mouse: hold Super and drag = move, Super + right-drag = resize)\n"
 	"  query tags|windows|monitors|layout|state\n"
 	"  reload                          re-read Xresources (xrdb) and restyle live\n"
+	"  completions bash|zsh            print a shell completion script (redirect it,\n"
+	"                                  e.g. mwmc completions bash > \\\n"
+	"                                  ~/.local/share/bash-completion/completions/mwmc)\n"
 	"  quit | version | help\n",
 	stderr);
 }
@@ -65,6 +70,15 @@ main(int argc, char *argv[])
 	if (!strcmp(argv[1], "-h") || !strcmp(argv[1], "--help")) {
 		usage();
 		return 0;
+	}
+
+	/* `completions bash|zsh` prints an embedded completion script to stdout and
+	 * exits, without needing a running mwm (handled before opening a display) */
+	if (!strcmp(argv[1], "completions")) {
+		if (argc > 2 && !strcmp(argv[2], "bash")) { fputs(completion_bash, stdout); return 0; }
+		if (argc > 2 && !strcmp(argv[2], "zsh"))  { fputs(completion_zsh, stdout);  return 0; }
+		fputs("usage: mwmc completions bash|zsh\n", stderr);
+		return 2;
 	}
 
 	if (!(dpy = XOpenDisplay(NULL))) {

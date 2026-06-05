@@ -1,0 +1,170 @@
+.TH MWMC 1 mwmc\-VERSION
+.SH NAME
+mwmc \- control client for mwm
+.SH SYNOPSIS
+.B mwmc
+.I command
+.RI [ args ...]
+.br
+.B mwmc
+.RB [ \-h | \-\-help ]
+.SH DESCRIPTION
+.B mwmc
+sends a single command to a running
+.BR mwm (1)
+instance and prints any reply. It talks to mwm over an X11 ClientMessage IPC
+channel: the argument vector is stashed on a throwaway window, mwm is poked with
+a ClientMessage, and mwmc blocks (with a short timeout) for the reply mwm writes
+back onto that window.
+.PP
+mwm itself has no built\-in keybindings, so
+.B mwmc
+is the way every action is triggered \(em typically bound to keys with an
+external hotkey daemon such as
+.BR sxhkd (1).
+.PP
+Many commands operate on a hierarchy where a
+.B window
+belongs to a
+.B tag
+and a tag is owned by a
+.BR monitor .
+Most selectors accept the literal words
+.B next
+or
+.B prev
+for relative motion, or an explicit name/index.
+.SH OPTIONS
+.TP
+.BR \-h ", " \-\-help
+print the command summary to stderr and exit. (The same summary is produced by
+.BR "mwmc help" ,
+which asks mwm directly.)
+.SH COMMANDS
+.SS Focus
+.TP
+.B focus next|prev|last
+focus the next, previous, or last\-used window in the stack.
+.TP
+.B focus win next|prev|last|\fIclass\fB
+focus a window by direction, last\-used, or by matching its
+.B WM_CLASS
+.RI ( class
+is a case\-insensitive substring).
+.TP
+.B focus tag next|prev|\fIname\fB
+view a tag by direction, name, or 1\-based index.
+.TP
+.B focus mon next|prev|\fIn\fB
+focus a monitor by direction or index.
+.SS Move
+.TP
+.B move win next|prev|master|\fItag\fB
+send the focused window to an adjacent tag, promote it to master, or send it to
+a named/numbered tag.
+.TP
+.B move win mon next|prev
+send the focused window to the next/previous monitor.
+.TP
+.B move tag next|prev|\fImon\fB
+move the current tag (and its windows) to another monitor.
+.SS Layout and sizing
+.TP
+.B swap next|prev
+reorder the focused window forward/backward in the stack.
+.TP
+.B layout cols|stack|float|next|prev
+set or cycle the layout.
+.TP
+.B master +1|\-1|\fIn\fB
+adjust the number of windows in the master area.
+.TP
+.B master ratio +0.05|\-0.05|\fIf\fB
+adjust the master area width fraction.
+.TP
+.B gap +5|\-5|\fIpx\fB
+adjust the gap size, relative or absolute.
+.SS Bar and tray
+.TP
+.B bar toggle|show|hide
+toggle, show, or hide the bar.
+.TP
+.B traybar toggle|show|hide
+toggle, show, or hide the system tray. While hidden, mwm keeps owning the tray
+selection, so icons still dock and reappear when shown again.
+.SS Windows
+.TP
+.B win close
+close the focused window.
+.TP
+.B win tag \fIname\fB
+move the focused window to a named/numbered tag.
+.TP
+.B win toggle float|full|sticky
+toggle the floating, fullscreen, or sticky state of the focused window.
+.TP
+.B win move \fIdx dy\fB
+nudge a floating window by the given pixel offsets (auto\-floats it first).
+.TP
+.B win resize \fIdw dh\fB
+grow/shrink a floating window by the given pixel deltas.
+.TP
+.B win center
+center a floating window on its monitor.
+.SS Introspection and session
+.TP
+.B query tags|windows|monitors|layout|state
+print machine\-readable state for scripts, menus, and external keybinders.
+.TP
+.B reload
+re\-read Xresources (xrdb) and restyle the running instance live.
+.TP
+.B quit
+ask mwm to exit.
+.TP
+.B version
+print the running mwm version.
+.TP
+.B help
+print the command summary (reply comes from mwm).
+.TP
+.B completions bash|zsh
+print a shell completion script (embedded in the binary at build time) to
+standard output. This needs no running mwm. Redirect it to the location your
+shell loads completions from, e.g.:
+.PP
+.RS
+.nf
+mwmc completions bash > ~/.local/share/bash-completion/completions/mwmc
+mwmc completions zsh  > ~/.zsh/completions/_mwmc   # dir must be in $fpath
+.fi
+.RE
+.IP
+Alternatively, source it directly from your shell rc:
+.B "source <(mwmc completions bash)" .
+.SH MOUSE
+With the pointer over a window, hold
+.B Super
+and drag with the left button to move it, or with the right button to resize it
+(the modifier is the
+.B movemod
+config option). Both gestures auto\-float the window.
+.SH EXIT STATUS
+.B mwmc
+exits 0 on success. It exits non\-zero if mwm replies with a line beginning
+.BR error: ,
+if no reply arrives before the timeout (mwm not running), or on a usage error.
+.SH EXAMPLES
+.PP
+.RS
+.nf
+mwmc focus tag web
+mwmc move win master
+mwmc layout stack
+mwmc traybar toggle
+mwmc query state
+.fi
+.RE
+.SH SEE ALSO
+.BR mwm (1),
+.BR sxhkd (1)

@@ -3,6 +3,7 @@ mwm
 mwmc
 *.o
 config.h
+completions.h
 *.tar.gz
 
 # Vagrant
