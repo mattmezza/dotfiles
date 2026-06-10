@@ -34,7 +34,7 @@ Print
     dmscreenshot
 
 mod4 + shift + control + 4
-    maim -s | s2 -D ~/screenshots -i - &> /dev/null
+    maim -s --noopengl | s2 -D ~/screenshots -i - &> /dev/null
 
 mod4 + Escape
     slock
