@@ -11,7 +11,6 @@ i3/.config/i3/wallpaper.png
 dmenu/dmenu
 dmenu/stest
 st/st
-slock/slock
 slstatus/slstatus
 .tmux-session
 sandbox/.env

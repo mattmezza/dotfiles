@@ -4,7 +4,7 @@ while [ "$select" != "lock" -a "$select" != "exit" -a "$select" != "suspend" -a 
     [ -z "$select" ] && exit 0
 done
 [ "$select" = "exit" ] && pkill dwm
-[ "$select" = "lock" ] && slock -m "Locked by $(whoami) on $(hostnamectl hostname) at $(date +'%Y-%m-%d %H:%M:%S')"
+[ "$select" = "lock" ] && lok -t "$(hostnamectl hostname) is locked" -s "$(whoami), type your password"
 [ "$select" = "suspend" ] && systemctl suspend
 [ "$select" = "hibernate" ] && systemctl hibernate
 [ "$select" = "sth (suspend-then-hibernate)" ] && systemctl suspend-then-hibernate

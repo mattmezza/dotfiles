@@ -1,0 +1,97 @@
+.Dd 2026-06-12
+.Dt LOK 1
+.Os
+.Sh NAME
+.Nm lok
+.Nd monkey-themed screen locker for X
+.Sh SYNOPSIS
+.Nm
+.Op Fl v
+.Op Fl t Ar title
+.Op Fl s Ar subtitle
+.Op Fl b Ar bottomtext
+.Op Ar cmd Op Ar arg ...
+.Sh DESCRIPTION
+.Nm
+locks every screen of the current X display and waits for the user's
+password. While locked it shows a configurable emoji, a title, a subtitle
+and a footer line, all centered per physical monitor. The background color,
+the emoji and the texts change with the lock state: idle, typing (two
+alternating colors), wrong password, and caps lock active.
+.Pp
+Every text field (title, subtitle, footer) can contain
+.Xr strftime 3
+format specifiers; when enabled via
+.Fl T / S / B
+or the corresponding
+config.h
+settings, those placeholders are replaced with the current time and updated
+every second, effectively turning any part of the display into a clock.
+.Pp
+If
+.Ar cmd
+is given, it is executed after the screen has been locked.
+.Sh OPTIONS
+.Bl -tag -width Ds
+.It Fl v
+Print version information to stdout and exit.
+.It Fl t Ar title
+Override the main centered text. An empty string disables it.
+.It Fl s Ar subtitle
+Override the subtitle shown below the title. An empty string disables it.
+.It Fl b Ar bottomtext
+Override the footer text. An empty string disables it.
+.It Fl T Ar val
+Enable (1) or disable (0) live
+.Xr strftime 3
+expansion in the title text. Default: 1.
+.It Fl S Ar val
+Enable (1) or disable (0) live
+.Xr strftime 3
+expansion in the subtitle. Default: 1.
+.It Fl B Ar val
+Enable (1) or disable (0) live
+.Xr strftime 3
+expansion in the footer text. Default: 1.
+.El
+.Pp
+When live expansion is enabled for a field its text is scanned for
+.Xr strftime 3
+format specifiers (e.g.
+.Qq %H:%M )
+and the placeholders are updated every second. This allows any part of the
+screen to act as a clock.
+.Sh SECURITY CONSIDERATIONS
+.Nm
+reads the password hash from
+.Pa /etc/shadow
+and therefore must be installed setuid root; it drops privileges to the
+user and group configured in
+.Pa config.h
+(default: nobody/nobody) right after startup, before any font or text
+rendering happens. The whole process is locked into RAM with
+.Xr mlockall 2
+so the typed password can never be written to swap.
+.Pp
+On Linux, the OOM killer is disabled for the
+.Nm
+process to prevent it from being killed while the screen is locked.
+.Sh CUSTOMIZATION
+.Nm
+is customized by editing
+.Pa config.h
+(created from
+.Pa config.def.h )
+and (re)compiling the source code. This keeps it fast, secure and simple.
+.Sh EXAMPLES
+Lock the screen and suspend:
+.Dl lok systemctl suspend
+.Pp
+Lock with custom texts:
+.Dl lok -t \(dqgone for lunch\(dq -s \(dq\(dq -b \(dqback at %H:30\(dq
+.Sh AUTHORS
+Matteo Merola
+.Aq Mt mattmezza@gmail.com .
+Derived from
+.Xr slock 1
+by the suckless.org community.

@@ -15,7 +15,7 @@ clipmenud &
 sxhkd &
 
 # 1. Lock screen listener
-xss-lock --transfer-sleep-lock -- slock &
+xss-lock --transfer-sleep-lock -- lok &
 
 # 2. Dynamic Power Management Loop
 (

@@ -37,9 +37,9 @@ mod4 + shift + control + 4
     maim -s --noopengl | s2 -D ~/screenshots -i - &> /dev/null
 
 mod4 + Escape
-    slock
-#   lock and suspend-then-hibernate (uncomment to enable; remove the plain slock line above)
-#   slock & systemctl suspend-then-hibernate
+    lok
+#   lock and suspend-then-hibernate (uncomment to enable; remove the plain lok line above)
+#   lok & systemctl suspend-then-hibernate
 
 mod4 + shift + Escape
     dmexit
