@@ -9,7 +9,7 @@ xcape -e 'Control_L=Escape'
 nm-applet &
 gsettings set org.blueman.general plugin-list "['!ConnectionNotifier']"
 blueman-applet &
-slstatus &
+xbarstatus &
 picom &
 clipmenud &
 sxhkd &

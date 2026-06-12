@@ -1,94 +1,166 @@
-#!/usr/bin/env perl
+#!/usr/bin/env bash
 #
-# Copyright 2014 Pierre Mavro <deimos@deimos.fr>
-# Copyright 2014 Vivien Didelot <vivien@didelot.org>
+# battery - read battery status from sysfs
+# Usage: battery [-b<N>[,<N>...]] [-s|-ss]
 #
-# Licensed under the terms of the GNU GPL v3, or any later version.
+#   -b0     show battery 0 only
+#   -b0,1   show batteries 0 and 1
+#   -s      short format (e.g. B0D82%1h10m B1C100%)
+#   -ss     super short format (e.g. B091%)
 #
-# This script is meant to use with i3blocks. It parses the output of the "acpi"
-# command (often provided by a package of the same name) to read the status of
-# the battery, and eventually its remaining time (to full charge or discharge).
-#
-# The color will gradually change for a percentage below 85%, and the urgency
-# (exit code 33) is set if there is less that 5% remaining.
+# Default (no flags): verbose list of all batteries
+# D=discharging C=charging F=full N=not charging U=unknown
 
-use strict;
-use warnings;
-use utf8;
+battery_nums=""
+short=0
 
-my $acpi;
-my $status;
-my $percent;
-my $ac_adapt;
-my $full_text;
-my $short_text;
-my $bat_number = $ENV{BAT_NUMBER} || 0;
-my $label = $ENV{LABEL} || "";
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        -b*)
+            val="${1#-b}"
+            if [[ -z "$val" ]]; then
+                shift
+                val="$1"
+            fi
+            battery_nums="$val"
+            ;;
+        -ss) short=2 ;;
+        -s)  short=1 ;;
+        -h|--help)
+            echo "Usage: $(basename "$0") [-b<N>[,<N>...]] [-s|-ss]"
+            echo "  -b<N>[,<N>]  show specific battery(s)"
+            echo "  -s           short format (e.g. D82%1h10m)"
+            echo "  -ss          super short format (e.g. 91%)"
+            exit 0
+            ;;
+        *)
+            echo "Usage: $(basename "$0") [-b<N>[,<N>...]] [-s|-ss]" >&2
+            exit 1
+            ;;
+    esac
+    shift
+done
 
-# read the first line of the "acpi" command output
-open (ACPI, "acpi -b 2>/dev/null| grep 'Battery $bat_number' |") or die;
-$acpi = <ACPI>;
-close(ACPI);
+# --- Discover batteries ---
+bats=()
+if [[ -n "$battery_nums" ]]; then
+    IFS=',' read -ra nums <<< "$battery_nums"
+    for n in "${nums[@]}"; do
+        d="/sys/class/power_supply/BAT${n}"
+        [[ -d "$d" ]] && bats+=("BAT${n}")
+    done
+else
+    for d in /sys/class/power_supply/BAT*; do
+        [[ -d "$d" ]] && bats+=("$(basename "$d")")
+    done
+fi
 
-# fail on unexpected output
-if (not defined($acpi)) {
-    # don't print anything to stderr if there is no battery
-    exit(0);
-}
-elsif ($acpi !~ /: ([\w\s]+), (\d+)%/) {
-	die "$acpi\n";
-}
+(( ${#bats[@]} == 0 )) && exit 0
+single=$(( ${#bats[@]} == 1 ))
 
-$status = $1;
-$percent = $2;
-$full_text = "$label$percent%";
+# --- Helpers ---
 
-if ($status eq 'Discharging') {
-	$full_text .= '_d';
-} elsif ($status eq 'Charging') {
-	$full_text .= '_c';
-} elsif ($status eq 'Unknown') {
-	open (AC_ADAPTER, "acpi -a |") or die;
-	$ac_adapt = <AC_ADAPTER>;
-	close(AC_ADAPTER);
-
-	if ($ac_adapt =~ /: ([\w-]+)/) {
-		$ac_adapt = $1;
-
-		if ($ac_adapt eq 'on-line') {
-			$full_text .= '_c';
-		} elsif ($ac_adapt eq 'off-line') {
-			$full_text .= '_d';
-		}
-	}
-}
-
-$short_text = $full_text;
-
-if ($acpi =~ /(\d\d:\d\d):/) {
-	$full_text .= "$1";
-}
-
-# print text
-print "$full_text\n";
-#print "$short_text\n";
-
-# consider color and urgent flag only on discharge
-if ($status eq 'Discharging') {
-
-	if ($percent < 20) {
-		print "#FF0000\n";
-	} elsif ($percent < 40) {
-		print "#FFAE00\n";
-	} elsif ($percent < 60) {
-		print "#FFF600\n";
-	} elsif ($percent < 85) {
-		print "#A8FF00\n";
-	}
-
-	if ($percent < 5) {
-		exit(33);
-	}
+# Status char
+sc() {
+    case "$1" in
+        Discharging)  echo -n D ;;
+        Charging)     echo -n C ;;
+        Full)         echo -n F ;;
+        "Not charging") echo -n N ;;
+        *)            echo -n U ;;
+    esac
 }
 
-exit(0);
+# Format time: XhYm or Ym
+fmt_t() {
+    local h=$1 m=$2
+    if (( h > 0 )); then
+        printf "%dh%02dm" "$h" "$m"
+    else
+        printf "%dm" "$m"
+    fi
+}
+
+# Compute time hours and minutes from charge/current (µAh/µA = hours)
+# calc_t charge_now current_now [charge_full]
+# Without charge_full: remaining time (discharging)
+# With charge_full: time to full (charging)
+calc_t() {
+    local c=$1 r=$2 f=$3
+    local rem
+    if [[ -n "$f" ]]; then
+        (( rem = f - c ))
+        (( rem <= 0 )) && { echo "0 0"; return; }
+    else
+        rem=$c
+    fi
+    (( r <= 0 )) && { echo "0 0"; return; }
+    awk -v r="$rem" -v rate="$r" 'BEGIN {
+        t = r / rate
+        h = int(t)
+        m = int((t - h) * 60 + 0.5)
+        if (m >= 60) { h += 1; m -= 60 }
+        print h, m
+    }'
+}
+
+# --- Format each battery ---
+out=()
+for bat in "${bats[@]}"; do
+    id="${bat/BAT/b}"
+    id="${id,,}"
+
+    st=$(cat "/sys/class/power_supply/$bat/status" 2>/dev/null || echo "Unknown")
+    cap=$(cat "/sys/class/power_supply/$bat/capacity" 2>/dev/null || echo "0")
+
+    # Try charge_* then fall back to energy_*
+    cnow=$(cat "/sys/class/power_supply/$bat/charge_now" 2>/dev/null || cat "/sys/class/power_supply/$bat/energy_now" 2>/dev/null || echo "")
+    rnow=$(cat "/sys/class/power_supply/$bat/current_now" 2>/dev/null || cat "/sys/class/power_supply/$bat/power_now" 2>/dev/null || echo "")
+    cfull=$(cat "/sys/class/power_supply/$bat/charge_full" 2>/dev/null || cat "/sys/class/power_supply/$bat/energy_full" 2>/dev/null || echo "")
+
+    # Compute time
+    th=0; tm=0; has_t=0
+    if [[ -n "$cnow" && -n "$rnow" && "$rnow" -gt 0 && "$cnow" -gt 0 ]]; then
+        if [[ "$st" == "Discharging" ]]; then
+            read th tm <<< $(calc_t "$cnow" "$rnow")
+            has_t=$(( th > 0 || tm > 0 ))
+        elif [[ "$st" == "Charging" && -n "$cfull" ]]; then
+            read th tm <<< $(calc_t "$cnow" "$rnow" "$cfull")
+            has_t=$(( th > 0 || tm > 0 ))
+        fi
+    fi
+
+    if (( short == 2 )); then
+        # Super short: B91% or 91%
+        if (( single )); then
+            out+=("${cap}%")
+        else
+            out+=("${id}${cap}%")
+        fi
+    elif (( short == 1 )); then
+        # Short: B0D82%1h10m or D82%1h10m
+        s=$(sc "$st")
+        seg=""
+        (( !single )) && seg="$id"
+        seg+="${s}${cap}%"
+        (( has_t )) && seg+=$(fmt_t "$th" "$tm")
+        out+=("$seg")
+    else
+        # Verbose: "Discharging, 91%, 4h08m remaining"
+        seg=""
+        (( !single )) && seg="$id: "
+        seg+="${st}, ${cap}%"
+        if (( has_t )); then
+            seg+=", $(fmt_t "$th" "$tm")"
+            [[ "$st" == "Discharging" ]] && seg+=" remaining" || seg+=" until charged"
+        fi
+        out+=("$seg")
+    fi
+done
+
+# --- Print ---
+if (( short > 0 )); then
+    IFS=' '; echo "${out[*]}"
+else
+    printf '%s\n' "${out[@]}"
+fi

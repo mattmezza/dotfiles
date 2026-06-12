@@ -1,0 +1,9 @@
+#!/bin/env bash
+
+perc=$(awk -v a="$(grep 'cpu ' /proc/stat)" -v b="$(sleep 0.5 && grep 'cpu ' /proc/stat)" 'BEGIN {
+       split(a, x); split(b, y)
+       idle = y[5] - x[5]
+       total = (y[2]+y[3]+y[4]+y[5]+y[6]+y[7]+y[8]) - (x[2]+x[3]+x[4]+x[5]+x[6]+x[7]+x[8])
+       printf "%.0f\n", (1 - idle/total)*100
+   }')
+echo "$perc%"

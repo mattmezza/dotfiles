@@ -1,0 +1,56 @@
+#!/bin/env bash
+
+load() {
+    cut -d ' ' -f1,2,3 /proc/loadavg | sed 's/ /|/g'
+}
+
+mem() {
+    PERCENT=false TOT=false memory
+}
+
+batt() {
+    battery -ss -b0
+}
+
+updates() {
+    yay -Qu | wc -l
+}
+
+BATT=$(batt)
+LOAD=$(load)
+MEM=$(mem)
+#UPD=$(updates)
+
+while true; do
+    now=$(date +%s)
+    every_3s=$((now % 3))
+    every_1m=$((now % 60))
+    every_5m=$((now % 300))
+    every_1h=$((now % 3600))
+    every_6h=$((now % 21600))
+
+    CPU=$(cpu)
+
+    if [ $every_3s -eq 0 ]; then
+        LOAD=$(load)
+        MEM=$(mem)
+    fi
+
+    if [ $every_5m -eq 0 ]; then
+        BATT=$(batt)
+    fi
+
+#    if [ $every_6h -eq 0 ]; then
+#        UPD=$(updates)
+#    fi
+
+    # STATUS="B$BATT C$CPU L$LOAD M$MEM V$(volume) B$(brightness) K$(key-light) U$UPD $(date '+%b %d %H:%M')"
+    STATUS="B$BATT C$CPU L$LOAD M$MEM V$(volume) B$(brightness) $(date '+%b %d %H:%M')"
+
+    if [ "$1" = '-d' ]; then
+        echo "$STATUS"
+    else
+        xsetroot -name "$STATUS"
+    fi
+    sleep 1
+done
