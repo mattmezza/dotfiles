@@ -3,7 +3,7 @@
 /* runtime behavior */
 static const char *default_window_class = "s2";
 static const int default_fill_mode = 0;
-static const char *default_save_directory = "~";
+static const char *default_save_directory = "~/screenshots";
 static const int window_padding = 16;
 
 /* tool palette (hex RGB, no leading # in code) */
@@ -26,9 +26,11 @@ static const int default_text_scale = 4;
 static const int default_highlight_strength = 25;
 static const int default_pixelate_block = 8;
 static const int default_blur_radius = 5;
+static const int default_marker_height = 24;   /* text-highlight band height (image px) */
+static const int default_marker_strength = 40;  /* text-highlight alpha/strength (1..100) */
 
 /* UI defaults */
-/* tool index mapping: 0=select, 1=arrow, 2=line, 3=pen, 4=number, 5=rect, 6=circle, 7=text, 8=highlight, 9=pixelate, 10=blur, 11=picker */
+/* tool index mapping: 0=select, 1=arrow, 2=line, 3=pen, 4=number, 5=rect, 6=circle, 7=text, 8=highlight, 9=marker, 10=pixelate, 11=blur, 12=picker */
 static const int default_tool_index = 1;
 static const unsigned int selection_bbox_color = 0x00ffffu;
 

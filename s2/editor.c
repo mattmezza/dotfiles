@@ -10,6 +10,7 @@
 #include <ctype.h>
 #include <locale.h>
 #include <limits.h>
+#include <math.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -36,6 +37,14 @@
 
 #ifndef default_blur_radius
 #define default_blur_radius 2
+#endif
+
+#ifndef default_marker_height
+#define default_marker_height 24
+#endif
+
+#ifndef default_marker_strength
+#define default_marker_strength 40
 #endif
 
 #ifndef text_fill_padding
@@ -67,6 +76,7 @@ enum tool {
 	TOOL_PIXELATE,
 	TOOL_BLUR,
 	TOOL_PICKER,
+	TOOL_MARKER,
 };
 
 enum action_type {
@@ -78,6 +88,7 @@ enum action_type {
 	ACTION_CIRCLE,
 	ACTION_TEXT,
 	ACTION_HIGHLIGHT,
+	ACTION_MARKER,
 	ACTION_PIXELATE,
 	ACTION_BLUR,
 };
@@ -89,6 +100,7 @@ struct action {
 	int x1;
 	int y1;
 	int p0;
+	int rotation;
 	unsigned int color;
 	char *text;
 	int *pen_points;
@@ -108,6 +120,7 @@ struct editor_state {
 	Window win;
 	Pixmap backbuf;
 	Cursor cursor;
+	Cursor cursor_text;
 	GC gc;
 	XImage *ximg;
 	int status_h;
@@ -150,6 +163,7 @@ struct editor_state {
 	int pixelate_block;
 	int blur_radius;
 	int highlight_strength;
+	int marker_height;
 	int cursor_x;
 	int cursor_y;
 	int anchor_active;
@@ -165,12 +179,20 @@ struct editor_state {
 	int mouse_anchor_set_on_press;
 	int mouse_drag_moved;
 	int selected_idx;
+	int *sel;
+	int sel_len;
+	int sel_cap;
+	int marquee_active;
+	int marquee_x;
+	int marquee_y;
 	int drag_active;
 	int drag_origin_x;
 	int drag_origin_y;
 	int drag_dx;
 	int drag_dy;
+	int rotating;
 	int pen_active;
+	int pen_is_marker;
 	int pen_color;
 	int pen_thickness;
 	int *pen_points;
@@ -202,6 +224,13 @@ static void text_box_metrics(const struct editor_state *ed,
 			     int *bw,
 			     int *bh);
 static void set_tool(struct editor_state *ed, enum tool tool);
+static int tool_uses_anchor(enum tool tool);
+static void apply_action(struct editor_state *ed, struct image *img, const struct action *a);
+static void apply_action_rotated(struct editor_state *ed, struct image *img, const struct action *a);
+static int action_is_rotatable(enum action_type t);
+static void action_center(const struct editor_state *ed, const struct action *a, double *cx, double *cy);
+static void rotate_selected_by(struct editor_state *ed, int delta);
+static void sel_clear(struct editor_state *ed);
 
 static void
 build_font_pattern(char *out, size_t outlen, int px)
@@ -1018,7 +1047,7 @@ action_bounds(const struct editor_state *ed, const struct action *a, int *minx, 
 		y0 = a->y0 - r;
 		x1 = a->x0 + r;
 		y1 = a->y0 + r;
-	} else if (a->type == ACTION_PEN && a->pen_points && a->pen_len > 0) {
+	} else if ((a->type == ACTION_PEN || a->type == ACTION_MARKER) && a->pen_points && a->pen_len > 0) {
 		x0 = x1 = a->pen_points[0];
 		y0 = y1 = a->pen_points[1];
 		for (i = 1; i < a->pen_len; i++) {
@@ -1057,6 +1086,112 @@ draw_pen_points(struct image *img, const int *points, int len, int thickness, un
 		          thickness,
 		          color);
 	}
+}
+
+/*
+ * Render a freehand highlighter stroke: the thick path is rasterised into a
+ * binary coverage mask first, then blended onto the image exactly once at the
+ * given strength. The single blend keeps overlapping parts of one stroke from
+ * darkening, so it reads like a real highlighter.
+ */
+static void
+draw_marker_stroke(struct image *img, const int *points, int len, int thickness, unsigned int color, int strength)
+{
+	struct image mask;
+	int *shifted;
+	int minx;
+	int miny;
+	int maxx;
+	int maxy;
+	int rad;
+	int w;
+	int h;
+	int x;
+	int y;
+	int i;
+	unsigned int r;
+	unsigned int g;
+	unsigned int b;
+	unsigned int s;
+	unsigned int inv;
+
+	if (!img || !img->pixels || !points || len <= 0) {
+		return;
+	}
+	if (thickness < 1) {
+		thickness = 1;
+	}
+	rad = thickness / 2 + 1;
+	minx = maxx = points[0];
+	miny = maxy = points[1];
+	for (i = 1; i < len; i++) {
+		int px = points[i * 2 + 0];
+		int py = points[i * 2 + 1];
+		if (px < minx) minx = px;
+		if (px > maxx) maxx = px;
+		if (py < miny) miny = py;
+		if (py > maxy) maxy = py;
+	}
+	minx -= rad;
+	miny -= rad;
+	maxx += rad;
+	maxy += rad;
+	if (minx < 0) minx = 0;
+	if (miny < 0) miny = 0;
+	if (maxx > img->width - 1) maxx = img->width - 1;
+	if (maxy > img->height - 1) maxy = img->height - 1;
+	w = maxx - minx + 1;
+	h = maxy - miny + 1;
+	if (w < 1 || h < 1) {
+		return;
+	}
+
+	memset(&mask, 0, sizeof(mask));
+	mask.width = w;
+	mask.height = h;
+	mask.len = (size_t)w * (size_t)h * 4u;
+	mask.pixels = calloc(1, mask.len);
+	if (!mask.pixels) {
+		return;
+	}
+	shifted = malloc((size_t)len * 2u * sizeof(*shifted));
+	if (!shifted) {
+		free(mask.pixels);
+		return;
+	}
+	for (i = 0; i < len; i++) {
+		shifted[i * 2 + 0] = points[i * 2 + 0] - minx;
+		shifted[i * 2 + 1] = points[i * 2 + 1] - miny;
+	}
+	draw_pen_points(&mask, shifted, len, thickness, 0xffffffu);
+
+	if (strength < 1) {
+		strength = 1;
+	}
+	if (strength > 100) {
+		strength = 100;
+	}
+	s = (unsigned int)strength;
+	inv = 100u - s;
+	r = (color >> 16) & 0xffu;
+	g = (color >> 8) & 0xffu;
+	b = color & 0xffu;
+	for (y = 0; y < h; y++) {
+		for (x = 0; x < w; x++) {
+			unsigned char *mp = mask.pixels + ((size_t)y * (size_t)w + (size_t)x) * 4u;
+			unsigned char *dp;
+			if (mp[3] <= 8) {
+				continue;
+			}
+			dp = img->pixels + ((size_t)(y + miny) * (size_t)img->width + (size_t)(x + minx)) * 4u;
+			dp[0] = (unsigned char)(((unsigned int)dp[0] * inv + r * s) / 100u);
+			dp[1] = (unsigned char)(((unsigned int)dp[1] * inv + g * s) / 100u);
+			dp[2] = (unsigned char)(((unsigned int)dp[2] * inv + b * s) / 100u);
+			dp[3] = 0xff;
+		}
+	}
+	free(shifted);
+	free(mask.pixels);
 }
 
 static int
@@ -1299,6 +1434,7 @@ reset_pen_input(struct editor_state *ed)
 		return;
 	}
 	ed->pen_active = 0;
+	ed->pen_is_marker = 0;
 	ed->pen_len = 0;
 }
 
@@ -1314,6 +1450,10 @@ static void
 apply_action(struct editor_state *ed, struct image *img, const struct action *a)
 {
 	if (!ed || !img || !a) {
+		return;
+	}
+	if (a->rotation % 360 != 0 && action_is_rotatable(a->type)) {
+		apply_action_rotated(ed, img, a);
 		return;
 	}
 	switch (a->type) {
@@ -1383,6 +1523,9 @@ apply_action(struct editor_state *ed, struct image *img, const struct action *a)
 	case ACTION_HIGHLIGHT:
 		draw_highlight(img, a->x0, a->y0, a->x1, a->y1, a->color, a->p0);
 		break;
+	case ACTION_MARKER:
+		draw_marker_stroke(img, a->pen_points, a->pen_len, a->p0, a->color, default_marker_strength);
+		break;
 	case ACTION_PIXELATE:
 		draw_pixelate(img, a->x0, a->y0, a->x1, a->y1, a->p0);
 		break;
@@ -1392,6 +1535,221 @@ apply_action(struct editor_state *ed, struct image *img, const struct action *a)
 	default:
 		break;
 	}
+}
+
+static int
+action_is_rotatable(enum action_type t)
+{
+	return t == ACTION_ARROW || t == ACTION_LINE || t == ACTION_PEN || t == ACTION_NUMBER ||
+	       t == ACTION_RECT || t == ACTION_CIRCLE || t == ACTION_TEXT;
+}
+
+static void
+action_center(const struct editor_state *ed, const struct action *a, double *cx, double *cy)
+{
+	int minx;
+	int miny;
+	int maxx;
+	int maxy;
+
+	action_bounds(ed, a, &minx, &miny, &maxx, &maxy);
+	if (cx) {
+		*cx = (minx + maxx) / 2.0;
+	}
+	if (cy) {
+		*cy = (miny + maxy) / 2.0;
+	}
+}
+
+static int
+action_draw_pad(const struct action *a)
+{
+	int t;
+
+	if (!a) {
+		return 4;
+	}
+	switch (a->type) {
+	case ACTION_ARROW:
+		t = a->p0 > 0 ? a->p0 : 1;
+		return (int)(10.0 + t * 2.0) + t + 4;
+	case ACTION_LINE:
+	case ACTION_RECT:
+	case ACTION_CIRCLE:
+	case ACTION_PEN:
+		t = a->p0 > 0 ? a->p0 : 1;
+		return t / 2 + 3;
+	default:
+		return 4;
+	}
+}
+
+/*
+ * Render a rotatable action rotated by a->rotation degrees about its center.
+ * The action is first drawn into a transparent scratch layer, which is then
+ * sampled back onto img with an inverse rotation (nearest-neighbour).
+ */
+static void
+apply_action_rotated(struct editor_state *ed, struct image *img, const struct action *a)
+{
+	struct image tmp;
+	struct action s;
+	int *pts = NULL;
+	int minx;
+	int miny;
+	int maxx;
+	int maxy;
+	int pad;
+	int tw;
+	int th;
+	double cx;
+	double cy;
+	double tcx;
+	double tcy;
+	double rad;
+	double cosr;
+	double sinr;
+	double dminx;
+	double dminy;
+	double dmaxx;
+	double dmaxy;
+	int dx0;
+	int dy0;
+	int dx1;
+	int dy1;
+	int X;
+	int Y;
+	int i;
+
+	if (!ed || !img || !img->pixels || !a) {
+		return;
+	}
+
+	action_bounds(ed, a, &minx, &miny, &maxx, &maxy);
+	pad = action_draw_pad(a);
+	minx -= pad;
+	miny -= pad;
+	maxx += pad;
+	maxy += pad;
+	tw = maxx - minx + 1;
+	th = maxy - miny + 1;
+	if (tw < 1 || th < 1) {
+		return;
+	}
+	/* guard against pathological sizes */
+	if ((long)tw * (long)th > 64L * 1024L * 1024L) {
+		return;
+	}
+
+	memset(&tmp, 0, sizeof(tmp));
+	tmp.width = tw;
+	tmp.height = th;
+	tmp.len = (size_t)tw * (size_t)th * 4u;
+	tmp.pixels = calloc(1, tmp.len);
+	if (!tmp.pixels) {
+		return;
+	}
+
+	s = *a;
+	s.rotation = 0;
+	switch (a->type) {
+	case ACTION_NUMBER:
+	case ACTION_TEXT:
+		s.x0 = a->x0 - minx;
+		s.y0 = a->y0 - miny;
+		break;
+	case ACTION_PEN:
+		if (a->pen_points && a->pen_len > 0) {
+			pts = malloc((size_t)a->pen_len * 2u * sizeof(*pts));
+			if (!pts) {
+				free(tmp.pixels);
+				return;
+			}
+			for (i = 0; i < a->pen_len; i++) {
+				pts[i * 2 + 0] = a->pen_points[i * 2 + 0] - minx;
+				pts[i * 2 + 1] = a->pen_points[i * 2 + 1] - miny;
+			}
+			s.pen_points = pts;
+		}
+		break;
+	default:
+		s.x0 = a->x0 - minx;
+		s.y0 = a->y0 - miny;
+		s.x1 = a->x1 - minx;
+		s.y1 = a->y1 - miny;
+		break;
+	}
+
+	apply_action(ed, &tmp, &s);
+
+	cx = (minx + maxx) / 2.0;
+	cy = (miny + maxy) / 2.0;
+	tcx = cx - minx;
+	tcy = cy - miny;
+	rad = a->rotation * M_PI / 180.0;
+	cosr = cos(rad);
+	sinr = sin(rad);
+
+	/* destination bounding box: forward-rotate the four corners about center */
+	dminx = dminy = 1e18;
+	dmaxx = dmaxy = -1e18;
+	for (i = 0; i < 4; i++) {
+		double px = (i == 1 || i == 2) ? maxx : minx;
+		double py = (i >= 2) ? maxy : miny;
+		double rx = cosr * (px - cx) - sinr * (py - cy) + cx;
+		double ry = sinr * (px - cx) + cosr * (py - cy) + cy;
+		if (rx < dminx) dminx = rx;
+		if (ry < dminy) dminy = ry;
+		if (rx > dmaxx) dmaxx = rx;
+		if (ry > dmaxy) dmaxy = ry;
+	}
+	dx0 = (int)floor(dminx) - 1;
+	dy0 = (int)floor(dminy) - 1;
+	dx1 = (int)ceil(dmaxx) + 1;
+	dy1 = (int)ceil(dmaxy) + 1;
+	if (dx0 < 0) dx0 = 0;
+	if (dy0 < 0) dy0 = 0;
+	if (dx1 > img->width - 1) dx1 = img->width - 1;
+	if (dy1 > img->height - 1) dy1 = img->height - 1;
+
+	for (Y = dy0; Y <= dy1; Y++) {
+		for (X = dx0; X <= dx1; X++) {
+			double dxp = X - cx;
+			double dyp = Y - cy;
+			/* inverse rotation back into scratch space */
+			double sxr = cosr * dxp + sinr * dyp + tcx;
+			double syr = -sinr * dxp + cosr * dyp + tcy;
+			int isx = (int)lround(sxr);
+			int isy = (int)lround(syr);
+			const unsigned char *sp;
+			unsigned char *dp;
+			unsigned int al;
+
+			if (isx < 0 || isy < 0 || isx >= tw || isy >= th) {
+				continue;
+			}
+			sp = tmp.pixels + ((size_t)isy * (size_t)tw + (size_t)isx) * 4u;
+			al = sp[3];
+			if (al <= 8u) {
+				continue;
+			}
+			dp = img->pixels + ((size_t)Y * (size_t)img->width + (size_t)X) * 4u;
+			if (al >= 255u) {
+				dp[0] = sp[0];
+				dp[1] = sp[1];
+				dp[2] = sp[2];
+				dp[3] = 0xff;
+			} else {
+				dp[0] = (unsigned char)(((unsigned int)dp[0] * (255u - al) + (unsigned int)sp[0] * al) / 255u);
+				dp[1] = (unsigned char)(((unsigned int)dp[1] * (255u - al) + (unsigned int)sp[1] * al) / 255u);
+				dp[2] = (unsigned char)(((unsigned int)dp[2] * (255u - al) + (unsigned int)sp[2] * al) / 255u);
+				dp[3] = 0xff;
+			}
+		}
+	}
+
+	free(pts);
+	free(tmp.pixels);
 }
 
 static void
@@ -1464,7 +1822,7 @@ push_action(struct action_stack *st, const struct action *in)
 static int
 tool_count(void)
 {
-	return 12;
+	return 13;
 }
 
 static enum tool
@@ -1480,8 +1838,9 @@ tool_by_index(int idx)
 	case 6: return TOOL_CIRCLE;
 	case 7: return TOOL_TEXT;
 	case 8: return TOOL_HIGHLIGHT;
-	case 9: return TOOL_PIXELATE;
-	case 10: return TOOL_BLUR;
+	case 9: return TOOL_MARKER;
+	case 10: return TOOL_PIXELATE;
+	case 11: return TOOL_BLUR;
 	default: return TOOL_PICKER;
 	}
 }
@@ -1499,6 +1858,7 @@ tool_label(enum tool t)
 	case TOOL_CIRCLE: return "CIR";
 	case TOOL_TEXT: return "TXT";
 	case TOOL_HIGHLIGHT: return "HL";
+	case TOOL_MARKER: return "MRK";
 	case TOOL_PIXELATE: return "PXL";
 	case TOOL_BLUR: return "BLR";
 	case TOOL_PICKER: return "PCK";
@@ -1596,14 +1956,15 @@ draw_status(struct editor_state *ed)
 	}
 	snprintf(msg,
 	         sizeof(msg),
-	         "thickness:%d  text-size:%d  hl-strength:%d  pixelate:%d  blur:%d  fill:%s  selected:%d  actions:%lu/%lu%s%s",
+	         "thickness:%d  text-size:%d  hl-strength:%d  marker-h:%d  pixelate:%d  blur:%d  fill:%s  selected:%d  actions:%lu/%lu%s%s",
 	         thickness_presets[ed->thickness_idx],
 	         ed->text_scale,
 	         ed->highlight_strength,
+	         ed->marker_height,
 	         ed->pixelate_block,
 	         ed->blur_radius,
 	         ed->fill_mode ? "on" : "off",
-	         ed->selected_idx,
+	         ed->sel_len,
 	         (unsigned long)ed->actions.cursor,
 	         (unsigned long)ed->actions.len,
 	         ed->text_mode ? "  text:" : "",
@@ -1653,31 +2014,6 @@ draw_status(struct editor_state *ed)
 }
 
 static void
-draw_pen_overlay(struct editor_state *ed)
-{
-	int i;
-	int lw;
-
-	if (!ed || !ed->dpy || !ed->win || !ed->gc || !ed->pen_active || ed->pen_len < 2 || !ed->pen_points) {
-		return;
-	}
-	lw = (int)(ed->pen_thickness * ed->scale);
-	if (lw < 1) {
-		lw = 1;
-	}
-	XSetForeground(ed->dpy, ed->gc, (unsigned long)(ed->pen_color & 0xffffff));
-	XSetLineAttributes(ed->dpy, ed->gc, (unsigned int)lw, LineSolid, CapRound, JoinRound);
-	for (i = 1; i < ed->pen_len; i++) {
-		int x0 = ed->canvas_x + (int)(ed->pen_points[(i - 1) * 2 + 0] * ed->scale);
-		int y0 = ed->canvas_y + (int)(ed->pen_points[(i - 1) * 2 + 1] * ed->scale);
-		int x1 = ed->canvas_x + (int)(ed->pen_points[i * 2 + 0] * ed->scale);
-		int y1 = ed->canvas_y + (int)(ed->pen_points[i * 2 + 1] * ed->scale);
-		XDrawLine(ed->dpy, ed->win, ed->gc, x0, y0, x1, y1);
-	}
-	XSetLineAttributes(ed->dpy, ed->gc, 0, LineSolid, CapButt, JoinMiter);
-}
-
-static void
 draw_help_overlay(struct editor_state *ed)
 {
 	static const char *lines[] = {
@@ -1690,11 +2026,17 @@ draw_help_overlay(struct editor_state *ed)
 		"Ctrl+V: paste text from clipboard",
 		"Ctrl+Z / Ctrl+Shift+Z: undo/redo",
 		"s: select  a: arrow  l: line  n: number  r: rect  o: circle",
-		"t: text  h: highlight  b: blur  p: pen  x: pixelate  c: picker",
+		"t: text  h: highlight  m: marker  b: blur  p: pen  x: pixelate  c: picker",
+		"marker: drag to highlight text; [ / ] sets band height",
 		"Space / left-click: apply tool",
 		"arrow keys: move cursor by 1px",
 		"[ / ]: adjust size/strength",
 		"f: toggle fill  # + 6 hex: set color  1..9: palette color",
+		"select: click object, or drag empty area to box-select many",
+		"select: drag to move (Shift locks to one axis)",
+		"select: drag handle to rotate (Shift snaps 45)",
+		"Backspace/Del: remove all selected objects",
+		", / . rotate 15deg   < / > rotate 1deg",
 		"X: cancel pending anchor/pen/text",
 		"?: toggle this help",
 	};
@@ -1733,6 +2075,88 @@ draw_help_overlay(struct editor_state *ed)
 	}
 }
 
+#define ROTATE_HANDLE_OFFSET 22
+#define ROTATE_HANDLE_RADIUS 7
+
+/*
+ * Compute the selected action's bounding quad and rotation handle in screen
+ * coordinates. corners receives 8 ints (x,y for TL,TR,BR,BL); handle receives
+ * the handle centre (x,y). Honours any active drag offset.
+ */
+static void
+selection_geometry(struct editor_state *ed, const struct action *a, int *corners, int *handle)
+{
+	int minx;
+	int miny;
+	int maxx;
+	int maxy;
+	double cx;
+	double cy;
+	double rad;
+	double cosr;
+	double sinr;
+	double sxoff;
+	double syoff;
+	double tmx;
+	double tmy;
+	double upx;
+	double upy;
+	int i;
+	const double bx[4] = { 0, 1, 1, 0 };
+	const double by[4] = { 0, 0, 1, 1 };
+
+	action_bounds(ed, a, &minx, &miny, &maxx, &maxy);
+	if (ed->drag_active) {
+		minx += ed->drag_dx;
+		maxx += ed->drag_dx;
+		miny += ed->drag_dy;
+		maxy += ed->drag_dy;
+	}
+	cx = (minx + maxx) / 2.0;
+	cy = (miny + maxy) / 2.0;
+	rad = a->rotation * M_PI / 180.0;
+	cosr = cos(rad);
+	sinr = sin(rad);
+	sxoff = ed->canvas_x;
+	syoff = ed->canvas_y;
+
+	for (i = 0; i < 4; i++) {
+		double px = minx + bx[i] * (maxx - minx);
+		double py = miny + by[i] * (maxy - miny);
+		double rx = cosr * (px - cx) - sinr * (py - cy) + cx;
+		double ry = sinr * (px - cx) + cosr * (py - cy) + cy;
+		corners[i * 2 + 0] = (int)lround(sxoff + rx * ed->scale);
+		corners[i * 2 + 1] = (int)lround(syoff + ry * ed->scale);
+	}
+	/* handle sits beyond the rotated top edge midpoint */
+	tmx = (corners[0] + corners[2]) / 2.0;
+	tmy = (corners[1] + corners[3]) / 2.0;
+	upx = sinr;
+	upy = -cosr;
+	handle[0] = (int)lround(tmx + upx * ROTATE_HANDLE_OFFSET);
+	handle[1] = (int)lround(tmy + upy * ROTATE_HANDLE_OFFSET);
+}
+
+static int
+rotation_handle_hit(struct editor_state *ed, int sx, int sy)
+{
+	int corners[8];
+	int handle[2];
+	int dx;
+	int dy;
+
+	if (ed->selected_idx < 0 || (size_t)ed->selected_idx >= ed->actions.cursor) {
+		return 0;
+	}
+	if (!action_is_rotatable(ed->actions.items[ed->selected_idx].type)) {
+		return 0;
+	}
+	selection_geometry(ed, &ed->actions.items[ed->selected_idx], corners, handle);
+	dx = sx - handle[0];
+	dy = sy - handle[1];
+	return dx * dx + dy * dy <= (ROTATE_HANDLE_RADIUS + 3) * (ROTATE_HANDLE_RADIUS + 3);
+}
+
 static void
 render_frame(struct editor_state *ed)
 {
@@ -1746,7 +2170,7 @@ render_frame(struct editor_state *ed)
 
 	img_copy(&ed->preview, &ed->rendered);
 
-	if (ed->anchor_active && !ed->mouse_b1_down) {
+	if (ed->anchor_active) {
 		struct action a;
 		memset(&a, 0, sizeof(a));
 		a.x0 = ed->anchor_x;
@@ -1825,6 +2249,24 @@ render_frame(struct editor_state *ed)
 		ed->raster_dirty = 1;
 	}
 
+	if (ed->pen_active && ed->pen_len > 0) {
+		if (ed->pen_is_marker) {
+			draw_marker_stroke(&ed->preview,
+			                   ed->pen_points,
+			                   ed->pen_len,
+			                   ed->pen_thickness,
+			                   (unsigned int)ed->pen_color,
+			                   default_marker_strength);
+		} else {
+			draw_pen_points(&ed->preview,
+			                ed->pen_points,
+			                ed->pen_len,
+			                ed->pen_thickness,
+			                (unsigned int)ed->pen_color);
+		}
+		ed->raster_dirty = 1;
+	}
+
 	if (ed->raster_dirty) {
 		render_to_ximg(ed, &ed->preview);
 		ed->raster_dirty = 0;
@@ -1854,37 +2296,59 @@ render_frame(struct editor_state *ed)
 	          (unsigned int)ed->win_h,
 	          0,
 	          0);
-	if (ed->selected_idx >= 0 && (size_t)ed->selected_idx < ed->actions.cursor) {
-		struct action *sa = &ed->actions.items[ed->selected_idx];
-		int minx;
-		int miny;
-		int maxx;
-		int maxy;
-		int sx0;
-		int sy0;
-		int sx1;
-		int sy1;
-		action_bounds(ed, sa, &minx, &miny, &maxx, &maxy);
-		if (ed->drag_active) {
-			minx += ed->drag_dx;
-			maxx += ed->drag_dx;
-			miny += ed->drag_dy;
-			maxy += ed->drag_dy;
-		}
-		sx0 = ed->canvas_x + (int)(minx * ed->scale);
-		sy0 = ed->canvas_y + (int)(miny * ed->scale);
-		sx1 = ed->canvas_x + (int)(maxx * ed->scale);
-		sy1 = ed->canvas_y + (int)(maxy * ed->scale);
+	{
+		int k;
 		XSetForeground(ed->dpy, ed->gc, (unsigned long)(selection_bbox_color & 0xffffffu));
-		XDrawRectangle(ed->dpy,
-		               ed->win,
-		               ed->gc,
-		               sx0,
-		               sy0,
-		               (unsigned int)(sx1 >= sx0 ? (sx1 - sx0) : (sx0 - sx1)),
-		               (unsigned int)(sy1 >= sy0 ? (sy1 - sy0) : (sy0 - sy1)));
+		for (k = 0; k < ed->sel_len; k++) {
+			struct action *sa;
+			int corners[8];
+			int handle[2];
+			int i;
+			if (ed->sel[k] < 0 || (size_t)ed->sel[k] >= ed->actions.cursor) {
+				continue;
+			}
+			sa = &ed->actions.items[ed->sel[k]];
+			selection_geometry(ed, sa, corners, handle);
+			for (i = 0; i < 4; i++) {
+				int j = (i + 1) % 4;
+				XDrawLine(ed->dpy,
+				          ed->win,
+				          ed->gc,
+				          corners[i * 2 + 0],
+				          corners[i * 2 + 1],
+				          corners[j * 2 + 0],
+				          corners[j * 2 + 1]);
+			}
+			/* rotation handle only when a single object is selected */
+			if (ed->sel_len == 1 && action_is_rotatable(sa->type)) {
+				int tmx = (corners[0] + corners[2]) / 2;
+				int tmy = (corners[1] + corners[3]) / 2;
+				XDrawLine(ed->dpy, ed->win, ed->gc, tmx, tmy, handle[0], handle[1]);
+				XDrawArc(ed->dpy,
+				         ed->win,
+				         ed->gc,
+				         handle[0] - ROTATE_HANDLE_RADIUS,
+				         handle[1] - ROTATE_HANDLE_RADIUS,
+				         (unsigned int)(ROTATE_HANDLE_RADIUS * 2),
+				         (unsigned int)(ROTATE_HANDLE_RADIUS * 2),
+				         0,
+				         360 * 64);
+			}
+		}
 	}
-	if (ed->anchor_active && (ed->tool == TOOL_CIRCLE || ed->tool == TOOL_PIXELATE || ed->tool == TOOL_BLUR)) {
+	if (ed->marquee_active) {
+		int x0 = ed->canvas_x + (int)(ed->marquee_x * ed->scale);
+		int y0 = ed->canvas_y + (int)(ed->marquee_y * ed->scale);
+		int x1 = ed->canvas_x + (int)(ed->cursor_x * ed->scale);
+		int y1 = ed->canvas_y + (int)(ed->cursor_y * ed->scale);
+		int minx = x0 < x1 ? x0 : x1;
+		int miny = y0 < y1 ? y0 : y1;
+		unsigned int w = (unsigned int)(x0 < x1 ? (x1 - x0) : (x0 - x1));
+		unsigned int h = (unsigned int)(y0 < y1 ? (y1 - y0) : (y0 - y1));
+		XSetForeground(ed->dpy, ed->gc, (unsigned long)(selection_bbox_color & 0xffffffu));
+		XDrawRectangle(ed->dpy, ed->win, ed->gc, minx, miny, w, h);
+	}
+	if (ed->anchor_active && tool_uses_anchor(ed->tool)) {
 		int x0 = ed->canvas_x + (int)(ed->anchor_x * ed->scale);
 		int y0 = ed->canvas_y + (int)(ed->anchor_y * ed->scale);
 		int x1 = ed->canvas_x + (int)(ed->cursor_x * ed->scale);
@@ -1893,8 +2357,21 @@ render_frame(struct editor_state *ed)
 		int miny = y0 < y1 ? y0 : y1;
 		unsigned int w = (unsigned int)(x0 < x1 ? (x1 - x0) : (x0 - x1));
 		unsigned int h = (unsigned int)(y0 < y1 ? (y1 - y0) : (y0 - y1));
-		XSetForeground(ed->dpy, ed->gc, ed->status_fg == 0x000000ul ? 0x000000ul : 0xfffffful);
+		XSetForeground(ed->dpy, ed->gc, (unsigned long)(selection_bbox_color & 0xffffffu));
 		XDrawRectangle(ed->dpy, ed->win, ed->gc, minx, miny, w, h);
+		if (ed->tool == TOOL_ARROW || ed->tool == TOOL_LINE) {
+			XDrawLine(ed->dpy, ed->win, ed->gc, x0, y0, x1, y1);
+		}
+	}
+	if (ed->tool == TOOL_MARKER && !ed->pen_active) {
+		int mh = ed->marker_height > 0 ? ed->marker_height : 1;
+		int cx = ed->canvas_x + (int)(ed->cursor_x * ed->scale);
+		int yt = ed->canvas_y + (int)((ed->cursor_y - mh / 2) * ed->scale);
+		int yb = ed->canvas_y + (int)((ed->cursor_y + mh / 2) * ed->scale);
+		XSetForeground(ed->dpy, ed->gc, (unsigned long)(ed->color & 0xffffffu));
+		XDrawLine(ed->dpy, ed->win, ed->gc, cx, yt, cx, yb);
+		XDrawLine(ed->dpy, ed->win, ed->gc, cx - 3, yt, cx + 3, yt);
+		XDrawLine(ed->dpy, ed->win, ed->gc, cx - 3, yb, cx + 3, yb);
 	}
 	{
 		int cx = ed->canvas_x + (int)(ed->cursor_x * ed->scale);
@@ -1908,7 +2385,6 @@ render_frame(struct editor_state *ed)
 	if (ed->show_help) {
 		draw_help_overlay(ed);
 	}
-	draw_pen_overlay(ed);
 	XFlush(ed->dpy);
 }
 
@@ -1930,16 +2406,32 @@ parse_hex_color(const char *s, unsigned int *out)
 }
 
 static void
+update_cursor(struct editor_state *ed)
+{
+	Cursor c;
+
+	if (!ed || !ed->dpy || !ed->win) {
+		return;
+	}
+	c = (ed->tool == TOOL_MARKER && ed->cursor_text) ? ed->cursor_text : ed->cursor;
+	if (c) {
+		XDefineCursor(ed->dpy, ed->win, c);
+	}
+}
+
+static void
 set_tool(struct editor_state *ed, enum tool tool)
 {
 	if (!ed) {
 		return;
 	}
 	if (ed->tool == TOOL_SELECT && tool != TOOL_SELECT) {
-		ed->selected_idx = -1;
+		sel_clear(ed);
 		ed->drag_active = 0;
 		ed->drag_dx = 0;
 		ed->drag_dy = 0;
+		ed->rotating = 0;
+		ed->marquee_active = 0;
 	}
 	if (ed->tool == TOOL_TEXT && ed->text_mode) {
 		commit_text_input(ed);
@@ -1952,6 +2444,7 @@ set_tool(struct editor_state *ed, enum tool tool)
 	clear_text_mode(ed);
 	reset_pen_input(ed);
 	ed->color_mode = 0;
+	update_cursor(ed);
 }
 
 static int
@@ -2064,9 +2557,10 @@ tool_from_config_value(int value)
 	case 6: return TOOL_CIRCLE;
 	case 7: return TOOL_TEXT;
 	case 8: return TOOL_HIGHLIGHT;
-	case 9: return TOOL_PIXELATE;
-	case 10: return TOOL_BLUR;
-	case 11: return TOOL_PICKER;
+	case 9: return TOOL_MARKER;
+	case 10: return TOOL_PIXELATE;
+	case 11: return TOOL_BLUR;
+	case 12: return TOOL_PICKER;
 	default: return TOOL_ARROW;
 	}
 }
@@ -2131,6 +2625,20 @@ action_hit_test(const struct editor_state *ed, const struct action *a, int x, in
 	if (!a) {
 		return 0;
 	}
+	if (a->rotation % 360 != 0 && action_is_rotatable(a->type)) {
+		double cx;
+		double cy;
+		double rad = -a->rotation * M_PI / 180.0;
+		double cosr = cos(rad);
+		double sinr = sin(rad);
+		double dxp;
+		double dyp;
+		action_center(ed, a, &cx, &cy);
+		dxp = x - cx;
+		dyp = y - cy;
+		x = (int)lround(cosr * dxp - sinr * dyp + cx);
+		y = (int)lround(sinr * dxp + cosr * dyp + cy);
+	}
 	pad = 6 + a->p0;
 	minx = a->x0 < a->x1 ? a->x0 : a->x1;
 	miny = a->y0 < a->y1 ? a->y0 : a->y1;
@@ -2142,6 +2650,7 @@ action_hit_test(const struct editor_state *ed, const struct action *a, int x, in
 	case ACTION_LINE:
 		return distance_sq_point_segment(x, y, a->x0, a->y0, a->x1, a->y1) <= pad * pad;
 	case ACTION_PEN:
+	case ACTION_MARKER:
 		if (a->pen_points && a->pen_len > 0) {
 			int i;
 			if (a->pen_len == 1) {
@@ -2261,6 +2770,95 @@ find_action_at(const struct editor_state *ed, int x, int y)
 }
 
 static void
+sel_sync_primary(struct editor_state *ed)
+{
+	/* selected_idx mirrors the selection only when exactly one item is held;
+	 * single-object affordances (rotation handle) key off it. */
+	ed->selected_idx = (ed->sel_len == 1) ? ed->sel[0] : -1;
+}
+
+static void
+sel_clear(struct editor_state *ed)
+{
+	ed->sel_len = 0;
+	ed->selected_idx = -1;
+}
+
+static int
+sel_contains(const struct editor_state *ed, int idx)
+{
+	int i;
+	for (i = 0; i < ed->sel_len; i++) {
+		if (ed->sel[i] == idx) {
+			return 1;
+		}
+	}
+	return 0;
+}
+
+static int
+sel_add(struct editor_state *ed, int idx)
+{
+	if (idx < 0 || sel_contains(ed, idx)) {
+		return 0;
+	}
+	if (ed->sel_len == ed->sel_cap) {
+		int new_cap = ed->sel_cap ? ed->sel_cap * 2 : 16;
+		int *p = realloc(ed->sel, (size_t)new_cap * sizeof(*p));
+		if (!p) {
+			return -1;
+		}
+		ed->sel = p;
+		ed->sel_cap = new_cap;
+	}
+	ed->sel[ed->sel_len++] = idx;
+	return 0;
+}
+
+static void
+sel_set_single(struct editor_state *ed, int idx)
+{
+	sel_clear(ed);
+	if (idx >= 0) {
+		sel_add(ed, idx);
+	}
+	sel_sync_primary(ed);
+}
+
+static int
+rects_intersect(int ax0, int ay0, int ax1, int ay1, int bx0, int by0, int bx1, int by1)
+{
+	if (ax1 < bx0 || bx1 < ax0 || ay1 < by0 || by1 < ay0) {
+		return 0;
+	}
+	return 1;
+}
+
+/* select every object whose bounding box intersects the marquee rectangle */
+static void
+selection_from_marquee(struct editor_state *ed, int x0, int y0, int x1, int y1)
+{
+	int rx0 = x0 < x1 ? x0 : x1;
+	int ry0 = y0 < y1 ? y0 : y1;
+	int rx1 = x0 > x1 ? x0 : x1;
+	int ry1 = y0 > y1 ? y0 : y1;
+	int i;
+
+	sel_clear(ed);
+	for (i = 0; i < (int)ed->actions.cursor; i++) {
+		int minx;
+		int miny;
+		int maxx;
+		int maxy;
+		action_bounds(ed, &ed->actions.items[i], &minx, &miny, &maxx, &maxy);
+		if (rects_intersect(minx, miny, maxx, maxy, rx0, ry0, rx1, ry1)) {
+			sel_add(ed, i);
+		}
+	}
+	sel_sync_primary(ed);
+}
+
+static void
 action_move_by(struct action *a, int dx, int dy)
 {
 	int i;
@@ -2268,7 +2866,7 @@ action_move_by(struct action *a, int dx, int dy)
 	if (!a) {
 		return;
 	}
-	if (a->type == ACTION_PEN && a->pen_points && a->pen_len > 0) {
+	if ((a->type == ACTION_PEN || a->type == ACTION_MARKER) && a->pen_points && a->pen_len > 0) {
 		for (i = 0; i < a->pen_len; i++) {
 			a->pen_points[i * 2 + 0] += dx;
 			a->pen_points[i * 2 + 1] += dy;
@@ -2294,17 +2892,39 @@ static int
 delete_selected(struct editor_state *ed)
 {
 	int i;
+	int j;
+	int removed = 0;
 
-	if (ed->selected_idx < 0 || (size_t)ed->selected_idx >= ed->actions.cursor) {
+	if (ed->sel_len <= 0) {
 		return -1;
 	}
-	free_action(&ed->actions.items[ed->selected_idx]);
-	for (i = ed->selected_idx; (size_t)i + 1 < ed->actions.cursor; i++) {
-		ed->actions.items[i] = ed->actions.items[i + 1];
+	/* delete highest indices first so the remaining indices stay valid */
+	for (i = 0; i < ed->sel_len; i++) {
+		for (j = i + 1; j < ed->sel_len; j++) {
+			if (ed->sel[j] > ed->sel[i]) {
+				int t = ed->sel[i];
+				ed->sel[i] = ed->sel[j];
+				ed->sel[j] = t;
+			}
+		}
 	}
-	ed->actions.cursor--;
+	for (i = 0; i < ed->sel_len; i++) {
+		int idx = ed->sel[i];
+		if (idx < 0 || (size_t)idx >= ed->actions.cursor) {
+			continue;
+		}
+		free_action(&ed->actions.items[idx]);
+		for (j = idx; (size_t)j + 1 < ed->actions.cursor; j++) {
+			ed->actions.items[j] = ed->actions.items[j + 1];
+		}
+		ed->actions.cursor--;
+		removed++;
+	}
 	ed->actions.len = ed->actions.cursor;
-	ed->selected_idx = -1;
+	sel_clear(ed);
+	if (removed == 0) {
+		return -1;
+	}
 	ed->dirty = 1;
 	ed->raster_dirty = 1;
 	return 0;
@@ -2315,7 +2935,7 @@ commit_current_tool(struct editor_state *ed)
 {
 	switch (ed->tool) {
 	case TOOL_SELECT:
-		ed->selected_idx = find_action_at(ed, ed->cursor_x, ed->cursor_y);
+		sel_set_single(ed, find_action_at(ed, ed->cursor_x, ed->cursor_y));
 		return 0;
 	case TOOL_ARROW:
 		if (!ed->anchor_active) {
@@ -2453,6 +3073,8 @@ commit_current_tool(struct editor_state *ed)
 		                         ed->cursor_x,
 		                         ed->cursor_y,
 		                         ed->highlight_strength);
+	case TOOL_MARKER:
+		return 0;
 	case TOOL_PICKER:
 		ed->color = draw_sample_color(&ed->rendered, ed->cursor_x, ed->cursor_y);
 		return 0;
@@ -2662,6 +3284,8 @@ handle_keypress(struct editor_state *ed, XKeyEvent *kev)
 			}
 		}
 		ed->anchor_active = 0;
+		sel_clear(ed);
+		ed->marquee_active = 0;
 		return 1;
 	}
 	if ((kev->state & ControlMask) && (sym == XK_v || sym == XK_V)) {
@@ -2712,6 +3336,10 @@ handle_keypress(struct editor_state *ed, XKeyEvent *kev)
 	}
 	if (sym == XK_b) {
 		set_tool(ed, TOOL_BLUR);
+		return 1;
+	}
+	if (sym == XK_m) {
+		set_tool(ed, TOOL_MARKER);
 		return 1;
 	}
 	if (sym == XK_x) {
@@ -2769,6 +3397,10 @@ handle_keypress(struct editor_state *ed, XKeyEvent *kev)
 			if (ed->blur_radius > 1) {
 				ed->blur_radius -= 1;
 			}
+		} else if (ed->tool == TOOL_MARKER) {
+			if (ed->marker_height > 4) {
+				ed->marker_height -= 2;
+			}
 		} else if (ed->tool == TOOL_TEXT) {
 			if (ed->text_scale > 1) {
 				ed->text_scale--;
@@ -2791,6 +3423,10 @@ handle_keypress(struct editor_state *ed, XKeyEvent *kev)
 			if (ed->blur_radius < 16) {
 				ed->blur_radius += 1;
 			}
+		} else if (ed->tool == TOOL_MARKER) {
+			if (ed->marker_height < 400) {
+				ed->marker_height += 2;
+			}
 		} else if (ed->tool == TOOL_TEXT) {
 			if (ed->text_scale < max_text_scale) {
 				ed->text_scale++;
@@ -2798,6 +3434,23 @@ handle_keypress(struct editor_state *ed, XKeyEvent *kev)
 		} else if (ed->thickness_idx < max_t) {
 			ed->thickness_idx++;
 		}
+		return 1;
+	}
+
+	if (sym == XK_comma) {
+		rotate_selected_by(ed, -15);
+		return 1;
+	}
+	if (sym == XK_period) {
+		rotate_selected_by(ed, 15);
+		return 1;
+	}
+	if (sym == XK_less) {
+		rotate_selected_by(ed, -1);
+		return 1;
+	}
+	if (sym == XK_greater) {
+		rotate_selected_by(ed, 1);
 		return 1;
 	}
 
@@ -2932,6 +3585,7 @@ x11_setup(struct editor_state *ed)
 	                           (unsigned int)ed->win_h,
 	                           (unsigned int)depth);
 	ed->cursor = XCreateFontCursor(ed->dpy, XC_crosshair);
+	ed->cursor_text = XCreateFontCursor(ed->dpy, XC_xterm);
 	if (ed->cursor) {
 		XDefineCursor(ed->dpy, ed->win, ed->cursor);
 	}
@@ -3003,6 +3657,10 @@ x11_teardown(struct editor_state *ed)
 		XFreeCursor(ed->dpy, ed->cursor);
 		ed->cursor = 0;
 	}
+	if (ed->cursor_text) {
+		XFreeCursor(ed->dpy, ed->cursor_text);
+		ed->cursor_text = 0;
+	}
 	if (ed->xic) {
 		XDestroyIC(ed->xic);
 		ed->xic = NULL;
@@ -3042,6 +3700,10 @@ x11_teardown(struct editor_state *ed)
 	ed->pen_points = NULL;
 	ed->pen_len = 0;
 	ed->pen_cap = 0;
+	free(ed->sel);
+	ed->sel = NULL;
+	ed->sel_len = 0;
+	ed->sel_cap = 0;
 	free_actions(&ed->actions);
 }
 
@@ -3065,6 +3727,64 @@ set_cursor_from_xy(struct editor_state *ed, int x, int y)
 }
 
 static void
+rotate_selected_by(struct editor_state *ed, int delta)
+{
+	struct action *a;
+	int deg;
+
+	if (ed->selected_idx < 0 || (size_t)ed->selected_idx >= ed->actions.cursor) {
+		return;
+	}
+	a = &ed->actions.items[ed->selected_idx];
+	if (!action_is_rotatable(a->type)) {
+		return;
+	}
+	deg = (a->rotation + delta) % 360;
+	if (deg < 0) {
+		deg += 360;
+	}
+	a->rotation = deg;
+	ed->dirty = 1;
+	ed->raster_dirty = 1;
+}
+
+static void
+rotate_selected_to_pointer(struct editor_state *ed, int sx, int sy, int snap)
+{
+	struct action *a;
+	double cx;
+	double cy;
+	double scx;
+	double scy;
+	double ang;
+	int deg;
+
+	if (ed->selected_idx < 0 || (size_t)ed->selected_idx >= ed->actions.cursor) {
+		return;
+	}
+	a = &ed->actions.items[ed->selected_idx];
+	if (!action_is_rotatable(a->type)) {
+		return;
+	}
+	action_center(ed, a, &cx, &cy);
+	scx = ed->canvas_x + cx * ed->scale;
+	scy = ed->canvas_y + cy * ed->scale;
+	ang = atan2((double)sy - scy, (double)sx - scx) * 180.0 / M_PI + 90.0;
+	if (snap) {
+		deg = (int)lround(ang / 45.0) * 45;
+	} else {
+		deg = (int)lround(ang);
+	}
+	deg %= 360;
+	if (deg < 0) {
+		deg += 360;
+	}
+	a->rotation = deg;
+	ed->dirty = 1;
+	ed->raster_dirty = 1;
+}
+
+static void
 handle_button_press(struct editor_state *ed, XButtonEvent *bev)
 {
 	if (bev->button != Button1) {
@@ -3084,18 +3804,42 @@ handle_button_press(struct editor_state *ed, XButtonEvent *bev)
 	ed->mouse_b1_down = 1;
 	ed->mouse_drag_moved = 0;
 	if (ed->tool == TOOL_SELECT) {
-		ed->selected_idx = find_action_at(ed, ed->cursor_x, ed->cursor_y);
-		ed->drag_active = (ed->selected_idx >= 0);
-		ed->drag_origin_x = ed->cursor_x;
-		ed->drag_origin_y = ed->cursor_y;
-		ed->drag_dx = 0;
-		ed->drag_dy = 0;
+		int hit;
+		if (rotation_handle_hit(ed, bev->x, bev->y)) {
+			ed->rotating = 1;
+			ed->drag_active = 0;
+			ed->drag_dx = 0;
+			ed->drag_dy = 0;
+			return;
+		}
+		hit = find_action_at(ed, ed->cursor_x, ed->cursor_y);
+		if (hit >= 0) {
+			/* clicking an unselected object replaces the selection;
+			 * clicking one already in the set keeps the whole group */
+			if (!sel_contains(ed, hit)) {
+				sel_set_single(ed, hit);
+			}
+			ed->drag_active = 1;
+			ed->drag_origin_x = ed->cursor_x;
+			ed->drag_origin_y = ed->cursor_y;
+			ed->drag_dx = 0;
+			ed->drag_dy = 0;
+		} else {
+			/* empty space: start a rubber-band marquee selection */
+			sel_clear(ed);
+			ed->drag_active = 0;
+			ed->marquee_active = 1;
+			ed->marquee_x = ed->cursor_x;
+			ed->marquee_y = ed->cursor_y;
+		}
 		return;
 	}
-	if (ed->tool == TOOL_PEN) {
+	if (ed->tool == TOOL_PEN || ed->tool == TOOL_MARKER) {
 		ed->pen_active = 1;
+		ed->pen_is_marker = (ed->tool == TOOL_MARKER);
 		ed->pen_color = (int)ed->color;
-		ed->pen_thickness = thickness_presets[ed->thickness_idx];
+		ed->pen_thickness = ed->pen_is_marker ? (ed->marker_height > 0 ? ed->marker_height : 1)
+		                                       : thickness_presets[ed->thickness_idx];
 		ed->pen_len = 0;
 		if (append_pen_point(ed, ed->cursor_x, ed->cursor_y) != 0) {
 			fprintf(stderr, "s2: out of memory for pen tool\n");
@@ -3130,13 +3874,29 @@ handle_button_release(struct editor_state *ed, XButtonEvent *bev)
 		return;
 	}
 	set_cursor_from_xy(ed, bev->x, bev->y);
+	if (ed->rotating) {
+		ed->rotating = 0;
+		ed->mouse_b1_down = 0;
+		ed->raster_dirty = 1;
+		return;
+	}
 	if (!ed->mouse_b1_down) {
 		return;
 	}
 	if (ed->tool == TOOL_SELECT) {
-		if (ed->drag_active && (ed->drag_dx != 0 || ed->drag_dy != 0) && ed->selected_idx >= 0 &&
-		    (size_t)ed->selected_idx < ed->actions.cursor) {
-			action_move_by(&ed->actions.items[ed->selected_idx], ed->drag_dx, ed->drag_dy);
+		if (ed->marquee_active) {
+			if (ed->mouse_drag_moved) {
+				selection_from_marquee(ed, ed->marquee_x, ed->marquee_y, ed->cursor_x, ed->cursor_y);
+			}
+			ed->marquee_active = 0;
+		} else if (ed->drag_active && (ed->drag_dx != 0 || ed->drag_dy != 0)) {
+			int k;
+			for (k = 0; k < ed->sel_len; k++) {
+				int idx = ed->sel[k];
+				if (idx >= 0 && (size_t)idx < ed->actions.cursor) {
+					action_move_by(&ed->actions.items[idx], ed->drag_dx, ed->drag_dy);
+				}
+			}
 			ed->dirty = 1;
 		}
 		ed->drag_active = 0;
@@ -3148,11 +3908,11 @@ handle_button_release(struct editor_state *ed, XButtonEvent *bev)
 		ed->raster_dirty = 1;
 		return;
 	}
-	if (ed->tool == TOOL_PEN) {
+	if (ed->tool == TOOL_PEN || ed->tool == TOOL_MARKER) {
 		if (ed->pen_active && ed->pen_len > 0) {
 			struct action a;
 			memset(&a, 0, sizeof(a));
-			a.type = ACTION_PEN;
+			a.type = ed->pen_is_marker ? ACTION_MARKER : ACTION_PEN;
 			a.color = (unsigned int)ed->pen_color;
 			a.p0 = ed->pen_thickness;
 			a.pen_points = ed->pen_points;
@@ -3200,16 +3960,28 @@ handle_motion(struct editor_state *ed, XMotionEvent *mev)
 	oldx = ed->cursor_x;
 	oldy = ed->cursor_y;
 	set_cursor_from_xy(ed, mev->x, mev->y);
-	if (ed->tool == TOOL_SELECT && ed->drag_active && ed->selected_idx >= 0 &&
-	    (size_t)ed->selected_idx < ed->actions.cursor) {
+	if (ed->tool == TOOL_SELECT && ed->rotating) {
+		rotate_selected_to_pointer(ed, mev->x, mev->y, mev->state & ShiftMask);
+	}
+	if (ed->tool == TOOL_SELECT && ed->marquee_active) {
+		selection_from_marquee(ed, ed->marquee_x, ed->marquee_y, ed->cursor_x, ed->cursor_y);
+	}
+	if (ed->tool == TOOL_SELECT && ed->drag_active && ed->sel_len > 0) {
 		int dx = ed->cursor_x - ed->drag_origin_x;
 		int dy = ed->cursor_y - ed->drag_origin_y;
-		if (dx != 0 || dy != 0) {
-			ed->drag_dx = dx;
-			ed->drag_dy = dy;
+		if (mev->state & ShiftMask) {
+			int adx = dx < 0 ? -dx : dx;
+			int ady = dy < 0 ? -dy : dy;
+			if (adx >= ady) {
+				dy = 0;
+			} else {
+				dx = 0;
+			}
 		}
+		ed->drag_dx = dx;
+		ed->drag_dy = dy;
 	}
-	if (ed->tool == TOOL_PEN && ed->pen_active) {
+	if ((ed->tool == TOOL_PEN || ed->tool == TOOL_MARKER) && ed->pen_active) {
 		if (append_pen_point(ed, ed->cursor_x, ed->cursor_y) != 0) {
 			fprintf(stderr, "s2: out of memory for pen tool\n");
 			reset_pen_input(ed);
@@ -3280,6 +4052,13 @@ editor_run(const struct app_config *cfg, struct image *img)
 	if (ed.highlight_strength > 100) {
 		ed.highlight_strength = 100;
 	}
+	ed.marker_height = default_marker_height;
+	if (ed.marker_height < 4) {
+		ed.marker_height = 4;
+	}
+	if (ed.marker_height > 400) {
+		ed.marker_height = 400;
+	}
 	ed.fill_mode = default_fill_mode ? 1 : 0;
 	ed.status_h = 28;
 	ed.status_pad = 10;
@@ -3312,6 +4091,7 @@ editor_run(const struct app_config *cfg, struct image *img)
 	if (ed.xic) {
 		XSetICFocus(ed.xic);
 	}
+	update_cursor(&ed);
 
 	render_frame(&ed);
 	while (ed.running) {
@@ -3356,7 +4136,8 @@ editor_run(const struct app_config *cfg, struct image *img)
 			break;
 		case MotionNotify:
 			handle_motion(&ed, &ev.xmotion);
-			if (ed.drag_active || ed.anchor_active || ed.text_mode || ed.tool == TOOL_PICKER ||
+			if (ed.drag_active || ed.rotating || ed.marquee_active || ed.anchor_active ||
+			    ed.text_mode || ed.pen_active || ed.tool == TOOL_PICKER || ed.tool == TOOL_MARKER ||
 			    ev.xmotion.y >= ed.win_h - ed.status_h) {
 				render_frame(&ed);
 			}
