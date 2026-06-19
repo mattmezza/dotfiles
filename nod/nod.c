@@ -18,7 +18,9 @@
 #include <X11/Xlib.h>
 #include <X11/cursorfont.h>
 #include <X11/Xft/Xft.h>
+#include <X11/Xresource.h>
 #include <X11/extensions/Xrandr.h>
+#include <X11/extensions/shape.h>
 
 #include <dbus/dbus.h>
 
@@ -46,6 +48,11 @@ typedef struct {
 	int      summary_nlines;
 } Notif;
 
+static void layout_notif(Notif *n);
+static void draw_notif(Notif *n);
+static void reposition_all(void);
+static void set_window_shape(Window win, int w, int h, int r);
+
 static Display        *dpy;
 static int             screen;
 static Window          root;
@@ -56,6 +63,12 @@ static XftFont        *xfont;
 static XftFont        *xfont_bold;
 static XftColor        bg_xft[3], fg_xft[3], border_xft[3];
 static Cursor          hand_cursor = 0;
+static int             have_shape = 0;
+
+static const char     *orig_font;
+static const char     *orig_bg[3], *orig_fg[3], *orig_border[3];
+static char           *xrm_last = NULL;
+static volatile sig_atomic_t reload = 0;
 
 static DBusConnection *dbus = NULL;
 
@@ -298,6 +311,193 @@ x_error_handler(Display *d, XErrorEvent *e)
 	return 0;
 }
 
+static char *
+get_resource_manager(void)
+{
+	Atom atom = XInternAtom(dpy, "RESOURCE_MANAGER", False);
+	Atom actual_type;
+	int actual_format;
+	unsigned long nitems, bytes_after;
+	unsigned char *prop = NULL;
+	char *ret = NULL;
+
+	if (XGetWindowProperty(dpy, root, atom, 0, 256 * 1024, False, XA_STRING,
+	        &actual_type, &actual_format, &nitems, &bytes_after, &prop) == Success
+	    && prop && actual_type == XA_STRING && actual_format == 8 && nitems > 0) {
+		ret = ecalloc(1, nitems + 1);
+		memcpy(ret, prop, nitems);
+		ret[nitems] = '\0';
+	}
+	if (prop) XFree(prop);
+	return ret;
+}
+
+static char *
+xres_get(XrmDatabase db, const char *name, const char *class)
+{
+	XrmValue value;
+	char *type;
+
+	if (db && XrmGetResource(db, name, class, &type, &value) && value.addr)
+		return value.addr;
+	return NULL;
+}
+
+static void
+xres_load(void)
+{
+	if (!use_xresources)
+		return;
+
+	char *rm = get_resource_manager();
+	if (!rm)
+		return;
+
+	XrmDatabase db = XrmGetStringDatabase(rm);
+	free(rm);
+	if (!db)
+		return;
+
+	static const char *urgencies[] = { "low", "normal", "critical" };
+	static const char *urgencies_class[] = { "Low", "Normal", "Critical" };
+	char name[64], class[64];
+	char *v;
+
+	if ((v = xres_get(db, "nod.font", "Nod.Font")))
+		font = strdup(v);
+
+	for (int i = 0; i < 3; i++) {
+		snprintf(name, sizeof(name), "nod.background.%s", urgencies[i]);
+		snprintf(class, sizeof(class), "Nod.Background.%s", urgencies_class[i]);
+		if ((v = xres_get(db, name, class)))
+			bg_colors[i] = strdup(v);
+
+		snprintf(name, sizeof(name), "nod.foreground.%s", urgencies[i]);
+		snprintf(class, sizeof(class), "Nod.Foreground.%s", urgencies_class[i]);
+		if ((v = xres_get(db, name, class)))
+			fg_colors[i] = strdup(v);
+
+		snprintf(name, sizeof(name), "nod.border.%s", urgencies[i]);
+		snprintf(class, sizeof(class), "Nod.Border.%s", urgencies_class[i]);
+		if ((v = xres_get(db, name, class)))
+			border_colors[i] = strdup(v);
+	}
+
+	XrmDestroyDatabase(db);
+}
+
+static void
+theme_save_defaults(void)
+{
+	orig_font = font;
+	for (int i = 0; i < 3; i++) {
+		orig_bg[i]     = bg_colors[i];
+		orig_fg[i]     = fg_colors[i];
+		orig_border[i] = border_colors[i];
+	}
+}
+
+static void
+theme_reset(void)
+{
+	font = orig_font;
+	for (int i = 0; i < 3; i++) {
+		bg_colors[i]     = orig_bg[i];
+		fg_colors[i]     = orig_fg[i];
+		border_colors[i] = orig_border[i];
+	}
+}
+
+static void
+theme_load(void)
+{
+	if (!use_xresources)
+		return;
+	theme_reset();
+	xres_load();
+}
+
+static void
+theme_reload(void)
+{
+	if (!use_xresources)
+		return;
+
+	theme_load();
+
+	if (xfont_bold && xfont_bold != xfont) XftFontClose(dpy, xfont_bold);
+	if (xfont) XftFontClose(dpy, xfont);
+
+	xfont = XftFontOpenName(dpy, screen, font);
+	if (!xfont) die("cannot load font: %s", font);
+
+	size_t fn = strlen(font);
+	char *bfn = ecalloc(1, fn + 32);
+	snprintf(bfn, fn + 32, "%s:style=Bold", font);
+	xfont_bold = XftFontOpenName(dpy, screen, bfn);
+	free(bfn);
+	if (!xfont_bold) xfont_bold = xfont;
+
+	for (int i = 0; i < 3; i++) {
+		XftColorFree(dpy, visual, cmap, &bg_xft[i]);
+		XftColorFree(dpy, visual, cmap, &fg_xft[i]);
+		XftColorFree(dpy, visual, cmap, &border_xft[i]);
+	}
+
+	for (int i = 0; i < 3; i++) {
+		bg_xft[i]     = alloc_color(bg_colors[i]);
+		fg_xft[i]     = alloc_color(fg_colors[i]);
+		border_xft[i] = alloc_color(border_colors[i]);
+	}
+
+	for (int i = 0; i < MAX_NOTIFS; i++) {
+		Notif *n = &notifs[i];
+		if (!n->active) continue;
+		layout_notif(n);
+		if (n->win) {
+			XSetWindowBackground(dpy, n->win, bg_xft[n->urgency].pixel);
+			XSetWindowBorder(dpy, n->win, border_xft[n->urgency].pixel);
+			XResizeWindow(dpy, n->win, n->w, n->h);
+			set_window_shape(n->win, n->w, n->h, border_radius);
+			if (n->has_default_action && hand_cursor)
+				XDefineCursor(dpy, n->win, hand_cursor);
+			else
+				XUndefineCursor(dpy, n->win);
+		}
+	}
+
+	reposition_all();
+
+	for (int i = 0; i < MAX_NOTIFS; i++)
+		if (notifs[i].active)
+			draw_notif(&notifs[i]);
+
+	XFlush(dpy);
+}
+
+static void
+check_xrm_change(void)
+{
+	if (!use_xresources || xresources_poll_ms <= 0)
+		return;
+	char *cur = get_resource_manager();
+	if (!cur) {
+		free(xrm_last);
+		xrm_last = NULL;
+		return;
+	}
+	if (!xrm_last || strcmp(cur, xrm_last)) {
+		free(xrm_last);
+		xrm_last = cur;
+		theme_reload();
+	} else {
+		free(cur);
+	}
+}
+
+static void
+on_sigusr1(int sig) { (void)sig; reload = 1; }
+
 static void
 x_init(void)
 {
@@ -309,6 +509,15 @@ x_init(void)
 	visual = DefaultVisual(dpy, screen);
 	cmap = DefaultColormap(dpy, screen);
 	depth = DefaultDepth(dpy, screen);
+
+	{
+		int shape_event, shape_error;
+		have_shape = XShapeQueryExtension(dpy, &shape_event, &shape_error);
+	}
+
+	theme_save_defaults();
+	theme_load();
+	xrm_last = get_resource_manager();
 
 	xfont = XftFontOpenName(dpy, screen, font);
 	if (!xfont) die("cannot load font: %s", font);
@@ -436,6 +645,46 @@ layout_notif(Notif *n)
 }
 
 static void
+set_window_shape(Window win, int w, int h, int r)
+{
+	if (!have_shape)
+		return;
+	if (r <= 0) {
+		XShapeCombineMask(dpy, win, ShapeBounding, 0, 0, None, ShapeSet);
+		return;
+	}
+
+	int maxr = (w < h ? w : h) / 2;
+	if (r > maxr) r = maxr;
+
+	Pixmap mask = XCreatePixmap(dpy, win, w, h, 1);
+	GC gc = XCreateGC(dpy, mask, 0, NULL);
+
+	XSetForeground(dpy, gc, 0);
+	XFillRectangle(dpy, mask, gc, 0, 0, w, h);
+
+	XSetForeground(dpy, gc, 1);
+	/* center */
+	XFillRectangle(dpy, mask, gc, r, r, w - 2 * r, h - 2 * r);
+	/* sides */
+	XFillRectangle(dpy, mask, gc, r, 0, w - 2 * r, r);
+	XFillRectangle(dpy, mask, gc, r, h - r, w - 2 * r, r);
+	XFillRectangle(dpy, mask, gc, 0, r, r, h - 2 * r);
+	XFillRectangle(dpy, mask, gc, w - r, r, r, h - 2 * r);
+	/* corners */
+	int d = 2 * r;
+	XFillArc(dpy, mask, gc, 0, 0, d, d, 90 * 64, 90 * 64);
+	XFillArc(dpy, mask, gc, w - d, 0, d, d, 0, 90 * 64);
+	XFillArc(dpy, mask, gc, 0, h - d, d, d, 180 * 64, 90 * 64);
+	XFillArc(dpy, mask, gc, w - d, h - d, d, d, 270 * 64, 90 * 64);
+
+	XShapeCombineMask(dpy, win, ShapeBounding, 0, 0, mask, ShapeSet);
+
+	XFreeGC(dpy, gc);
+	XFreePixmap(dpy, mask);
+}
+
+static void
 create_window(Notif *n)
 {
 	XSetWindowAttributes swa;
@@ -452,6 +701,8 @@ create_window(Notif *n)
 
 	XClassHint ch = { .res_name = "nod", .res_class = "nod" };
 	XSetClassHint(dpy, n->win, &ch);
+
+	set_window_shape(n->win, n->w, n->h, border_radius);
 
 	if (n->has_default_action && hand_cursor)
 		XDefineCursor(dpy, n->win, hand_cursor);
@@ -706,6 +957,7 @@ handle_notify(DBusMessage *msg)
 		XSetWindowBackground(dpy, n->win, bg_xft[n->urgency].pixel);
 		XSetWindowBorder(dpy, n->win, border_xft[n->urgency].pixel);
 		XResizeWindow(dpy, n->win, n->w, n->h);
+		set_window_shape(n->win, n->w, n->h, border_radius);
 		if (n->has_default_action && hand_cursor)
 			XDefineCursor(dpy, n->win, hand_cursor);
 		else
@@ -921,6 +1173,10 @@ main(int argc, char *argv[])
 	sigaction(SIGINT,  &sa, NULL);
 	signal(SIGPIPE, SIG_IGN);
 
+	struct sigaction sa_reload = { 0 };
+	sa_reload.sa_handler = on_sigusr1;
+	sigaction(SIGUSR1, &sa_reload, NULL);
+
 	x_init();
 	dbus_init();
 
@@ -940,6 +1196,7 @@ main(int argc, char *argv[])
 			dbus_connection_dispatch(dbus);
 
 		dbus_connection_flush(dbus);
+		check_xrm_change();
 
 		struct timespec now;
 		clock_gettime(CLOCK_MONOTONIC, &now);
@@ -955,12 +1212,21 @@ main(int argc, char *argv[])
 		else if (next_ms > INT_MAX) timeout = INT_MAX;
 		else timeout = (int)next_ms;
 
+		int xrm_timeout = (use_xresources && xresources_poll_ms > 0) ? xresources_poll_ms : -1;
+		if (xrm_timeout >= 0 && (timeout < 0 || timeout > xrm_timeout))
+			timeout = xrm_timeout;
+
 		struct pollfd pfd[2];
 		pfd[0].fd = xfd; pfd[0].events = POLLIN; pfd[0].revents = 0;
 		pfd[1].fd = dfd; pfd[1].events = POLLIN; pfd[1].revents = 0;
 
 		int pr = poll(pfd, 2, timeout);
 		if (pr < 0 && errno != EINTR) break;
+
+		if (reload) {
+			theme_reload();
+			reload = 0;
+		}
 
 		dbus_connection_read_write(dbus, 0);
 		while (dbus_connection_get_dispatch_status(dbus) == DBUS_DISPATCH_DATA_REMAINS)
@@ -983,6 +1249,7 @@ main(int argc, char *argv[])
 		dbus_bus_release_name(dbus, BUS_NAME, NULL);
 		dbus_connection_unref(dbus);
 	}
+	free(xrm_last);
 	if (hand_cursor) XFreeCursor(dpy, hand_cursor);
 	if (xfont_bold && xfont_bold != xfont) XftFontClose(dpy, xfont_bold);
 	if (xfont) XftFontClose(dpy, xfont);

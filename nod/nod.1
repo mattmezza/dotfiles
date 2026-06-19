@@ -70,18 +70,67 @@ It does not advertise
 or
 .Sy sound .
 .Sh SIGNALS
-.Bl -tag -width "SIGTERM "
+.Bl -tag -width "SIGUSR1 "
 .It Sy SIGINT , SIGTERM
 Clean up windows, release the D-Bus name, exit.
+.It Sy SIGUSR1
+Reload colors and font from X resources.
 .El
 .Sh FILES
 .Bl -tag -width "config.def.h "
 .It Pa config.h
-Per-user appearance, timeouts, position, stacking.
+Per-user appearance, timeouts, position, stacking, and corner radius.
 Copied from
 .Pa config.def.h
 on first build.
+Rounded corners use the X Shape extension when available.
 .El
+.Sh X RESOURCES
+When
+.Sy use_xresources
+is enabled in
+.Pa config.h ,
+.Nm
+reads the following resources at startup.
+Unset resources fall back to the compiled-in defaults from
+.Pa config.h .
+.Bl -tag -width "nod.background.critical "
+.It Sy nod.font
+Font pattern passed to Xft, e.g.\& Li monospace:size=10 .
+.It Sy nod.background.low
+.It Sy nod.background.normal
+.It Sy nod.background.critical
+Background color per urgency.
+.It Sy nod.foreground.low
+.It Sy nod.foreground.normal
+.It Sy nod.foreground.critical
+Foreground color per urgency.
+.It Sy nod.border.low
+.It Sy nod.border.normal
+.It Sy nod.border.critical
+Border color per urgency.
+.El
+.Pp
+When
+.Sy use_xresources
+is enabled, nod polls the X resource database every
+.Sy xresources_poll_ms
+milliseconds and reloads colors and font automatically.
+Set
+.Sy xresources_poll_ms
+to 0 to disable polling; send
+.Sy SIGUSR1
+to force a reload.
+.Pp
+Example
+.Pa ~/.Xresources :
+.Bd -literal -offset indent
+nod.font:              Noto Sans:size=10
+nod.background.normal: #1d2021
+nod.foreground.normal: #ebdbb2
+nod.border.normal:     #458588
+nod.border.critical:   #cc241d
+.Ed
 .Sh EXAMPLES
 Start from
 .Pa ~/.xinitrc

@@ -19,6 +19,7 @@ nod: $(OBJ)
 	$(CC) -o $@ $(OBJ) $(LDFLAGS)
 
 clean:
+	rm -f config.h
 	rm -f nod $(OBJ)
 
 install: all

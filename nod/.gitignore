@@ -1,0 +1,26 @@
+# build artifacts
+*.o
+*.a
+nod
+
+# local config (user edits from config.def.h)
+config.h
+
+# editor / OS cruft
+*.swp
+*.swo
+*~
+.*.sw[a-z]
+.DS_Store
+
+# core dumps
+core
+core.*
+
+# clangd / ccls cache
+.cache/
+compile_commands.json
+.ccls-cache/
+
+# release tarballs
+nod-*.tar.gz

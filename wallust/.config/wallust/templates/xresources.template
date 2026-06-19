@@ -40,3 +40,17 @@ mwm.statusfg:   {{foreground}}
 mwm.statusbg:   {{background}}
 ! bar background strip (raise mwm.barbgalpha in config/Xresources for a solid bar)
 mwm.barbg:      {{background}}
+
+! ---- nod (notification daemon) ----
+nod.font:              Noto Sans:size=12
+nod.background.low:    {{background}}
+nod.background.normal: {{background}}
+nod.background.critical: {{color1}}
+
+nod.foreground.low:    {{color8}}
+nod.foreground.normal: {{foreground}}
+nod.foreground.critical: {{background}}
+
+nod.border.low:        {{color8}}
+nod.border.normal:     {{color4}}
+nod.border.critical:   {{color1}}

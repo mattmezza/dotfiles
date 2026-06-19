@@ -20,7 +20,7 @@ DBUSINC = `pkg-config --cflags dbus-1`
 DBUSLIB = `pkg-config --libs dbus-1`
 
 INCS = -I$(X11INC) $(XFTINC) $(FREETYPEINC) $(DBUSINC)
-LIBS = -L$(X11LIB) -lX11 -lXrandr $(XFTLIB) $(DBUSLIB)
+LIBS = -L$(X11LIB) -lX11 -lXrandr -lXext $(XFTLIB) $(DBUSLIB)
 
 CPPFLAGS = -DVERSION=\"$(VERSION)\" -D_POSIX_C_SOURCE=200809L
 CFLAGS   = -Wall -Wextra -pedantic -std=c99 -Os $(INCS) $(CPPFLAGS)
