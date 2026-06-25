@@ -31,17 +31,17 @@ button9
     xdotool key alt+Right
 
 Print
-    dmscreenshot
+    maim -s --noopengl | s2 -D ~/screenshots -i - &> /dev/null
 
 mod4 + shift + control + 4
     maim -s --noopengl | s2 -D ~/screenshots -i - &> /dev/null
 
-mod4 + Escape
-    lok
+mod4 + shift + q
+#   lok
 #   lock and suspend-then-hibernate (uncomment to enable; remove the plain lok line above)
-#   lok & systemctl suspend-then-hibernate
+    lok & systemctl suspend-then-hibernate
 
-mod4 + shift + Escape
+mod4 + ctrl + shift + q
     dmexit
 
 mod4 + f
@@ -56,7 +56,7 @@ mod4 + shift + b
 mod4 + e
     BEMOJI_PICKER_CMD="dmenu" bemoji
 
-mod4 + shift + t
+mod4 + t
     st -t "termfloat" -g 85x25+550+300
 
 mod4 + Return
@@ -91,7 +91,7 @@ mod4 + shift + 0
  	mwmc move win 10
 mod4 + shift + {bracketright,bracketleft}
 	mwmc move win {next,prev}
-mod4 + m
+mod4 + shift + m
     mwmc move win master
 mod4 + shift + {comma,period}
 	mwmc move tag {prev,next}
@@ -105,27 +105,27 @@ mod4 + ctrl + {c,s,f}
     mwmc layout {cols,stack,float}
 mod4 + ctrl + shift + space
 	mwmc layout next
-mod4 + {h,l}
+mod4 + ctrl + {h,l}
 	mwmc master ratio {-0.05,+0.05}
-mod4 + {i,o}
+mod4 + ctrl + {i,o}
     mwmc master {+1,-1}
-mod4 + {minus,equal}
+mod4 + ctrl + {minus,equal}
 	mwmc gap {-5,+5}
 
 # --- floating window geometry (also: hold mod4 and drag = move, mod4+right-drag = resize) ---
 mod4 + ctrl + space
     mwmc win center
-mod4 + ctrl + {h,j,k,l}
+mod4 + ctrl + shift + {h,j,k,l}
 	mwmc win resize {-20 0,0 20,0 -20,20 0}
-#mod4 + alt + {h,j,k,l}
-#mwmc win move {-20 0,0 20,0 -20,20 0}
+mod4 + ctrl + shift + alt + {h,j,k,l}
+    mwmc win move {-20 0,0 20,0 -20,20 0}
 
 # --- window state ---
 mod4 + ctrl + shift + f
     mwmc win toggle float
-mod4 + shift + z
+mod4 + ctrl + shift + z
 	mwmc win toggle full
-mod4 + shift + s
+mod4 + ctrl + shift + s
 	mwmc win toggle sticky
 mod4 + q
     mwmc win close
@@ -137,5 +137,5 @@ mod4 + ctrl + b
     mwmc bar toggle
 mod4 + ctrl + t
     mwmc traybar toggle
-mod4 + shift + ctrl + Escape
+mod4 + ctrl + shift + Escape
 	mwmc quit
