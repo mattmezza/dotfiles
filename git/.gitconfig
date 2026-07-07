@@ -1020,7 +1020,9 @@
 
   ull = pull
   ush = push
-  pod = git pull origin develop
+  pod = pull origin develop
+  wtl = worktree list
+  wtr = worktree remove
 
 [filter "lfs"]
 	process = git-lfs filter-process
