@@ -1,0 +1,8 @@
+<script>
+  const repo = () => {
+    let r = prompt('repo? (e.g. mattmezza/reponame)')
+    if (!r.includes('/')) return 'mattmezza/' + r
+    else return r
+  }
+  window.location.href = `https://github.com/${window.location.href.split("#")[1] || repo()}/${prompt("issue or pr? (e.g. i354, p239)").replace("i", "issue/").replace("p", "pull/")}`
+</script>
