@@ -161,5 +161,8 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 # .local/bin
 export PATH="$HOME/.local/bin:$PATH"
 
+# .cargo/bin
+export PATH="$HOME/.cargo/bin:$PATH"
+
 # source my secrets
 [[ -f ~/.secrets ]] && source $HOME/.secrets
