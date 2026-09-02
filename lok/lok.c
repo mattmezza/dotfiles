@@ -277,12 +277,17 @@ drawlock(Display *dpy, struct lock *lock, int state)
 {
 	cairo_t *cr;
 	XRRMonitorInfo *mons = NULL;
-	int nmon = 0, i;
+	int nmon = 0, i, bgstate = state;
+
+	if (!typing_background_feedback &&
+	    (state == INPUT || state == INPUT_ALT))
+		bgstate = INIT;
 
 	cr = cairo_create(lock->bufsurf);
 
 	/* render into off-screen pixmap */
-	cairo_set_source_rgb(cr, bgcol[state][0], bgcol[state][1], bgcol[state][2]);
+	cairo_set_source_rgb(cr, bgcol[bgstate][0], bgcol[bgstate][1],
+	                     bgcol[bgstate][2]);
 	cairo_paint(cr);
 
 	/* draw once per physical monitor so nothing spans a bezel */
@@ -625,7 +630,7 @@ static void
 usage(void)
 {
 	die("usage: lok [-v] [-t title] [-s subtitle] [-b bottomtext]"
-	    " [-T 0/1] [-S 0/1] [-B 0/1]"
+	    " [-T 0/1] [-S 0/1] [-B 0/1] [-A 0/1]"
 	    " [cmd [arg ...]]\n");
 }
 
@@ -667,6 +672,9 @@ main(int argc, char **argv)
 		break;
 	case 'B':
 		footer_datetime_updated = atoi(EARGF(usage()));
+		break;
+	case 'A':
+		typing_background_feedback = atoi(EARGF(usage()));
 		break;
 	default:
 		usage();

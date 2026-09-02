@@ -10,6 +10,10 @@
 .Op Fl t Ar title
 .Op Fl s Ar subtitle
 .Op Fl b Ar bottomtext
+.Op Fl T Ar val
+.Op Fl S Ar val
+.Op Fl B Ar val
+.Op Fl A Ar val
 .Op Ar cmd Op Ar arg ...
 .Sh DESCRIPTION
 .Nm
@@ -53,6 +57,13 @@ expansion in the subtitle. Default: 1.
 Enable (1) or disable (0) live
 .Xr strftime 3
 expansion in the footer text. Default: 1.
+.It Fl A Ar val
+Enable (1) or disable (0) alternating background feedback while typing.
+When disabled, the background stays at the idle color while typing; other
+typing visuals remain enabled. Default: 1, or the value of
+.Va typing_background_feedback
+in
+.Pa config.h .
 .El
 .Pp
 When live expansion is enabled for a field its text is scanned for

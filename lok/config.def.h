@@ -14,6 +14,9 @@ static const char *colorname[NUMCOLS] = {
 	[CAPS]      = "#cc6600",  /* caps lock is on */
 };
 
+/* change the background color while typing; CLI flag -A overrides this */
+static int typing_background_feedback = 0;
+
 /* emoji for each state; set an entry to "" to show none for that state */
 static const char *emoji[NUMCOLS] = {
 	[INIT]      = "🐒",
