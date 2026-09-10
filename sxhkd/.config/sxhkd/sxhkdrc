@@ -54,7 +54,7 @@ mod4 + shift + b
     st -t "btop" btop
 
 mod4 + e
-    BEMOJI_PICKER_CMD="dmenu" bemoji
+    BEMOJI_PICKER_CMD="dmenu" bemoji --noline
 
 mod4 + t
     st -t "termfloat" -g 85x25+550+300
