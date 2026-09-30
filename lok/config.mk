@@ -10,7 +10,7 @@ PKGS = x11 xext xrandr pangocairo
 
 # includes and libs
 INCS = `$(PKG_CONFIG) --cflags $(PKGS)`
-LIBS = `$(PKG_CONFIG) --libs $(PKGS)` -lcrypt
+LIBS = `$(PKG_CONFIG) --libs $(PKGS)` -lcrypt -lpam
 
 # flags
 CPPFLAGS = -DVERSION=\"$(VERSION)\" -D_DEFAULT_SOURCE -D_XOPEN_SOURCE=700

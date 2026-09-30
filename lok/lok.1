@@ -18,7 +18,7 @@
 .Sh DESCRIPTION
 .Nm
 locks every screen of the current X display and waits for the user's
-password. While locked it shows a configurable emoji, a title, a subtitle
+password or a confirmed fingerprint match. While locked it shows a configurable emoji, a title, a subtitle
 and a footer line, all centered per physical monitor. The background color,
 the emoji and the texts change with the lock state: idle, typing (two
 alternating colors), wrong password, and caps lock active.
@@ -35,6 +35,13 @@ every second, effectively turning any part of the display into a clock.
 If
 .Ar cmd
 is given, it is executed after the screen has been locked.
+.Pp
+On Linux, fingerprint scans use the dedicated
+.Pa /etc/pam.d/lok-fingerprint
+PAM service and run asynchronously after all screens are locked.
+Password entry remains available during scanning. Failed or timed-out scans
+retry automatically; missing configuration or hardware never unlocks the screen.
+Run lok as the session user, not through sudo.
 .Sh OPTIONS
 .Bl -tag -width Ds
 .It Fl v
@@ -80,7 +87,18 @@ and therefore must be installed setuid root; it drops privileges to the
 user and group configured in
 .Pa config.h
 (default: nobody/nobody) right after startup, before any font or text
-rendering happens. The whole process is locked into RAM with
+rendering happens. A separate privileged PAM supervisor authenticates the
+original real user's name, captured before dropping privileges. It is forked
+before loading the password hash or opening X. A private socket carries only
+start/cancel control and confirmed authentication success; unlocking or locker
+exit cancels scans and releases the fingerprint reader.
+.Pp
+The dedicated PAM service must be a regular root-owned file without group or
+other write permission. Install it with
+.Dl sudo make install-pam
+The supplied policy uses only pam_fprintd; do not include a password fallback
+or pam_permit in that service.
+.Pp The whole process is locked into RAM with
 .Xr mlockall 2
 so the typed password can never be written to swap.
 .Pp

@@ -32,6 +32,7 @@
 #include <pango/pangocairo.h>
 
 #include "arg.h"
+#include "fingerprint.h"
 
 char *argv0;
 
@@ -67,6 +68,13 @@ static double bgcol[NUMCOLS][3];
 static double fgcol[3], dimcol[3];
 static int failcount = 0;
 static int caps = 0;
+static struct fingerprint fingerprint = { -1, -1 };
+
+static void
+stopfingerprint(void)
+{
+	fingerprint_stop(&fingerprint);
+}
 
 static void die(const char *errstr, ...) __attribute__((noreturn));
 
@@ -333,7 +341,7 @@ readpw(Display *dpy, struct lock **locks, int nscreens, const char *hash)
 	unsigned int len = 0;
 	int num, s, alt = 0, failure = 0, dirty = 0, running = 1;
 	int oldc, color;
-	int xfd = ConnectionNumber(dpy);
+	int xfd = ConnectionNumber(dpy), maxfd;
 	int need_timer, has_title_dt, has_sub_dt, has_footer_dt;
 	char last_title[256], last_sub[256], last_footer[256];
 	fd_set fds;
@@ -473,11 +481,19 @@ readpw(Display *dpy, struct lock **locks, int nscreens, const char *hash)
 		if (!running)
 			break;
 
+		if (fingerprint_result(&fingerprint))
+			break;
 		FD_ZERO(&fds);
 		FD_SET(xfd, &fds);
+		maxfd = xfd;
+		if (fingerprint.fd >= 0) {
+			FD_SET(fingerprint.fd, &fds);
+			if (fingerprint.fd > maxfd)
+				maxfd = fingerprint.fd;
+		}
 		tv.tv_sec = 1;
 		tv.tv_usec = 0;
-		if (select(xfd + 1, &fds, NULL, NULL, need_timer ? &tv : NULL) < 0) {
+		if (select(maxfd + 1, &fds, NULL, NULL, need_timer ? &tv : NULL) < 0) {
 			if (errno != EINTR)
 				die("lok: select: %s\n", strerror(errno));
 		}
@@ -645,6 +661,7 @@ main(int argc, char **argv)
 	uid_t duid;
 	gid_t dgid;
 	const char *hash;
+	char *authuser;
 	Display *dpy;
 	int i, s, nlocks, nscreens;
 	CARD16 dpmsstandby, dpmssuspend, dpmsoff, dpmslevel;
@@ -680,6 +697,10 @@ main(int argc, char **argv)
 		usage();
 	} ARGEND
 
+	/* Capture the real invoking user, never $USER or the drop identity. */
+	if (!(pwd = getpwuid(getuid())) || !(authuser = strdup(pwd->pw_name)))
+		die("lok: cannot preserve invoking user\n");
+
 	/* validate drop-user and -group */
 	errno = 0;
 	if (!(pwd = getpwnam(user)))
@@ -699,6 +720,14 @@ main(int argc, char **argv)
 	/* the password buffer must never hit swap */
 	if (mlockall(MCL_CURRENT) < 0)
 		fprintf(stderr, "lok: mlockall: %s\n", strerror(errno));
+
+	/* Fork before loading the hash or opening X: neither reaches PAM. */
+	if (!fingerprint_prepare(&fingerprint, authuser))
+		fprintf(stderr, "lok: fingerprint worker unavailable; use password\n");
+	free(authuser);
+	atexit(stopfingerprint);
+	if (fingerprint.fd >= FD_SETSIZE)
+		fingerprint_stop(&fingerprint);
 
 	hash = gethash();
 	errno = 0;
@@ -756,6 +785,8 @@ main(int argc, char **argv)
 		case -1:
 			die("lok: fork failed: %s\n", strerror(errno));
 		case 0:
+			if (fingerprint.fd >= 0)
+				close(fingerprint.fd);
 			if (close(ConnectionNumber(dpy)) < 0)
 				die("lok: close: %s\n", strerror(errno));
 			execvp(argv[0], argv);
@@ -765,10 +796,16 @@ main(int argc, char **argv)
 		}
 	}
 
-	/* everything is now blank. Wait for the correct password */
+	/* All screens are locked and the post-lock child has no auth socket. */
+	fingerprint_start(&fingerprint);
+
+	/* Wait for either password or confirmed fingerprint success. */
 	readpw(dpy, locks, nscreens, hash);
 
-	/* password ok, unlock everything and quit */
+	/* Release the reader and reap workers before removing any lock. */
+	fingerprint_stop(&fingerprint);
+
+	/* authentication ok, unlock everything and quit */
 	if (dpmssaved) {
 		DPMSSetTimeouts(dpy, dpmsstandby, dpmssuspend, dpmsoff);
 		if (!dpmson)
