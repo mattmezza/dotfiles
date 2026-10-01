@@ -668,6 +668,9 @@ main(int argc, char **argv)
 	BOOL dpmson = 0;
 	int dpmssaved = 0;
 
+	if (fingerprint_enabled)
+		subtext = fingerprint_subtext;
+
 	ARGBEGIN {
 	case 'v':
 		puts("lok-"VERSION);
@@ -722,7 +725,7 @@ main(int argc, char **argv)
 		fprintf(stderr, "lok: mlockall: %s\n", strerror(errno));
 
 	/* Fork before loading the hash or opening X: neither reaches PAM. */
-	if (!fingerprint_prepare(&fingerprint, authuser))
+	if (fingerprint_enabled && !fingerprint_prepare(&fingerprint, authuser))
 		fprintf(stderr, "lok: fingerprint worker unavailable; use password\n");
 	free(authuser);
 	atexit(stopfingerprint);

@@ -27,9 +27,13 @@ static const char *emoji[NUMCOLS] = {
 };
 static const int showemoji = 1;
 
+/* enable fingerprint unlocking through the dedicated PAM service */
+static const int fingerprint_enabled = 1;
+
 /* texts; set any to "" to disable it. CLI flags -t/-s/-b override these */
 static const char *titletext  = "This computer is locked";
 static const char *subtext    = "Type your password to unlock";
+static const char *fingerprint_subtext = "Type your password or use fingerprint to unlock";
 static const char *footertext = "%A %d %B  ·  %H:%M:%S"; /* strftime(3) codes are expanded */
 static const char *capstext   = "Caps Lock is on";    /* shown instead of subtext while caps lock is on */
 static const char *failformat  = "%d failed attempts"; /* shown instead of subtext after a wrong password */
