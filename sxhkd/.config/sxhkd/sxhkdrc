@@ -143,7 +143,7 @@ mod4 + ctrl + shift + Escape
 # Cast — Super + Alt
 # --- daemon / control panel ---
 mod4 + alt + Return
-    cast
+    cast --record-dir "$HOME/screenshots"
 
 mod4 + alt + shift + q
     cast quit
@@ -165,8 +165,24 @@ mod4 + alt + shift + p
 mod4 + alt + c
     cast camera toggle
 
+mod4 + alt + a
+    cast camera anchor next
+
 mod4 + alt + z
     cast zoom toggle
+
+mod4 + alt + l
+    cast layout next
+
+mod4 + alt + shift + l
+    dmcast layout
+
+# --- overlays (B = mouse buttons; K = keystrokes) ---
+mod4 + alt + b
+    cast clicks toggle
+
+mod4 + alt + k
+    cast keys toggle
 
 # --- recording ---
 mod4 + alt + r
@@ -179,6 +195,6 @@ mod4 + alt + shift + r
 mod4 + alt + shift + space
     cast record toggle
 
-# --- pause-screen text (Escape cancels; empty input clears) ---
+# --- cascading controls, including pause/blur title and subtitle ---
 mod4 + alt + t
-    text=$(printf '\n' | dmenu -p 'Pause text:') && cast live message "$text"
+    dmcast

@@ -63,3 +63,9 @@ Run `./manage.sh install stow` to install the dotfile symlinks, or
 Cast's configuration is managed in `cast/.config/cast/cast.conf` and linked to
 `~/.config/cast/cast.conf`. To install or remove only this package, run `stow cast`
 or `stow -D cast` from this directory.
+
+`dmcast` (in the `bin` Stow package) opens cascading dmenu controls for Cast.
+Choose `blurred` or `solid pause` to enter a title and subtitle and activate that
+live-screen style. Text suggestions are remembered per style: Enter accepts,
+Tab edits, `Clear text` removes, and Escape cancels before applying changes.
+`dmcast layout` opens the layout chooser directly.

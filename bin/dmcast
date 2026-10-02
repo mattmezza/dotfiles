@@ -1,0 +1,115 @@
+#!/usr/bin/env bash
+# Cascading Cast controls. Escape cancels; Tab edits a text suggestion.
+set -Eeuo pipefail
+
+report_error() {
+    trap - ERR
+    printf 'dmcast: action failed; check that the Cast daemon is running.\n' >&2
+    if command -v notify-send >/dev/null; then
+        notify-send 'Cast' 'Action failed. Check that the daemon is running.' || true
+    fi
+    exit 1
+}
+trap report_error ERR
+
+menu() {
+    local prompt=$1
+    shift
+    printf '%s\n' "$@" | dmenu -i -l 10 -p "$prompt"
+}
+
+text_entry() {
+    local value
+    value=$(menu "$1 (Tab to edit)" "$2" 'Clear text') || return 1
+    [[ $value != 'Clear text' ]] || value=''
+    printf '%s' "$value"
+}
+
+pause_screen() {
+    local style=$1 prefix title subtitle cache
+    cache=${XDG_CACHE_HOME:-$HOME/.cache}/dmcast
+    if [[ $style == blurred ]]; then
+        prefix=blur
+        title='Back soon'
+    else
+        prefix=pause
+        title='Paused'
+    fi
+    subtitle='{date:%A, %d %B} · {time:%H:%M}'
+    [[ ! -f $cache/$prefix-title ]] || title=$(cat "$cache/$prefix-title")
+    [[ ! -f $cache/$prefix-subtitle ]] || subtitle=$(cat "$cache/$prefix-subtitle")
+    title=$(text_entry 'Title' "$title") || return 0
+    subtitle=$(text_entry 'Subtitle' "$subtitle") || return 0
+    cast settings "output.${prefix}_title" "$title" "output.${prefix}_subtitle" "$subtitle"
+    if [[ $style == blurred ]]; then
+        cast live blur on
+        cast live resume
+    else
+        cast live pause
+    fi
+    mkdir -p "$cache"
+    printf '%s' "$title" > "$cache/$prefix-title"
+    printf '%s' "$subtitle" > "$cache/$prefix-subtitle"
+}
+
+main() {
+    local selection action
+    selection=${1:-}
+    if [[ -z $selection ]]; then
+        selection=$(menu 'Cast' 'blurred' 'solid pause' 'live' 'layout' 'camera' \
+            'recording' 'overlays' 'audio' 'capture' 'preset' 'panel') || return 0
+    fi
+    case $selection in
+        blurred|'solid pause') pause_screen "$selection" ;;
+        live)
+            action=$(menu 'Live' 'resume' 'pause' 'freeze' 'unfreeze' 'blur on' 'blur off') || return 0
+            case $action in
+                resume) cast live blur off; cast live unfreeze; cast live resume ;;
+                pause|freeze|unfreeze) cast live "$action" ;;
+                'blur on') pause_screen blurred ;;
+                'blur off') cast live blur off ;;
+                *) return 1 ;;
+            esac ;;
+        layout)
+            action=$(menu 'Layout' overlay split screen camera) || return 0
+            case $action in overlay|split|screen|camera) cast layout "$action" ;; *) return 1 ;; esac ;;
+        camera)
+            action=$(menu 'Camera' 'toggle' 'next corner' 'next shape' 'larger' 'smaller' 'mirror') || return 0
+            case $action in
+                toggle) cast camera toggle ;;
+                'next corner') cast camera anchor next ;;
+                'next shape') cast camera shape next ;;
+                larger) cast camera size +5% ;;
+                smaller) cast camera size -5% ;;
+                mirror) cast camera mirror toggle ;;
+                *) return 1 ;;
+            esac ;;
+        recording)
+            action=$(menu 'Recording' start stop pause resume cut cancel) || return 0
+            case $action in start|stop|pause|resume|cut|cancel) cast record "$action" ;; *) return 1 ;; esac ;;
+        overlays)
+            action=$(menu 'Overlays' keys clicks 'cursor highlight') || return 0
+            case $action in
+                keys|clicks) cast "$action" toggle ;;
+                'cursor highlight') cast cursor highlight toggle ;;
+                *) return 1 ;;
+            esac ;;
+        audio)
+            action=$(menu 'Audio toggle' mic desktop virtual) || return 0
+            case $action in mic|desktop|virtual) cast audio "$action" toggle ;; *) return 1 ;; esac ;;
+        capture)
+            action=$(menu 'Capture' monitor region window 'active window' 'next monitor') || return 0
+            case $action in
+                monitor) cast capture monitor ;;
+                region|window) cast capture "$action" select ;;
+                'active window') cast capture window active ;;
+                'next monitor') cast screen next ;;
+                *) return 1 ;;
+            esac ;;
+        preset) cast preset next ;;
+        panel) cast panel ;;
+        *) printf 'Unknown dmcast menu: %s\n' "$selection" >&2; return 1 ;;
+    esac
+}
+
+main "$@"
