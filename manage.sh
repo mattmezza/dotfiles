@@ -80,7 +80,7 @@ run_pacco() {
 
 # ── Stow ──────────────────────────────────────────────────────
 declare -a ALL_PACKAGES=(
-    alacritty bookmarker dunst flameshot fonts git gnupg hop i3
+    alacritty bookmarker cast dunst flameshot fonts git gnupg hop i3
     nvim picom pipewire portals screenkey screenlayout spl sxhkd tmux
     wallpapers wallust wireplumber xorg zsh
 )

@@ -139,3 +139,46 @@ mod4 + ctrl + t
     mwmc traybar toggle
 mod4 + ctrl + shift + Escape
 	mwmc quit
+
+# Cast — Super + Alt
+# --- daemon / control panel ---
+mod4 + alt + Return
+    cast
+
+mod4 + alt + shift + q
+    cast quit
+
+mod4 + alt + v
+    cast panel
+
+# --- live / privacy ---
+mod4 + alt + space
+    cast live toggle
+
+mod4 + alt + p
+    cast pause
+
+mod4 + alt + shift + p
+    cast resume
+
+# --- camera / zoom ---
+mod4 + alt + c
+    cast camera toggle
+
+mod4 + alt + z
+    cast zoom toggle
+
+# --- recording ---
+mod4 + alt + r
+    cast record start
+
+mod4 + alt + shift + r
+    cast record stop
+
+# Pause/resume an existing recording; does not start a new file.
+mod4 + alt + shift + space
+    cast record toggle
+
+# --- pause-screen text (Escape cancels; empty input clears) ---
+mod4 + alt + t
+    text=$(printf '\n' | dmenu -p 'Pause text:') && cast live message "$text"

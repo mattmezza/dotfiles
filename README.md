@@ -14,6 +14,7 @@ It contains configuration for:
 - git
 - OSX (macOS)
 - xorg (X11)
+- cast (screen casting and recording)
 
 Symlinks are managed by `stow`.
 
@@ -56,4 +57,9 @@ This is a special html page with a bit of javascript in it. It serves me to spee
 
 # Installation
 
-See `install.sh` and `uninstall.sh` for the (un)installation script (untested).
+Run `./manage.sh install stow` to install the dotfile symlinks, or
+`./manage.sh uninstall stow` to remove them.
+
+Cast's configuration is managed in `cast/.config/cast/cast.conf` and linked to
+`~/.config/cast/cast.conf`. To install or remove only this package, run `stow cast`
+or `stow -D cast` from this directory.
