@@ -69,3 +69,7 @@ Choose `blurred` or `solid pause` to enter a title and subtitle and activate tha
 live-screen style. Text suggestions are remembered per style: Enter accepts,
 Tab edits, `Clear text` removes, and Escape cancels before applying changes.
 `dmcast layout` opens the layout chooser directly.
+The menu can start the daemon with recordings in `~/screenshots`; startup output
+is logged to `${XDG_CACHE_HOME:-~/.cache}/dmcast/daemon.log`. It also covers split
+geometry, camera placement/shape/aspect, zoom, recording effects, overlays, audio
+gains/sources, capture, named presets, preview, status, config reload, and quitting.

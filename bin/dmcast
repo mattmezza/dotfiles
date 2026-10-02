@@ -52,62 +52,193 @@ pause_screen() {
     printf '%s' "$subtitle" > "$cache/$prefix-subtitle"
 }
 
+start_daemon() {
+    local cache pid
+    if cast status --json >/dev/null 2>&1; then
+        command -v notify-send >/dev/null && notify-send 'Cast' 'Daemon is already running.'
+        return 0
+    fi
+    cache=${XDG_CACHE_HOME:-$HOME/.cache}/dmcast
+    mkdir -p "$cache" "$HOME/screenshots"
+    nohup setsid cast --record-dir "$HOME/screenshots" </dev/null >"$cache/daemon.log" 2>&1 &
+    pid=$!
+    sleep 0.5
+    if ! kill -0 "$pid" 2>/dev/null; then
+        cat "$cache/daemon.log" >&2
+        return 1
+    fi
+}
+
+show_info() {
+    local output
+    output=$(cast "$@")
+    printf '%s\n' "$output" | dmenu -i -l 20 -p "Cast $*" >/dev/null || return 0
+}
+
+choose_camera() {
+    local action value
+    action=$(menu 'Camera' toggle show hide 'next corner' corner 'next shape' shape aspect \
+        larger smaller size mirror move) || return 0
+    case $action in
+        toggle|show|hide) cast camera "$action" ;;
+        'next corner') cast camera anchor next ;;
+        'next shape') cast camera shape next ;;
+        corner)
+            value=$(menu 'Camera corner' top-left top-right bottom-left bottom-right) || return 0
+            case $value in top-left|top-right|bottom-left|bottom-right) cast camera anchor "$value" ;; *) return 1 ;; esac ;;
+        shape)
+            value=$(menu 'Camera shape' rectangle rounded circle) || return 0
+            case $value in rectangle|rounded|circle) cast camera shape "$value" ;; *) return 1 ;; esac ;;
+        aspect)
+            value=$(menu 'Camera aspect' native 16:9 4:3 1:1) || return 0
+            case $value in native|16:9|4:3|1:1) cast camera aspect "$value" ;; *) return 1 ;; esac ;;
+        larger) cast camera size +5% ;;
+        smaller) cast camera size -5% ;;
+        size)
+            value=$(menu 'Camera width (%)' 18% 25% 33% 50%) || return 0
+            [[ $value =~ ^[0-9]+%$ ]]
+            cast camera size "$value" ;;
+        mirror) cast camera mirror toggle ;;
+        move)
+            value=$(menu 'Move camera (20px)' left right up down) || return 0
+            case $value in
+                left) cast camera move -20 0 ;; right) cast camera move 20 0 ;;
+                up) cast camera move 0 -20 ;; down) cast camera move 0 20 ;;
+                *) return 1 ;;
+            esac ;;
+        *) return 1 ;;
+    esac
+}
+
+choose_audio() {
+    local lane action value
+    lane=$(menu 'Audio' mic desktop virtual 'list sources') || return 0
+    if [[ $lane == 'list sources' ]]; then show_info audio list; return; fi
+    case $lane in mic|desktop|virtual) ;; *) return 1 ;; esac
+    if [[ $lane == virtual ]]; then
+        action=$(menu 'Virtual audio' toggle on off) || return 0
+    else
+        action=$(menu "$lane audio" toggle on off gain source) || return 0
+    fi
+    case $action in
+        toggle|on|off) cast audio "$lane" "$action" ;;
+        gain)
+            value=$(menu "$lane gain (%)" 100% 75% 50% 125% 150% 0%) || return 0
+            [[ $value =~ ^[0-9]+%$ ]]
+            cast audio "$lane" gain "$value" ;;
+        source)
+            value=$(text_entry "$lane source name" '') || return 0
+            [[ -n $value ]]
+            cast audio "$lane" source "$value" ;;
+        *) return 1 ;;
+    esac
+}
+
 main() {
-    local selection action
+    local selection action value
     selection=${1:-}
     if [[ -z $selection ]]; then
-        selection=$(menu 'Cast' 'blurred' 'solid pause' 'live' 'layout' 'camera' \
-            'recording' 'overlays' 'audio' 'capture' 'preset' 'panel') || return 0
+        selection=$(menu 'Cast' 'start daemon' 'blurred' 'solid pause' 'live' 'layout' 'camera' \
+            'recording' 'zoom' 'overlays' 'audio' 'capture' 'preset' 'preview' 'panel' \
+            'status' 'config reload' 'reset composition' 'quit daemon') || return 0
     fi
     case $selection in
         blurred|'solid pause') pause_screen "$selection" ;;
+        'start daemon') start_daemon ;;
+        'quit daemon')
+            action=$(menu 'Quit daemon and finalize recording?' cancel quit) || return 0
+            case $action in quit) cast quit ;; cancel) return 0 ;; *) return 1 ;; esac ;;
         live)
-            action=$(menu 'Live' 'resume' 'pause' 'freeze' 'unfreeze' 'blur on' 'blur off') || return 0
+            action=$(menu 'Live' 'resume' 'pause' 'freeze' 'unfreeze' 'blur on' 'blur off' \
+                'pause both outputs' 'resume both outputs') || return 0
             case $action in
                 resume) cast live blur off; cast live unfreeze; cast live resume ;;
                 pause|freeze|unfreeze) cast live "$action" ;;
                 'blur on') pause_screen blurred ;;
                 'blur off') cast live blur off ;;
+                'pause both outputs') cast pause ;;
+                'resume both outputs') cast resume ;;
                 *) return 1 ;;
             esac ;;
         layout)
-            action=$(menu 'Layout' overlay split screen camera) || return 0
-            case $action in overlay|split|screen|camera) cast layout "$action" ;; *) return 1 ;; esac ;;
-        camera)
-            action=$(menu 'Camera' 'toggle' 'next corner' 'next shape' 'larger' 'smaller' 'mirror') || return 0
+            action=$(menu 'Layout' overlay split screen camera next 'split side' 'split ratio') || return 0
             case $action in
-                toggle) cast camera toggle ;;
-                'next corner') cast camera anchor next ;;
-                'next shape') cast camera shape next ;;
-                larger) cast camera size +5% ;;
-                smaller) cast camera size -5% ;;
-                mirror) cast camera mirror toggle ;;
+                overlay|split|screen|camera|next) cast layout "$action" ;;
+                'split side')
+                    value=$(menu 'Split camera side' left right) || return 0
+                    case $value in left|right) cast split side "$value" ;; *) return 1 ;; esac ;;
+                'split ratio')
+                    value=$(menu 'Split camera share (%)' 25% 33% 50% 66%) || return 0
+                    [[ $value =~ ^[0-9]+%$ ]]
+                    cast split ratio "$value" ;;
                 *) return 1 ;;
             esac ;;
+        camera) choose_camera ;;
         recording)
-            action=$(menu 'Recording' start stop pause resume cut cancel) || return 0
-            case $action in start|stop|pause|resume|cut|cancel) cast record "$action" ;; *) return 1 ;; esac ;;
-        overlays)
-            action=$(menu 'Overlays' keys clicks 'cursor highlight') || return 0
+            action=$(menu 'Recording' start stop pause resume cut cancel freeze unfreeze 'blur on' 'blur off') || return 0
             case $action in
-                keys|clicks) cast "$action" toggle ;;
-                'cursor highlight') cast cursor highlight toggle ;;
+                start|stop|pause|resume|cut|cancel|freeze|unfreeze) cast record "$action" ;;
+                'blur on') cast record blur on ;; 'blur off') cast record blur off ;;
                 *) return 1 ;;
             esac ;;
-        audio)
-            action=$(menu 'Audio toggle' mic desktop virtual) || return 0
-            case $action in mic|desktop|virtual) cast audio "$action" toggle ;; *) return 1 ;; esac ;;
+        zoom)
+            action=$(menu 'Zoom' toggle in out reset factor 'follow cursor' 'lock position') || return 0
+            case $action in
+                toggle|in|out|reset) cast zoom "$action" ;;
+                factor)
+                    value=$(menu 'Zoom factor' 1 1.5 2 3 4) || return 0
+                    [[ $value =~ ^[0-9]+([.][0-9]+)?$ ]]
+                    cast zoom set "$value" ;;
+                'follow cursor') cast zoom follow on ;; 'lock position') cast zoom follow off ;;
+                *) return 1 ;;
+            esac ;;
+        overlays)
+            action=$(menu 'Overlays' keys clicks cursor 'cursor highlight' 'shortcut keys only' \
+                'all keys' 'clear keys' 'live annotations' 'record annotations') || return 0
+            case $action in
+                keys|clicks|cursor) cast "$action" toggle ;;
+                'cursor highlight') cast cursor highlight toggle ;;
+                'shortcut keys only') cast keys mode shortcuts ;; 'all keys') cast keys mode all ;;
+                'clear keys') cast keys clear ;;
+                'live annotations'|'record annotations')
+                    value=$(menu 'Annotations' 'keys on' 'keys off' 'clicks on' 'clicks off') || return 0
+                    case $value in 'keys on'|'keys off'|'clicks on'|'clicks off')
+                        cast annotations "${action%% *}" "${value%% *}" "${value##* }" ;; *) return 1 ;;
+                    esac ;;
+                *) return 1 ;;
+            esac ;;
+        audio) choose_audio ;;
         capture)
-            action=$(menu 'Capture' monitor region window 'active window' 'next monitor') || return 0
+            action=$(menu 'Capture' monitor region window 'active window' 'next monitor' \
+                'list monitors' 'select monitor' contain cover) || return 0
             case $action in
                 monitor) cast capture monitor ;;
                 region|window) cast capture "$action" select ;;
                 'active window') cast capture window active ;;
                 'next monitor') cast screen next ;;
+                'list monitors') show_info screen list ;;
+                'select monitor')
+                    value=$(text_entry 'Monitor name' '') || return 0
+                    [[ -n $value ]]
+                    cast screen select "$value" ;;
+                contain|cover) cast capture fit "$action" ;;
                 *) return 1 ;;
             esac ;;
-        preset) cast preset next ;;
+        preset)
+            action=$(menu 'Preset (or type a custom name)' next coding demo conversation) || return 0
+            [[ -n $action ]]
+            cast preset "$action" ;;
+        preview)
+            action=$(menu 'Preview' toggle on off 'live target' 'record target') || return 0
+            case $action in
+                toggle|on|off) cast preview "$action" ;;
+                'live target') cast preview target live ;; 'record target') cast preview target record ;;
+                *) return 1 ;;
+            esac ;;
         panel) cast panel ;;
+        status) show_info status ;;
+        'config reload') cast config reload ;;
+        'reset composition') cast reset ;;
         *) printf 'Unknown dmcast menu: %s\n' "$selection" >&2; return 1 ;;
     esac
 }
